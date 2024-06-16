@@ -7,7 +7,6 @@ import { resetPasswordDto } from '../dto/forgotPasswordOtp.dto';
 import { UserType } from 'src/core/utils/enums/userType';
 import { RegisterDto } from '../dto/register.dto';
 import { forgotPasswordOtpDto } from '../dto/resetPassword.dto';
-import { compareSync } from 'bcrypt';
 import { ConfigService } from '@salman3001/nest-config-module';
 import { CustomHttpException } from 'src/core/utils/Exceptions/CustomHttpException';
 import { generateOtp } from 'src/core/utils/helpers';
@@ -15,12 +14,16 @@ import { IJwtPayload } from 'src/core/utils/types/common';
 
 import User from '../entities/user.entity';
 import { DataSource } from 'typeorm';
+import { compareSync } from 'bcrypt';
+import { MailService } from '@salman3001/nest-mailer';
+import { ForgorPasswordOtpEmail } from '../mails/forgorPasswordOtp.email';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectDataSource('usersApp') private readonly dataSource: DataSource,
     private config: ConfigService,
+    private readonly mailService: MailService,
   ) {}
 
   async login(dto: LoginDto): Promise<User> {
@@ -36,6 +39,14 @@ export class AuthService {
       });
     }
 
+    const isPasswordValid = compareSync(dto.password, user.password);
+    if (!isPasswordValid) {
+      throw new CustomHttpException({
+        code: HttpStatus.UNAUTHORIZED,
+        success: false,
+        message: 'Invalid Credentials',
+      });
+    }
     return user;
   }
 
@@ -50,22 +61,16 @@ export class AuthService {
         message: 'Email id already exist',
       });
     }
-    const user = await this.dataSource.manager.save(User, {
+    const user = Object.assign(new User(), {
       ...dto,
       userType: UserType.CUSTOMER,
     });
+
+    await this.dataSource.manager.save(User, user);
     return user;
   }
 
-  async registerVendor(dto: RegisterDto): Promise<User> {
-    const user = await this.dataSource.manager.save(User, {
-      ...dto,
-      userType: UserType.VENDOR,
-    });
-    return user;
-  }
-
-  async forgotPasswordOtp(dto: forgotPasswordOtpDto): Promise<number> {
+  async forgotPasswordOtp(dto: forgotPasswordOtpDto) {
     const user = await this.dataSource.manager.findOneByOrFail(User, {
       email: dto.email,
     });
@@ -73,7 +78,12 @@ export class AuthService {
     const otp = generateOtp();
     user.otp = otp;
     await this.dataSource.manager.save(user);
-    return otp;
+    await this.mailService.queue([
+      new ForgorPasswordOtpEmail(user.email, {
+        name: `${user.firstName}`,
+        otp,
+      }),
+    ]);
   }
 
   async resetPassword(dto: resetPasswordDto): Promise<User> {

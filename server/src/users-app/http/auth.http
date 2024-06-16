@@ -3,7 +3,7 @@ Content-Type: application/json
 
 {
  "email":"salman@gmail.com",
- "password":"123456789"
+ "password":"Salman@123"
 }
 
 ###
@@ -17,6 +17,14 @@ Content-Type: application/json
     "firstName": "salman",
     "lastName": "khan",   
     "email": "salman@gmail.com",
-    "password":"123456789",
+    "password":"Salman@123",
     "phone": "+919805893577"
+}
+
+### forgot password otp
+POST {{base_url}}/auth/forgot-password-otp
+Content-Type: application/json
+
+{  
+    "email": "salman@gmail.com"
 }

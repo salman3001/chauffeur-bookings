@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsPhoneNumber, Length } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsPhoneNumber,
+  IsStrongPassword,
+  Length,
+} from 'class-validator';
 
 export class RegisterDto {
   @Length(2, 50)
@@ -11,7 +17,7 @@ export class RegisterDto {
   @IsNotEmpty()
   email: string;
 
-  @Length(8, 50)
+  @IsStrongPassword()
   password: string;
 
   @IsPhoneNumber('IN')

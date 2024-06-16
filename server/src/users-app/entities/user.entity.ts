@@ -13,11 +13,13 @@ import {
   IsEmail,
   IsEnum,
   IsPhoneNumber,
+  IsStrongPassword,
   Length,
 } from 'class-validator';
 import { UserType } from '../../core/utils/enums/userType';
 import { hashSync } from 'bcrypt';
 import Profile from './profile.entity';
+import { Exclude, instanceToPlain } from 'class-transformer';
 
 @Entity()
 export default class User {
@@ -36,8 +38,9 @@ export default class User {
   @IsEmail()
   email: string;
 
-  @Column({ length: 50 })
-  @Length(8, 50)
+  @Exclude({ toPlainOnly: true })
+  @Column({ length: 256 })
+  @IsStrongPassword()
   password: string;
 
   @Column({ length: 15, nullable: true })
@@ -52,10 +55,7 @@ export default class User {
   @IsBoolean()
   isActive: boolean;
 
-  @Column('smallint', { nullable: true })
-  socketToken?: number;
-
-  @Column('smallint', { nullable: true })
+  @Column('int', { nullable: true })
   otp?: number;
 
   @CreateDateColumn()
@@ -73,8 +73,14 @@ export default class User {
   @JoinColumn()
   profile: Profile;
 
+  toJSON() {
+    return instanceToPlain(this);
+  }
+
   @BeforeInsert()
-  private hashPassword() {
+  hashPassword() {
+    console.log('ran');
+
     if (this.password) {
       const hash = hashSync(this.password, 10);
       this.password = hash;

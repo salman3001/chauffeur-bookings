@@ -1,7 +1,12 @@
 {
-    "workbench.colorCustomizations": {
-        "activityBar.background": "#3F2A00",
-        "titleBar.activeBackground": "#583A01",
-        "titleBar.activeForeground": "#FFFAEF"
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#3F2A00",
+    "titleBar.activeBackground": "#583A01",
+    "titleBar.activeForeground": "#FFFAEF"
+  },
+  "rest-client.environmentVariables": {
+    "$shared": {
+      "base_url": "http://localhost:3000"
     }
+  }
 }

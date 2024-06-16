@@ -6,7 +6,6 @@ export class CreateUserDto extends OmitType(User, [
   'isActive',
   'otp',
   'profile',
-  'socketToken',
   'cretaedAt',
   'updatedAt',
   'deletedAt',

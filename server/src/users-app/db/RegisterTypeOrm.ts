@@ -1,8 +1,6 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@salman3001/nest-config-module';
-import Address from 'src/users-app/entities/address.entity';
 import { Config } from 'src/core/config/config';
-import Role from 'src/users-app/entities/role.entity';
 import User from '../entities/user.entity';
 import Profile from '../entities/profile.entity';
 
@@ -17,7 +15,7 @@ export default function registerTypeOrm() {
       username: configService.get<Config>().envs().PG_USERNAME,
       password: configService.get<Config>().envs().PG_PASSWORD,
       database: configService.get<Config>().envs().PG_DB,
-      entities: [User, Address, Profile, Role],
+      entities: [User, Profile],
       synchronize: true,
     }),
   });

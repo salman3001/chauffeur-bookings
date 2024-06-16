@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from 'src/app.module';
 import { GlobalHttpExceptionsFilter } from './Exceptions/GlobalHttpExceptionsFilter';
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 import { CoreModule } from '../core.module';
 
 export async function createTestApp() {

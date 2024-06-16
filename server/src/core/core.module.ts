@@ -1,17 +1,36 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@salman3001/nest-config-module';
+import { ConfigModule, ConfigService } from '@salman3001/nest-config-module';
+import { MailModule } from '@salman3001/nest-mailer';
 import { Config } from './config/config';
+import { BullModule } from '@nestjs/bull';
+import * as Bull from 'bull';
 
 @Module({
   imports: [
     ConfigModule.register({
       config: new Config(),
-      envFile:
-        process.env.NODE_ENV === 'prod'
-          ? '.env.prod'
-          : process.env.NODE_ENV === 'dev'
-            ? '.env.dev'
-            : '.env.dev',
+      envFile: '.env',
+    }),
+    MailModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        transporter: 'nodemailer',
+        options: {
+          host: config.get<Config>().envs().SMTP_HOST,
+          port: config.get<Config>().envs().PORT,
+          secure: false,
+          auth: {
+            user: config.get<Config>().envs().SMTP_USERNAME,
+            pass: config.get<Config>().envs().SMTP_PASSWORD,
+          },
+        },
+      }),
+    }),
+    BullModule.forRootAsync({
+      useFactory: (config: ConfigService) => ({
+        createClient:config.get<Config>().envs().NODE_ENV==='prod'?new Bull.
+      }),
+      inject: [ConfigService],
     }),
   ],
 })

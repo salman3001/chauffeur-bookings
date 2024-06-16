@@ -3,7 +3,6 @@ import { AuthService } from '../services/auth.service';
 import { Response } from 'express';
 import { Config } from 'src/core/config/config';
 import { ConfigService } from '@salman3001/nest-config-module';
-import { MigrateToVendorDto } from '../dto/migrateToVendorDto';
 import { LoginDto } from '../dto/login.dto';
 import { RegisterDto } from '../dto/register.dto';
 import { forgotPasswordOtpDto } from '../dto/resetPassword.dto';
@@ -28,7 +27,6 @@ export class AuthController {
     const token = this.authService.getToken({
       id: user.id,
       userType: user.userType,
-      permissions: user?.role?.permissions,
     });
 
     res.cookie('auth_token', token, {
@@ -37,7 +35,7 @@ export class AuthController {
         this.config.get<Config>().envs().NODE_ENV !== 'prod' ? false : true,
     });
 
-    res.cookie('user', user, {
+    res.cookie('user', JSON.stringify(user), {
       secure:
         this.config.get<Config>().envs().NODE_ENV !== 'prod' ? false : true,
     });
@@ -45,7 +43,7 @@ export class AuthController {
     return CustomRes({
       data: null,
       code: HttpStatus.OK,
-      message: 'Logen Successfully',
+      message: 'Login Successfully',
       success: true,
     });
   }
@@ -72,7 +70,6 @@ export class AuthController {
     const token = this.authService.getToken({
       id: user.id,
       userType: user.userType,
-      permissions: undefined,
     });
 
     res.cookie('auth_token', token, {
@@ -81,7 +78,7 @@ export class AuthController {
         this.config.get<Config>().envs().NODE_ENV !== 'prod' ? false : true,
     });
 
-    res.cookie('user', user, {
+    res.cookie('user', JSON.stringify(user), {
       secure:
         this.config.get<Config>().envs().NODE_ENV !== 'prod' ? false : true,
     });
@@ -89,68 +86,6 @@ export class AuthController {
     return CustomRes({
       code: HttpStatus.OK,
       message: 'Account created',
-      data: null,
-      success: true,
-    });
-  }
-
-  @Post('register-vendor')
-  async registerVendor(
-    @Body(new ValidatorPipe()) dto: RegisterDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const user = await this.authService.registerVendor(dto);
-    const token = this.authService.getToken({
-      id: user.id,
-      userType: user.userType,
-      permissions: undefined,
-    });
-
-    res.cookie('auth_token', token, {
-      httpOnly: true,
-      secure:
-        this.config.get<Config>().envs().NODE_ENV !== 'prod' ? false : true,
-    });
-
-    res.cookie('user', user, {
-      secure:
-        this.config.get<Config>().envs().NODE_ENV !== 'prod' ? false : true,
-    });
-
-    return CustomRes({
-      code: HttpStatus.OK,
-      message: 'Account created',
-      data: null,
-      success: true,
-    });
-  }
-
-  @Post('migrate-to-vendor')
-  async migrateToVendor(
-    @Body(new ValidatorPipe()) dto: MigrateToVendorDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const user = await this.authService.migrateToVendor(dto);
-    const token = this.authService.getToken({
-      id: user.id,
-      userType: user.userType,
-      permissions: undefined,
-    });
-
-    res.cookie('auth_token', token, {
-      httpOnly: true,
-      secure:
-        this.config.get<Config>().envs().NODE_ENV !== 'prod' ? false : true,
-    });
-
-    res.cookie('user', user, {
-      secure:
-        this.config.get<Config>().envs().NODE_ENV !== 'prod' ? false : true,
-    });
-
-    return CustomRes({
-      code: HttpStatus.OK,
-      message: 'Account migrated',
       data: null,
       success: true,
     });
@@ -160,12 +95,11 @@ export class AuthController {
   async forgotPasswordOtp(
     @Body(new ValidatorPipe()) dto: forgotPasswordOtpDto,
   ) {
-    const otp = await this.authService.forgotPasswordOtp(dto);
+    await this.authService.forgotPasswordOtp(dto);
 
     return CustomRes({
       code: HttpStatus.OK,
       message: 'OTP Sent',
-      data: otp,
       success: true,
     });
   }

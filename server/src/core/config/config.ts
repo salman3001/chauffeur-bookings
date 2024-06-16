@@ -4,6 +4,8 @@ export class Config implements IConfig {
   envs() {
     return {
       NODE_ENV: process.env.NODE_ENV as string,
+      APP_NAME: process.env.APP_NAME as string,
+      APP_URL: process.env.APP_URL as string,
       PORT: process.env.PORT as string,
       APP_SECRETE: process.env.APP_SECRETE as string,
       DB_URI: process.env.DB_URI as string,

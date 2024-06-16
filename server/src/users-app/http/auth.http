@@ -1,0 +1,22 @@
+POST {{base_url}}/auth/login
+Content-Type: application/json  
+
+{
+ "email":"salman@gmail.com",
+ "password":"123456789"
+}
+
+###
+POST {{base_url}}/auth/logout
+
+###
+POST {{base_url}}/auth/register
+Content-Type: application/json
+
+{
+    "firstName": "salman",
+    "lastName": "khan",   
+    "email": "salman@gmail.com",
+    "password":"123456789",
+    "phone": "+919805893577"
+}

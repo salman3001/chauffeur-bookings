@@ -1,0 +1,11 @@
+GET {{base_url}}/profile
+
+
+### forgot password otp
+POST {{base_url}}/profile
+Content-Type: application/json
+
+{  
+
+}
+

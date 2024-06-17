@@ -2,8 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@salman3001/nest-config-module';
 import { MailModule } from '@salman3001/nest-mailer';
 import { Config } from './config/config';
-import { BullModule } from '@nestjs/bull';
-import * as Bull from 'bull';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -25,12 +24,6 @@ import * as Bull from 'bull';
           },
         },
       }),
-    }),
-    BullModule.forRootAsync({
-      useFactory: (config: ConfigService) => ({
-        createClient:config.get<Config>().envs().NODE_ENV==='prod'?new Bull.
-      }),
-      inject: [ConfigService],
     }),
   ],
 })

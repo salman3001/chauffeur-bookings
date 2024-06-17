@@ -5,8 +5,8 @@ export const profilePolicy = {
     return user ? true : false;
   },
 
-  update(user: AuthUserType, profileUserId: number) {
-    return user?.id === profileUserId;
+  update(user: AuthUserType) {
+    return user ? true : false;
   },
 };
 

@@ -8,6 +8,7 @@ export class Config implements IConfig {
       APP_URL: process.env.APP_URL as string,
       PORT: process.env.PORT as string,
       APP_SECRETE: process.env.APP_SECRETE as string,
+      UPLOAD_PATH: process.env.APP_SECRETE as string,
       DB_URI: process.env.DB_URI as string,
       PG_HOST: process.env.PG_HOST as string,
       PG_PORT: process.env.PG_PORT as string,

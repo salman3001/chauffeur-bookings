@@ -28,3 +28,13 @@ Content-Type: application/json
 {  
     "email": "salman@gmail.com"
 }
+
+### reset password 
+POST {{base_url}}/auth/reset-password
+Content-Type: application/json
+
+{  
+    "email": "salman@gmail.com",
+    "password":"123456789",
+    "otp":"457895"
+}

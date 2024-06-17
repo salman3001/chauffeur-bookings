@@ -1,18 +1,25 @@
 import { Controller, Get, Body, Patch, Param } from '@nestjs/common';
 import { ProfilesService } from '../services/profiles.service';
 import { UpdateProfileDto } from '../dto/update-profile.dto';
+import { AuthUser } from 'src/core/utils/decorators/user/authUser.decorator';
+import { AuthUserType } from 'src/core/utils/types/common';
 
-@Controller('profiles')
+@Controller('profile')
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.profilesService.findOne(+id);
+  @Get()
+  async findOne(@AuthUser() authUser: AuthUserType) {
+    const profle = await this.profilesService.findOne(authUser);
+    return profle;
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProfileDto: UpdateProfileDto) {
-    return this.profilesService.update(+id, updateProfileDto);
+  @Patch()
+  async update(
+    @Body() updateProfileDto: UpdateProfileDto,
+    @AuthUser() authUser: AuthUserType,
+  ) {
+    const profile = this.profilesService.update(updateProfileDto, authUser);
+    return profile;
   }
 }

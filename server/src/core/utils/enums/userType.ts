@@ -1,6 +1,5 @@
 export enum UserType {
-  SUPER_ADMIN,
-  VENDOR,
+  ADMIN,
   CHAUFFEUR,
   CUSTOMER,
 }

@@ -20,6 +20,11 @@ export class Config implements IConfig {
       SMTP_USERNAME: process.env.SMTP_USERNAME as string,
       SMTP_PASSWORD: process.env.SMTP_PASSWORD as string,
       KAFKA_BROKER: process.env.KAFKA_BROKER as string,
+      ENABLE_BULLMQ: process.env.ENABLE_BULLMQ === 'true',
+      REDIS_HOST: process.env.REDIS_HOST as string,
+      REDIS_PORT: parseInt(process.env.REDIS_PORT || ''),
+      REDIS_USERNAME: process.env.REDIS_USERNAME as string,
+      REDIS_PASSWORD: process.env.REDIS_PASSWORD as string,
     };
   }
   // pagination

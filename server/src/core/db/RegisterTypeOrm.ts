@@ -1,8 +1,12 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@salman3001/nest-config-module';
 import { Config } from 'src/core/config/config';
-import User from '../../users-app/users/entities/user.entity';
-import Profile from '../../users-app/profiles/entities/profile.entity';
+import User from '../../users/entities/user.entity';
+import Profile from '../../profiles/entities/profile.entity';
+import { VendorProfile } from 'src/vendor-profiles/entities/vendor-profile.entity';
+import { ChauffeurProfile } from 'src/chauffeur-profiles/entities/chauffeur-profile.entity';
+import { Car } from 'src/cars/entities/car.entity';
+import { Booking } from 'src/bookings/entities/booking.entity';
 
 export default function registerTypeOrm() {
   return TypeOrmModule.forRootAsync({
@@ -14,7 +18,7 @@ export default function registerTypeOrm() {
       username: configService.get<Config>().envs().PG_USERNAME,
       password: configService.get<Config>().envs().PG_PASSWORD,
       database: configService.get<Config>().envs().PG_DB,
-      entities: [User, Profile],
+      entities: [User, Profile, VendorProfile, ChauffeurProfile, Car, Booking],
       synchronize: true,
     }),
   });

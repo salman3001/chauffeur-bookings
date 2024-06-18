@@ -3,8 +3,7 @@ import { ConfigModule, ConfigService } from '@salman3001/nest-config-module';
 import { MailModule } from '@salman3001/nest-mailer';
 import { Config } from './config/config';
 import registerTypeOrm from './db/RegisterTypeOrm';
-import { KafkaModule } from './kafka/kafka.module';
-import { EmailConsumer } from './consumers/email.consumer';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
@@ -13,9 +12,23 @@ import { EmailConsumer } from './consumers/email.consumer';
       envFile: '.env',
     }),
     registerTypeOrm(),
+    BullModule.forRoot({
+      connection: {},
+    }),
+    // BullModule.forRootAsync({
+    //   useFactory: (config: ConfigService) => ({
+    //     connection: {
+    //       host: config.get<Config>().envs().REDIS_HOST,
+    //       port: config.get<Config>().envs().REDIS_PORT,
+    //       // username: config.get<Config>().envs().REDIS_USERNAME,
+    //       // password: config.get<Config>().envs().REDIS_PASSWORD,
+    //     },
+    //   }),
+    //   inject: [ConfigService],
+    // }),
     MailModule.registerAsync({
       inject: [ConfigService],
-      useFactory: async (config: ConfigService) => ({
+      useFactory: (config: ConfigService) => ({
         transporter: 'nodemailer',
         options: {
           host: config.get<Config>().envs().SMTP_HOST,
@@ -25,15 +38,14 @@ import { EmailConsumer } from './consumers/email.consumer';
             user: config.get<Config>().envs().SMTP_USERNAME,
             pass: config.get<Config>().envs().SMTP_PASSWORD,
           },
-          // tls: {
-          //   // do not fail on invalid certs
-          //   rejectUnauthorized: false,
-          // },
         },
+        // queueAdapter: {
+        //   name: 'BullMq',
+        //   options: { connection: {} },
+        // },
       }),
     }),
-    KafkaModule,
   ],
-  providers: [EmailConsumer],
+  providers: [],
 })
 export class CoreModule {}

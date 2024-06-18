@@ -9,6 +9,7 @@ import { Groups } from '../kafka/enums/Groups';
 import { MailService } from '@salman3001/nest-mailer';
 import { EmailMessage } from '../kafka/interfaces/EmailMessage';
 import { retryWrapper } from '../utils/retryWrapper';
+import { Consumer } from 'kafkajs';
 
 @Injectable()
 export class EmailConsumer implements OnModuleInit, OnApplicationShutdown {
@@ -17,7 +18,7 @@ export class EmailConsumer implements OnModuleInit, OnApplicationShutdown {
     private readonly mailservice: MailService,
   ) {}
 
-  consumer = this.kafkaClient.kafka.consumer({
+  consumer: Consumer = this.kafkaClient.kafka.consumer({
     groupId: Groups.EMAIL_CONSUMER,
   });
 

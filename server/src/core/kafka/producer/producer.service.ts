@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { ProducerRecord } from 'kafkajs';
 import { KafkaClient } from '../kafka-client/kafka-client';
+import { Transaction } from 'kafkajs';
 
 @Injectable()
 export class ProducerService implements OnModuleInit, OnApplicationShutdown {
@@ -16,7 +17,7 @@ export class ProducerService implements OnModuleInit, OnApplicationShutdown {
     await this.producer.send(record);
   }
 
-  transaction() {
+  transaction(): Promise<Transaction> {
     return this.producer.transaction();
   }
 

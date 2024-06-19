@@ -16,6 +16,10 @@ export const ChauffeurProfilesPolicy = {
       chauffeurProfile?.user?.id === user.id
     );
   },
+
+  availableSlots(user: AuthUserType) {
+    return user ? true : false;
+  },
 };
 
 export type IChauffeurProfilesPolicy = typeof ChauffeurProfilesPolicy;

@@ -9,6 +9,7 @@ import { BookingsModule } from './bookings/bookings.module';
 import { AdminProfilesModule } from './admin-profiiles/admin-profiiles.module';
 import { PaymentsModule } from './payments/payments.module';
 import { RefundsModule } from './refunds/refunds.module';
+import { BookedSlotsModule } from './booked-slots/booked-slots.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { RefundsModule } from './refunds/refunds.module';
     AdminProfilesModule,
     PaymentsModule,
     RefundsModule,
+    BookedSlotsModule,
   ],
   controllers: [],
   providers: [],

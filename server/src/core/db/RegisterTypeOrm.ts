@@ -9,6 +9,7 @@ import { Booking } from 'src/bookings/entities/booking.entity';
 import { Payment } from 'src/payments/entities/payment.entity';
 import { Refund } from 'src/refunds/entities/refund.entity';
 import { AdminProfile } from 'src/admin-profiiles/entities/admin-profiile.entity';
+import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
 
 export default function registerTypeOrm() {
   return TypeOrmModule.forRootAsync({
@@ -29,6 +30,7 @@ export default function registerTypeOrm() {
         Booking,
         Payment,
         Refund,
+        BookedSlot,
       ],
       synchronize: true,
     }),

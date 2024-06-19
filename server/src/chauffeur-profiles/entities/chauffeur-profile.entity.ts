@@ -10,6 +10,8 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Availability, defaultSlots } from '../fixtures/availability';
+import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
 
 @Entity()
 export class ChauffeurProfile {
@@ -19,6 +21,9 @@ export class ChauffeurProfile {
   @Column('decimal', { precision: 10, scale: 2 })
   @IsNumber()
   pricePerHour: string;
+
+  @Column('json', { default: defaultSlots })
+  availability: Availability;
 
   @OneToMany(() => Booking, (booking) => booking.chauffeurProfile, {
     onDelete: 'SET NULL',
@@ -32,4 +37,7 @@ export class ChauffeurProfile {
   @OneToOne(() => User, (user) => user.chauffeurProfile)
   @JoinColumn()
   user: User;
+
+  @OneToMany(() => BookedSlot, (bookedSlot) => bookedSlot.chauffeurProfile)
+  bookedSlots: BookedSlot[];
 }

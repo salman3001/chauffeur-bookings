@@ -6,6 +6,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
 import { ChauffeurProfile } from 'src/chauffeur-profiles/entities/chauffeur-profile.entity';
 import { jsonTransformer } from 'src/core/db/helpers/jsonTransformer';
 import BookingHistory from 'src/core/utils/enities/bookingHistory.entity';
@@ -83,4 +84,7 @@ export class Booking {
     (chauffeurProfile) => chauffeurProfile.bookings,
   )
   chauffeurProfile: ChauffeurProfile;
+
+  @OneToOne(() => BookedSlot, (bookedSlot) => bookedSlot.booking)
+  bookedSlot: BookedSlot;
 }

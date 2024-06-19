@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { CarsService } from './cars.service';
 import { CreateCarDto } from './dto/create-car.dto';
@@ -28,8 +29,8 @@ export class CarsController {
   }
 
   @Get()
-  async findAll(@AuthUser() authUser: AuthUserType) {
-    const cars = await this.carsService.findAll(authUser);
+  async findAll(@AuthUser() authUser: AuthUserType, @Query() query: any) {
+    const cars = await this.carsService.findAll(authUser, query);
     return cars;
   }
 

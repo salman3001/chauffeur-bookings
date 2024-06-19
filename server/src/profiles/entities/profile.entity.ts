@@ -6,7 +6,6 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { IsOptional, ValidateNested } from 'class-validator';
 import Image from '../../core/utils/enities/Image.entity';
 import User from 'src/users/entities/user.entity';
 import { Booking } from 'src/bookings/entities/booking.entity';
@@ -23,7 +22,7 @@ export default class Profile {
   @JoinColumn()
   user: User;
 
-  @OneToMany(() => Booking, (booking) => booking.profile, {
+  @OneToMany(() => Booking, (booking) => booking.chauffeurProfile, {
     onDelete: 'SET NULL',
   })
   bookings: Booking[];

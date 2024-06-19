@@ -32,7 +32,7 @@ export class Car {
   image?: Image;
 
   @ManyToOne(() => AdminProfile, (adminProfile) => adminProfile.cars)
-  adminProfile: AdminProfile;
+  owner: AdminProfile;
 
   @OneToOne(
     () => ChauffeurProfile,

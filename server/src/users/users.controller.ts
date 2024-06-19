@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import ValidatorPipe from 'src/core/utils/pipes/ValidatorPipe';
@@ -34,8 +35,8 @@ export class UsersController {
   }
 
   @Get()
-  async findAll(@AuthUser() authUser: AuthUserType) {
-    const users = await this.usersService.findAll(authUser);
+  async findAll(@AuthUser() authUser: AuthUserType, @Query() query: any) {
+    const users = await this.usersService.findAll(authUser, query);
     return CustomRes({
       code: 200,
       data: users,

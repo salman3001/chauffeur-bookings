@@ -1,7 +1,9 @@
+import { IsNumber } from 'class-validator';
 import { Booking } from 'src/bookings/entities/booking.entity';
 import { Car } from 'src/cars/entities/car.entity';
 import User from 'src/users/entities/user.entity';
 import {
+  Column,
   Entity,
   JoinColumn,
   OneToMany,
@@ -13,6 +15,10 @@ import {
 export class ChauffeurProfile {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column('decimal', { precision: 10, scale: 2 })
+  @IsNumber()
+  pricePerHour: string;
 
   @OneToMany(() => Booking, (booking) => booking.chauffeurProfile, {
     onDelete: 'SET NULL',

@@ -5,13 +5,13 @@ import { PolicyService } from '@salman3001/nest-policy-module';
 import { DataSource } from 'typeorm';
 import { AuthUserType } from 'src/core/utils/types/common';
 import { AdminProfile } from './entities/admin-profiile.entity';
-import { IAdminProfilesPolicy } from 'src/cars/cars.policy';
+import { IadminProfilesPolicy } from './admin-profiles.policy';
 
 @Injectable()
 export class AdminProfilesService {
   constructor(
     @Inject('AdminProfilesPolicy')
-    private readonly adminProfilesPolicy: PolicyService<IAdminProfilesPolicy>,
+    private readonly adminProfilesPolicy: PolicyService<IadminProfilesPolicy>,
     @InjectDataSource() private readonly dataSource: DataSource,
   ) {}
 

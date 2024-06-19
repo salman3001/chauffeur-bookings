@@ -32,7 +32,7 @@ export class CarsService {
       },
     );
 
-    car.adminProfile = adminProfile;
+    car.owner = adminProfile;
     await this.dataSource.manager.save(Car, car);
     return car;
   }

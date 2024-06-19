@@ -1,34 +1,84 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  Patch,
+} from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
-import { UpdateBookingDto } from './dto/update-booking.dto';
+import { AuthUser } from 'src/core/utils/decorators/user/authUser.decorator';
+import { AuthUserType } from 'src/core/utils/types/common';
 
 @Controller('bookings')
 export class BookingsController {
   constructor(private readonly bookingsService: BookingsService) {}
 
   @Post()
-  create(@Body() createBookingDto: CreateBookingDto) {
-    return this.bookingsService.create(createBookingDto);
+  async create(
+    @Body() createBookingDto: CreateBookingDto,
+    @AuthUser() authUser: AuthUserType,
+  ) {
+    const booking = await this.bookingsService.create(
+      createBookingDto,
+      authUser,
+    );
+    return booking;
   }
 
   @Get()
-  findAll() {
-    return this.bookingsService.findAll();
+  async findAll(@AuthUser() authUser: AuthUserType, @Query() query: any) {
+    const bookings = await this.bookingsService.findAll(authUser, query);
+    return bookings;
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.bookingsService.findOne(+id);
+  async findOne(@Param('id') id: string, @AuthUser() authUser: AuthUserType) {
+    const booking = await this.bookingsService.findOne(+id, authUser);
+    return booking;
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBookingDto: UpdateBookingDto) {
-    return this.bookingsService.update(+id, updateBookingDto);
+  @Patch(':id/reject-booking')
+  async rejectBooking(
+    @Param('id') id: string,
+    @AuthUser() authUser: AuthUserType,
+  ) {
+    const booking = await this.bookingsService.rejectBooking(+id, authUser);
+    return booking;
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.bookingsService.remove(+id);
+  @Patch(':id/accept-booking')
+  async acceptBooking(
+    @Param('id') id: string,
+    @AuthUser() authUser: AuthUserType,
+  ) {
+    const booking = await this.bookingsService.acceptBooking(+id, authUser);
+    return booking;
+  }
+
+  @Patch(':id/cancle-booking')
+  async cancleBooking(
+    @Param('id') id: string,
+    @AuthUser() authUser: AuthUserType,
+  ) {
+    const booking = await this.bookingsService.cancleBooking(+id, authUser);
+    return booking;
+  }
+
+  @Patch(':id/start-trip')
+  async startTrip(@Param('id') id: string, @AuthUser() authUser: AuthUserType) {
+    const booking = await this.bookingsService.startTrip(+id, authUser);
+    return booking;
+  }
+
+  @Patch(':id/complete-booking')
+  async completeBooling(
+    @Param('id') id: string,
+    @AuthUser() authUser: AuthUserType,
+  ) {
+    const booking = await this.bookingsService.completeBooking(+id, authUser);
+    return booking;
   }
 }

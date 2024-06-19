@@ -7,6 +7,8 @@ import { ChauffeurProfilesModule } from './chauffeur-profiles/chauffeur-profiles
 import { CarsModule } from './cars/cars.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { AdminProfilesModule } from './admin-profiiles/admin-profiiles.module';
+import { PaymentsModule } from './payments/payments.module';
+import { RefundsModule } from './refunds/refunds.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { AdminProfilesModule } from './admin-profiiles/admin-profiiles.module';
     CarsModule,
     BookingsModule,
     AdminProfilesModule,
+    PaymentsModule,
+    RefundsModule,
   ],
   controllers: [],
   providers: [],

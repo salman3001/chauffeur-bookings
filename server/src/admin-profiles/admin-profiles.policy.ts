@@ -1,6 +1,6 @@
 import { AuthUserType } from 'src/core/utils/types/common';
 import { UserType } from 'src/core/utils/enums/userType';
-import { AdminProfile } from './entities/admin-profiile.entity';
+import { AdminProfile } from './entities/admin-profile.entity';
 
 export const AdminProfilesPolicy = {
   find(user: AuthUserType, adminProfile: AdminProfile) {

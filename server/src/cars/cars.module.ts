@@ -3,9 +3,15 @@ import { CarsService } from './cars.service';
 import { CarsController } from './cars.controller';
 import { PolicyModule } from '@salman3001/nest-policy-module';
 import { CarsPolicy } from './cars.policy';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Car } from './entities/car.entity';
+import { AdminProfile } from 'src/admin-profiles/entities/admin-profile.entity';
+import { CarRepository } from './car.repository';
+import { AdminProfileRepository } from 'src/admin-profiles/admin-profile.repository';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([Car, AdminProfile]),
     PolicyModule.register([
       {
         token: 'CarsPolicy',
@@ -14,6 +20,6 @@ import { CarsPolicy } from './cars.policy';
     ]),
   ],
   controllers: [CarsController],
-  providers: [CarsService],
+  providers: [CarsService, CarRepository, AdminProfileRepository],
 })
 export class CarsModule {}

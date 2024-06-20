@@ -8,7 +8,7 @@ import { Car } from 'src/cars/entities/car.entity';
 import { Booking } from 'src/bookings/entities/booking.entity';
 import { Payment } from 'src/payments/entities/payment.entity';
 import { Refund } from 'src/refunds/entities/refund.entity';
-import { AdminProfile } from 'src/admin-profiiles/entities/admin-profiile.entity';
+import { AdminProfile } from 'src/admin-profiles/entities/admin-profiile.entity';
 import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
 
 export default function registerTypeOrm() {

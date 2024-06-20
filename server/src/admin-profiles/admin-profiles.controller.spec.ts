@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AdminProfilesController } from './admin-profiiles.controller';
-import { AdminProfilesService } from './admin-profiiles.service';
+import { AdminProfilesController } from './admin-profiles.controller';
+import { AdminProfilesService } from './admin-profiles.service';
 
 describe('AdminProfilesController', () => {
   let controller: AdminProfilesController;

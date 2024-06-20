@@ -15,6 +15,7 @@ import { AuthUser } from 'src/core/utils/decorators/user/authUser.decorator';
 import { AuthUserType } from 'src/core/utils/types/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { GetAvailableSlotsDto } from './dto/get-available-slots.dto';
 
 @Controller('users')
 export class UsersController {
@@ -77,6 +78,35 @@ export class UsersController {
       data: user,
       success: true,
       message: 'User removed',
+    });
+  }
+
+  @Get('chauffuer')
+  async getChauffuer(@AuthUser() authUser: AuthUserType, @Query() query: any) {
+    const results = await this.usersService.getChauffuer(authUser, query);
+    return CustomRes({
+      code: 200,
+      data: results,
+      success: true,
+    });
+  }
+
+  @Get('chauffuer/:id/available-slots')
+  async getAvailableSlots(
+    @Param('id') chauffeurId: string,
+    @AuthUser() authUser: AuthUserType,
+    @Query() query: any,
+    @Query(new ValidatorPipe()) dto: GetAvailableSlotsDto,
+  ) {
+    const results = await this.usersService.getAvailableSlots(
+      +chauffeurId,
+      dto.date,
+      authUser,
+    );
+    return CustomRes({
+      code: 200,
+      data: results,
+      success: true,
     });
   }
 }

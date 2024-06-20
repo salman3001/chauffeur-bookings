@@ -1,25 +1,25 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UpdateAdminProfileDto } from './dto/update-admin-profiile.dto';
+import { UpdateAdminProfileDto } from './dto/update-admin-profile.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { PolicyService } from '@salman3001/nest-policy-module';
-import { DataSource } from 'typeorm';
 import { AuthUserType } from 'src/core/utils/types/common';
-import { AdminProfile } from './entities/admin-profiile.entity';
 import { IadminProfilesPolicy } from './admin-profiles.policy';
+import { AdminProfileRepository } from './admin-profile.repository';
 
 @Injectable()
 export class AdminProfilesService {
   constructor(
     @Inject('AdminProfilesPolicy')
     private readonly adminProfilesPolicy: PolicyService<IadminProfilesPolicy>,
-    @InjectDataSource() private readonly dataSource: DataSource,
+    @InjectDataSource()
+    private readonly adminProfileRepo: AdminProfileRepository,
   ) {}
 
   async findOne(authUser: AuthUserType) {
-    const adminProfile = await this.dataSource.manager.findOneOrFail(
-      AdminProfile,
-      { where: { id: authUser?.id }, relations: { user: true } },
-    );
+    const adminProfile = await this.adminProfileRepo.findOneOrFail({
+      where: { id: authUser?.id },
+      relations: { user: true },
+    });
 
     this.adminProfilesPolicy.authorize('find', authUser, adminProfile);
     return adminProfile;
@@ -29,15 +29,15 @@ export class AdminProfilesService {
     updateAdminProfileDto: UpdateAdminProfileDto,
     authUser: AuthUserType,
   ) {
-    const adminProfile = await this.dataSource.manager.findOneOrFail(
-      AdminProfile,
-      { where: { id: authUser?.id }, relations: { user: true } },
-    );
+    const adminProfile = await this.adminProfileRepo.findOneOrFail({
+      where: { id: authUser?.id },
+      relations: { user: true },
+    });
 
     this.adminProfilesPolicy.authorize('update', authUser, adminProfile);
 
     Object.assign(adminProfile, updateAdminProfileDto);
-    await this.dataSource.manager.save(AdminProfile, adminProfile);
+    await this.adminProfileRepo.save(adminProfile);
     return adminProfile;
   }
 }

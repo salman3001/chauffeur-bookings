@@ -3,12 +3,16 @@ import { ProfilesController } from './profiles.controller';
 import { ProfilesService } from './profiles.service';
 import { PolicyModule } from '@salman3001/nest-policy-module';
 import { profilePolicy } from './pofilePolicy';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import Profile from './entities/profile.entity';
+import { ProfileRepository } from './profile.repository';
 
 @Module({
   imports: [
     PolicyModule.register([{ token: 'profilePolicy', policy: profilePolicy }]),
+    TypeOrmModule.forFeature([Profile]),
   ],
   controllers: [ProfilesController],
-  providers: [ProfilesService],
+  providers: [ProfilesService, ProfileRepository],
 })
 export class ProfilesModule {}

@@ -5,13 +5,13 @@ import { IChauffeurProfilesPolicy } from './chauffeur-profiles.policy';
 import { AuthUserType } from 'src/core/utils/types/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { ChauffeurProfile } from './entities/chauffeur-profile.entity';
-import User from 'src/users/entities/user.entity';
 import { UserType } from 'src/core/utils/enums/userType';
 import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
 import { weekDays } from 'src/core/utils/helpers';
 import { Availability } from './fixtures/availability';
 import { CustomHttpException } from 'src/core/utils/Exceptions/CustomHttpException';
+import { ChauffeurProfileRepository } from './chuffeur-profile.repository';
+import { UserRepository } from 'src/users/user.repository';
 
 @Injectable()
 export class ChauffeurProfilesService {
@@ -19,13 +19,15 @@ export class ChauffeurProfilesService {
     @Inject('ChauffeurProfilesPolicy')
     private readonly chauffeurProfilesPolicy: PolicyService<IChauffeurProfilesPolicy>,
     @InjectDataSource() private readonly dataSource: DataSource,
+    private chauffeurProfileRepo: ChauffeurProfileRepository,
+    private userRepo: UserRepository,
   ) {}
 
   async findOne(authUser: AuthUserType) {
-    const chauffeurProfile = await this.dataSource.manager.findOneOrFail(
-      ChauffeurProfile,
-      { where: { id: authUser?.id }, relations: { user: true } },
-    );
+    const chauffeurProfile = await this.chauffeurProfileRepo.findOneOrFail({
+      where: { id: authUser?.id },
+      relations: { user: true },
+    });
 
     this.chauffeurProfilesPolicy.authorize('find', authUser, chauffeurProfile);
     return chauffeurProfile;
@@ -35,10 +37,10 @@ export class ChauffeurProfilesService {
     updateChauffeurProfileDto: UpdateChauffeurProfileDto,
     authUser: AuthUserType,
   ) {
-    const chauffeurProfile = await this.dataSource.manager.findOneOrFail(
-      ChauffeurProfile,
-      { where: { id: authUser?.id }, relations: { user: true } },
-    );
+    const chauffeurProfile = await this.chauffeurProfileRepo.findOneOrFail({
+      where: { id: authUser?.id },
+      relations: { user: true },
+    });
 
     this.chauffeurProfilesPolicy.authorize(
       'update',
@@ -48,13 +50,13 @@ export class ChauffeurProfilesService {
 
     const { availability, ...restPayload } = updateChauffeurProfileDto;
 
-    Object.assign(chauffeurProfile, restPayload);
+    this.chauffeurProfileRepo.merge(chauffeurProfile, restPayload);
 
     if (availability) {
       chauffeurProfile.availability = availability;
     }
 
-    await this.dataSource.manager.save(ChauffeurProfile, chauffeurProfile);
+    await this.chauffeurProfileRepo.save(chauffeurProfile);
     return chauffeurProfile;
   }
 
@@ -65,7 +67,7 @@ export class ChauffeurProfilesService {
   ) {
     this.chauffeurProfilesPolicy.authorize('availableSlots', authUser);
 
-    const chauffeur = await this.dataSource.manager.findOneOrFail(User, {
+    const chauffeur = await this.userRepo.findOneOrFail({
       where: { id: chauffeurId, userType: UserType.CHAUFFEUR },
       relations: { chauffeurProfile: true },
     });

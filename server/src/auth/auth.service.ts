@@ -16,8 +16,9 @@ import { compareSync } from 'bcrypt';
 import { ForgorPasswordEmail } from './mails/forgorPassword.email';
 import { ConfirmationEmail } from './mails/confirmation.email';
 import { confirmEmailDto } from './dto/confirmEmail.dto';
-import Profile from '../profiles/entities/profile.entity';
 import { MailService } from '@salman3001/nest-mailer';
+import { UserRepository } from 'src/users/user.repository';
+import { ProfileRepository } from 'src/profiles/profile.repository';
 
 @Injectable()
 export class AuthService {
@@ -25,10 +26,12 @@ export class AuthService {
     @InjectDataSource() private readonly dataSource: DataSource,
     private config: ConfigService,
     private mailservice: MailService,
+    private userRepo: UserRepository,
+    private profileRepo: ProfileRepository,
   ) {}
 
   async login(dto: LoginDto): Promise<User> {
-    const user = await this.dataSource.manager.findOneBy(User, {
+    const user = await this.userRepo.findOneBy({
       email: dto.email,
     });
 
@@ -61,7 +64,7 @@ export class AuthService {
   }
 
   async register(dto: RegisterDto): Promise<User> {
-    const userExist = await this.dataSource.manager.findOne(User, {
+    const userExist = await this.userRepo.findOne({
       where: {
         email: dto.email,
       },
@@ -76,13 +79,15 @@ export class AuthService {
     }
 
     return this.dataSource.transaction(async (manager) => {
-      const user = Object.assign(new User(), dto);
+      const user = this.userRepo.create(dto);
       user.userType = UserType.CUSTOMER;
       user.isActive = false;
 
-      const savedUser = await manager.save(User, user);
+      const savedUser = await manager.save(user);
+      const profile = this.profileRepo.create({});
+      profile.user = savedUser;
 
-      await manager.save(Profile, { user: savedUser });
+      await manager.save(profile);
 
       const token = this.getToken(
         { id: user.id, userType: user.userType },
@@ -105,21 +110,21 @@ export class AuthService {
   async confirmEmail(dto: confirmEmailDto): Promise<User> {
     const payload = this.varifyToken(dto.jwt) as IJwtPayload;
 
-    const user = await this.dataSource.manager.findOneByOrFail(User, {
+    const user = await this.userRepo.findOneByOrFail({
       id: payload.id,
     });
 
     user.isActive = true;
-    await this.dataSource.manager.save(user);
+    await this.userRepo.save(user);
     return user;
   }
 
   async forgotPasswordOtp(dto: forgotPasswordOtpDto) {
-    const user = await this.dataSource.manager.findOneByOrFail(User, {
+    const user = await this.userRepo.findOneByOrFail({
       email: dto.email,
     });
 
-    await this.dataSource.manager.save(user);
+    await this.userRepo.save(user);
 
     const token = this.getToken(
       { id: user.id, userType: user.userType },
@@ -136,7 +141,7 @@ export class AuthService {
   }
 
   async resetPassword(dto: resetPasswordDto): Promise<User> {
-    const user = await this.dataSource.manager.findOneByOrFail(User, {
+    const user = await this.userRepo.findOneByOrFail({
       email: dto.email,
     });
 
@@ -151,7 +156,7 @@ export class AuthService {
     }
 
     user.password = dto.password;
-    await this.dataSource.manager.save(user);
+    await this.userRepo.save(user);
     return user;
   }
 

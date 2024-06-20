@@ -20,7 +20,7 @@ import { hashSync } from 'bcrypt';
 import { Exclude, instanceToPlain } from 'class-transformer';
 import Profile from 'src/profiles/entities/profile.entity';
 import { ChauffeurProfile } from 'src/chauffeur-profiles/entities/chauffeur-profile.entity';
-import { AdminProfile } from 'src/admin-profiiles/entities/admin-profiile.entity';
+import { AdminProfile } from 'src/admin-profiles/entities/admin-profiile.entity';
 
 @Entity()
 export default class User {

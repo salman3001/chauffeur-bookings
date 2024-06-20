@@ -21,6 +21,14 @@ export const userPolicy = {
   remove(user: AuthUserType) {
     return user?.userType === UserType.ADMIN;
   },
+
+  getChauffuers(user: AuthUserType) {
+    return user ? true : false;
+  },
+
+  getAvailableSlots(user: AuthUserType) {
+    return user ? true : false;
+  },
 };
 
 export type IUserPolicy = typeof userPolicy;

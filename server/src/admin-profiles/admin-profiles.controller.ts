@@ -1,6 +1,6 @@
 import { Controller, Get, Body, Patch } from '@nestjs/common';
-import { AdminProfilesService } from './admin-profiiles.service';
-import { UpdateAdminProfileDto } from './dto/update-admin-profiile.dto';
+import { AdminProfilesService } from './admin-profiles.service';
+import { UpdateAdminProfileDto } from './dto/update-admin-profile.dto';
 import { AuthUser } from 'src/core/utils/decorators/user/authUser.decorator';
 import { AuthUserType } from 'src/core/utils/types/common';
 import ValidatorPipe from 'src/core/utils/pipes/ValidatorPipe';

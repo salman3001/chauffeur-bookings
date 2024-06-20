@@ -17,7 +17,7 @@ export class BookingRepository extends BaseRepository<Booking> {
     super(repository, config);
   }
 
-  async getChauffuerBookings(chauffeurId: number, query?: BookingFilterQuery) {
+  async getchauffeurBookings(chauffeurId: number, query?: BookingFilterQuery) {
     const qb = this.createQueryBuilder()
       .leftJoin('user.chauffeurProfile', 'chauffeurProfile')
       .leftJoin('chauffeurProfile.user', 'user')

@@ -1,17 +1,27 @@
 import { Booking } from 'src/bookings/entities/booking.entity';
 import { ChauffeurProfile } from 'src/chauffeur-profiles/entities/chauffeur-profile.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class BookedSlot {
-  @Column('date')
-  date: Date;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  @Column()
+  @Column('date')
+  date: string;
+
+  @Column('time')
   time: string;
 
   @Column()
-  slotName: string;
+  duration: number;
 
   @OneToOne(() => Booking, (booking) => booking.bookedSlot)
   @JoinColumn()

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { DataSource, ILike, Not } from 'typeorm';
 import { ConfigService } from '@salman3001/nest-config-module';
 import { Config } from 'src/core/config/config';
@@ -16,6 +16,7 @@ import { ChauffeurProfileRepository } from 'src/chauffeur-profiles/chuffeur-prof
 import { AdminProfileRepository } from 'src/admin-profiles/admin-profile.repository';
 import { weekDays } from 'src/core/utils/helpers';
 import { BookedSlotRepository } from 'src/booked-slots/booked-slot.repository';
+import { CheckAvailabiltyDto } from './dto/check-availabilty.dto';
 
 @Injectable()
 export class UsersService {
@@ -140,50 +141,113 @@ export class UsersService {
     return user;
   }
 
-  async getChauffuer(authUser: AuthUserType, query: UserFilterQuery) {
-    this.userPolicy.authorize('getChauffuers', authUser);
+  async getChauffeur(authUser: AuthUserType, query: UserFilterQuery) {
+    this.userPolicy.authorize('getChauffeurs', authUser);
     const {
       results: chauffeurs,
       count,
       perPage,
-    } = await this.userRepository.getChuffuers(query);
+    } = await this.userRepository.getChuffeurs(query);
 
     return { chauffeurs, count, perPage };
   }
 
-  async getAvailableSlots(
-    chauffeurId: number,
-    date: Date,
-    authUser: AuthUserType,
-  ) {
-    this.userPolicy.authorize('getAvailableSlots', authUser);
+  async getActiveChauffeur(authUser: AuthUserType, query: UserFilterQuery) {
+    this.userPolicy.authorize('getActiveChauffeurs', authUser);
+    const {
+      results: chauffeurs,
+      count,
+      perPage,
+    } = await this.userRepository.getActiveChuffeurs(query);
 
-    const chauffeur = await this.userRepository.findOneOrFail({
-      where: { id: chauffeurId, userType: UserType.CHAUFFEUR },
-      relations: { chauffeurProfile: true },
+    return { chauffeurs, count, perPage };
+  }
+
+  async checkAvailabilty(dto: CheckAvailabiltyDto, authUser: AuthUserType) {
+    this.userPolicy.authorize('checkAvailabilty', authUser);
+
+    const { chauffeurId, date, time, duration } = dto;
+
+    const chauffeur = await this.userRepository.findOneByOrFail({
+      id: chauffeurId,
+      userType: UserType.CHAUFFEUR,
     });
 
-    const alreadyBookedSlots =
-      await this.bookedSlotRepo.getChauffeurBookedSlotsByDate(
-        chauffeur.id,
-        date,
-      );
+    const dateToCheck = new Date(date);
+    const day = dateToCheck.getDay();
+    const weekDay = weekDays[day] as 'sunday';
 
-    const dayToCheck = new Date(date).getDay();
+    const isAvailableOnThisDay =
+      chauffeur.chauffeurProfile?.availability[weekDay]?.available;
 
-    const availableSlots = chauffeur.chauffeurProfile.availability[
-      weekDays[dayToCheck] as 'sunday'
-    ].filter((slot) => {
-      const isBookedSlotExist = alreadyBookedSlots.filter(
-        (bs) => bs.slotName === slot.name,
-      );
+    const isAvailableFullDay =
+      chauffeur.chauffeurProfile?.availability[weekDay]?.fullDay;
 
-      if (isBookedSlotExist.length > 0) {
-        return false;
-      }
-      return true;
-    });
+    const isWithinRange = true;
 
-    return availableSlots;
+    if (!isAvailableOnThisDay) {
+      throw new CustomHttpException({
+        code: HttpStatus.BAD_GATEWAY,
+        success: false,
+        message: 'Chauffeur not available on this date',
+      });
+    }
+
+    if (!isAvailableFullDay || !isWithinRange) {
+      throw new CustomHttpException({
+        code: HttpStatus.BAD_GATEWAY,
+        success: false,
+        message: 'Chauffeur not available on this date',
+      });
+    }
+
+    return true;
+  }
+
+  // async getAvailableSlots(
+  //   chauffeurId: number,
+  //   date: Date,
+  //   authUser: AuthUserType,
+  // ) {
+  //   this.userPolicy.authorize('getAvailableSlots', authUser);
+
+  //   const chauffeur = await this.userRepository.findOneOrFail({
+  //     where: { id: chauffeurId, userType: UserType.CHAUFFEUR },
+  //     relations: { chauffeurProfile: true },
+  //   });
+
+  //   const alreadyBookedSlots =
+  //     await this.bookedSlotRepo.getChauffeurBookedSlotsByDate(
+  //       chauffeur.id,
+  //       date,
+  //     );
+
+  //   const dayToCheck = new Date(date).getDay();
+
+  //   const availableSlots = chauffeur.chauffeurProfile.availability[
+  //     weekDays[dayToCheck] as 'sunday'
+  //   ].filter((slot) => {
+  //     const isBookedSlotExist = alreadyBookedSlots.filter(
+  //       (bs) => bs.slotName === slot.name,
+  //     );
+
+  //     if (isBookedSlotExist.length > 0) {
+  //       return false;
+  //     }
+  //     return true;
+  //   });
+
+  //   return availableSlots;
+  // }
+
+  async getCustomer(authUser: AuthUserType, query: UserFilterQuery) {
+    this.userPolicy.authorize('getCustomer', authUser);
+    const {
+      results: customers,
+      count,
+      perPage,
+    } = await this.userRepository.getCustomer(query);
+
+    return { customers, count, perPage };
   }
 }

@@ -1,5 +1,5 @@
 import { IsNumber, Length, Min } from 'class-validator';
-import { AdminProfile } from 'src/admin-profiles/entities/admin-profiile.entity';
+import { AdminProfile } from 'src/admin-profiles/entities/admin-profile.entity';
 import { ChauffeurProfile } from 'src/chauffeur-profiles/entities/chauffeur-profile.entity';
 import Image from 'src/core/utils/enities/Image.entity';
 import {

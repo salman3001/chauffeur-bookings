@@ -11,14 +11,21 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class UpdateChauffeurProfileDto extends PartialType(
-  PickType(ChauffeurProfile, []),
-) {
-  @IsOptional()
-  availability?: availability;
+export class Slot {
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  time: string;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  available: boolean;
 }
 
-class availability {
+class Availability {
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayMinSize(24)
@@ -62,16 +69,9 @@ class availability {
   saturday: Slot[];
 }
 
-class Slot {
-  @IsNotEmpty()
-  @IsString()
-  name: string;
-
-  @IsNotEmpty()
-  @IsString()
-  time: string;
-
-  @IsNotEmpty()
-  @IsBoolean()
-  available: boolean;
+export class UpdateChauffeurProfileDto extends PartialType(
+  PickType(ChauffeurProfile, []),
+) {
+  @IsOptional()
+  availability?: Availability;
 }

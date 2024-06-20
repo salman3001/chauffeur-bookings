@@ -13,6 +13,7 @@ import { AdminProfile } from 'src/admin-profiles/entities/admin-profile.entity';
 import { AdminProfileRepository } from 'src/admin-profiles/admin-profile.repository';
 import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
 import { BookedSlotRepository } from 'src/booked-slots/booked-slot.repository';
+import { ChauffeurProfileRepository } from 'src/chauffeur-profiles/chuffeur-profile.repository';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { BookedSlotRepository } from 'src/booked-slots/booked-slot.repository';
   providers: [
     UsersService,
     UserRepository,
-    ChauffeurProfile,
+    ChauffeurProfileRepository,
     ProfileRepository,
     AdminProfileRepository,
     BookedSlotRepository,

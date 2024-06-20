@@ -10,7 +10,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Availability, defaultSlots } from '../fixtures/availability';
+import { Availability, defaultAvailability } from '../fixtures/availability';
 import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
 
 @Entity()
@@ -22,7 +22,7 @@ export class ChauffeurProfile {
   @IsNumber()
   pricePerHour: string;
 
-  @Column('json', { default: defaultSlots })
+  @Column('json', { default: defaultAvailability })
   availability: Availability;
 
   @OneToMany(() => Booking, (booking) => booking.chauffeurProfile, {

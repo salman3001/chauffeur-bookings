@@ -1,5 +1,8 @@
 import {
+  IsDate,
+  IsDateString,
   IsEnum,
+  IsISO8601,
   IsNumber,
   IsPositive,
   Length,
@@ -17,11 +20,13 @@ import { Payment } from 'src/payments/entities/payment.entity';
 import Profile from 'src/profiles/entities/profile.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -87,4 +92,10 @@ export class Booking {
 
   @OneToOne(() => BookedSlot, (bookedSlot) => bookedSlot.booking)
   bookedSlot: BookedSlot;
+
+  @CreateDateColumn()
+  cretaedAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

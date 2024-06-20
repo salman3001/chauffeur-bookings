@@ -22,12 +22,30 @@ export const userPolicy = {
     return user?.userType === UserType.ADMIN;
   },
 
-  getChauffuers(user: AuthUserType) {
+  getChauffeurs(user: AuthUserType) {
+    const isAdmin = user?.userType === UserType.ADMIN;
+    if (user && isAdmin) {
+      return true;
+    } else {
+      return false;
+    }
+  },
+
+  getActiveChauffeurs(user: AuthUserType) {
     return user ? true : false;
   },
 
-  getAvailableSlots(user: AuthUserType) {
+  checkAvailabilty(user: AuthUserType) {
     return user ? true : false;
+  },
+
+  getCustomer(user: AuthUserType) {
+    const isAdmin = user?.userType === UserType.ADMIN;
+    if (user && isAdmin) {
+      return true;
+    } else {
+      return false;
+    }
   },
 };
 

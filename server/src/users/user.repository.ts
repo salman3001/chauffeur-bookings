@@ -18,28 +18,58 @@ export class UserRepository extends BaseRepository<User> {
     super(repository, config);
   }
 
-  getChuffuers(query?: UserFilterQuery) {
+  getChuffeurs(query?: UserFilterQuery) {
     const qb = this.createQueryBuilder();
-    qb.where('users.userType = :userType', { userType: UserType.CHAUFFEUR });
+    qb.where('user.userType = :userType', { userType: UserType.CHAUFFEUR });
+    this.applySearch(qb, query);
+
+    return this.paginate(qb, query);
+  }
+
+  getActiveChuffeurs(query?: UserFilterQuery) {
+    const qb = this.createQueryBuilder();
+    qb.where('user.userType = :userType', {
+      userType: UserType.CHAUFFEUR,
+    }).andWhere('user.isActive = true');
+    this.applySearch(qb, query);
+
+    return this.paginate(qb, query);
+  }
+
+  getCustomer(query?: UserFilterQuery) {
+    const qb = this.createQueryBuilder();
+    qb.where('user.userType = :userType', { userType: UserType.CUSTOMER });
     this.applySearch(qb, query);
 
     return this.paginate(qb, query);
   }
 
   applySearch(qb: SelectQueryBuilder<User>, query?: UserFilterQuery) {
-    qb.andWhere(
-      new Brackets((qb) => {
-        qb.where('users.firstName ILIKE :search', {
-          search: `%${query?.search}%`,
-        });
-        qb.orWhere('users.lastName ILIKE :search', {
-          search: `%${query?.search}%`,
-        });
-      }),
-    );
+    if (query?.search) {
+      qb.andWhere(
+        new Brackets((qb) => {
+          qb.where('user.firstName ILIKE :search', {
+            search: `%${query?.search}%`,
+          });
+          qb.orWhere('user.lastName ILIKE :search', {
+            search: `%${query?.search}%`,
+          });
+        }),
+      );
+    }
+
+    if (query?.active) {
+      qb.andWhere('user.isActive = true');
+    }
+
+    if (query?.userType) {
+      qb.andWhere('user.userType = :userType', { userType: query.userType });
+    }
   }
 }
 
 export interface UserFilterQuery extends BaseQueryFilter {
   search?: string;
+  active?: boolean;
+  userType?: UserType;
 }

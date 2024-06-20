@@ -8,6 +8,12 @@ import { UserType } from 'src/core/utils/enums/userType';
 import { BookingStatus } from 'src/core/utils/enums/BookingStatus';
 import { BookingFilterQuery, BookingRepository } from './booking.repository';
 import { UserRepository } from 'src/users/user.repository';
+import { BookedSlotRepository } from 'src/booked-slots/booked-slot.repository';
+import { Availability } from 'src/chauffeur-profiles/fixtures/availability';
+import { CustomHttpException } from 'src/core/utils/Exceptions/CustomHttpException';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
 
 @Injectable()
 export class BookingsService {
@@ -15,11 +21,14 @@ export class BookingsService {
     @Inject('BookingsPolicy')
     private readonly bookingsPolicy: PolicyService<IBookingsPolicy>,
     private bookingRepo: BookingRepository,
+    private readonly bookedSlotRepo: BookedSlotRepository,
     private userRepo: UserRepository,
+    @InjectDataSource() private dataSource: DataSource,
   ) {}
 
   async create(createBookingDto: CreateBookingDto, authUser: AuthUserType) {
     this.bookingsPolicy.authorize('create', authUser);
+    // get customer
     const customer = await this.userRepo.findOneOrFail({
       where: { id: authUser?.id },
       relations: {
@@ -27,8 +36,9 @@ export class BookingsService {
       },
     });
 
-    const { chauffeurId, ...payload } = createBookingDto;
+    const { chauffeurId, slots, pickupDate, ...payload } = createBookingDto;
 
+    // get chauffeur
     const chauffeur = await this.userRepo.findOneOrFail({
       where: {
         id: chauffeurId,
@@ -39,27 +49,57 @@ export class BookingsService {
       },
     });
 
+    // get bookedSlots
+    const alreadyBookedSlots =
+      await this.bookedSlotRepo.getChauffeurBookedSlotsByDate(
+        chauffeurId,
+        new Date(pickupDate),
+      );
+
+    // validate incoming slots
+    slots.forEach((slot) => {
+      this.validateSlot(chauffeurId, alreadyBookedSlots, slot);
+    });
+
     const pricePerHour = chauffeur.chauffeurProfile.pricePerHour;
+
     const total = (
       Number(chauffeur.chauffeurProfile.pricePerHour) * payload.bookedForHours
     ).toFixed(2);
 
-    const booking = this.bookingRepo.create(createBookingDto);
-    booking.pricePerHour = pricePerHour;
-    booking.total = total;
-    booking.chauffeurProfile = chauffeur.chauffeurProfile;
-    booking.customerProfile = customer.profile;
-    booking.status = BookingStatus.BOOKED;
-    booking.history = [
-      {
-        dateTime: new Date(Date.now()),
-        event: 'Booking Created',
-        detail: `New booking created by customer ${customer.firstName}`,
-      },
-    ];
+    return this.dataSource.transaction(async (manager) => {
+      // create slots
+      const bookedSlots: BookedSlot[] = [];
+      for (const slot of slots) {
+        const bookedSlot = this.bookedSlotRepo.create({
+          date: pickupDate,
+          slotName: slot.name,
+          time: slot.time,
+        });
 
-    const savedBooking = await this.bookingRepo.save(booking);
-    return savedBooking;
+        await manager.save(bookedSlot);
+        bookedSlots.push(bookedSlot);
+      }
+
+      // create booking and assign properties
+      const booking = this.bookingRepo.create(createBookingDto);
+      booking.pricePerHour = pricePerHour;
+      booking.total = total;
+      booking.chauffeurProfile = chauffeur.chauffeurProfile;
+      booking.customerProfile = customer.profile;
+      booking.status = BookingStatus.BOOKED;
+      booking.bookedSlot = bookedSlots;
+      booking.history = [
+        {
+          dateTime: new Date(Date.now()),
+          event: 'Booking Created',
+          detail: `New booking created by customer ${customer.firstName}`,
+        },
+      ];
+
+      const savedBooking = await manager.save(booking);
+      return savedBooking;
+    });
   }
 
   async findAll(authUser: AuthUserType, query?: BookingFilterQuery) {
@@ -73,24 +113,24 @@ export class BookingsService {
         authUser?.id,
         query,
       );
-      bookings = bookingData.bookings;
+      bookings = bookingData.results;
       count = bookingData.count;
       perPage = bookingData.perPage;
     }
 
     if (authUser?.userType === UserType.CHAUFFEUR) {
-      const bookingData = await this.bookingRepo.getChauffuerBookings(
+      const bookingData = await this.bookingRepo.getchauffeurBookings(
         authUser?.id,
         query,
       );
-      bookings = bookingData.bookings;
+      bookings = bookingData.results;
       count = bookingData.count;
       perPage = bookingData.perPage;
     }
 
     if (authUser?.userType === UserType.ADMIN) {
       const bookingData = await this.bookingRepo.getAdminBookings(query);
-      bookings = bookingData.bookings;
+      bookings = bookingData.results;
       count = bookingData.count;
       perPage = bookingData.perPage;
     }
@@ -228,5 +268,23 @@ export class BookingsService {
     });
     await this.bookingRepo.save(booking);
     return booking;
+  }
+
+  validateSlot(
+    chauffeurId: number,
+    alreadyBookedSlots: BookedSlot[],
+    slot: Availability['friday'][0],
+  ) {
+    const validSlot = alreadyBookedSlots.filter((s) => {
+      s.slotName === slot.name;
+    });
+
+    if (validSlot.length === 0) {
+      throw new CustomHttpException({
+        code: 400,
+        success: false,
+        message: 'Invalid booking slots provided',
+      });
+    }
   }
 }

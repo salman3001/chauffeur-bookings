@@ -81,9 +81,9 @@ export class UsersController {
     });
   }
 
-  @Get('chauffuer')
-  async getChauffuer(@AuthUser() authUser: AuthUserType, @Query() query: any) {
-    const results = await this.usersService.getChauffuer(authUser, query);
+  @Get('chauffeurs')
+  async getchauffeur(@AuthUser() authUser: AuthUserType, @Query() query: any) {
+    const results = await this.usersService.getChauffeur(authUser, query);
     return CustomRes({
       code: 200,
       data: results,
@@ -91,7 +91,20 @@ export class UsersController {
     });
   }
 
-  @Get('chauffuer/:id/available-slots')
+  @Get('chauffeurs/active')
+  async getActivechauffeur(
+    @AuthUser() authUser: AuthUserType,
+    @Query() query: any,
+  ) {
+    const results = await this.usersService.getActiveChauffeur(authUser, query);
+    return CustomRes({
+      code: 200,
+      data: results,
+      success: true,
+    });
+  }
+
+  @Get('chauffeurs/:id/available-slots')
   async getAvailableSlots(
     @Param('id') chauffeurId: string,
     @AuthUser() authUser: AuthUserType,
@@ -103,6 +116,16 @@ export class UsersController {
       dto.date,
       authUser,
     );
+    return CustomRes({
+      code: 200,
+      data: results,
+      success: true,
+    });
+  }
+
+  @Get('customers')
+  async getCustomers(@AuthUser() authUser: AuthUserType, @Query() query: any) {
+    const results = await this.usersService.getCustomer(authUser, query);
     return CustomRes({
       code: 200,
       data: results,

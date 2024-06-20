@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   BeforeInsert,
   OneToOne,
+  UpdateDateColumn,
 } from 'typeorm';
 import {
   IsBoolean,
@@ -20,7 +21,7 @@ import { hashSync } from 'bcrypt';
 import { Exclude, instanceToPlain } from 'class-transformer';
 import Profile from 'src/profiles/entities/profile.entity';
 import { ChauffeurProfile } from 'src/chauffeur-profiles/entities/chauffeur-profile.entity';
-import { AdminProfile } from 'src/admin-profiles/entities/admin-profiile.entity';
+import { AdminProfile } from 'src/admin-profiles/entities/admin-profile.entity';
 
 @Entity()
 export default class User {
@@ -63,7 +64,7 @@ export default class User {
   @CreateDateColumn()
   cretaedAt: Date;
 
-  @CreateDateColumn()
+  @UpdateDateColumn()
   updatedAt: Date;
 
   @DeleteDateColumn({ nullable: true })

@@ -34,10 +34,11 @@ export class CarsService {
 
   async findAll(authUser: AuthUserType, query?: CarFilterQuery) {
     this.carsPolicy.authorize('findAll', authUser);
+    const qb = this.carRepo.createQueryBuilder();
 
-    const { cars, count, perPage } = await this.carRepo.getPaginated(query);
+    const { results, count, perPage } = await this.carRepo.paginate(qb, query);
 
-    return { cars, count, perPage };
+    return { cars: results, count, perPage };
   }
 
   async findOne(id: number, authUser: AuthUserType) {

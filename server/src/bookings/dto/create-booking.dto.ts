@@ -1,15 +1,6 @@
 import { PickType } from '@nestjs/mapped-types';
 import { Booking } from '../entities/booking.entity';
-import {
-  ArrayMinSize,
-  IsArray,
-  IsDateString,
-  IsNotEmpty,
-  IsNumber,
-  ValidateNested,
-} from 'class-validator';
-import { Slot } from 'src/chauffeur-profiles/dto/update-chauffeur-profile.dto';
-import { Type } from 'class-transformer';
+import { IsDateString, IsNumber } from 'class-validator';
 
 export class CreateBookingDto extends PickType(Booking, [
   'pickupAddress',
@@ -25,9 +16,6 @@ export class CreateBookingDto extends PickType(Booking, [
   @IsDateString()
   pickupDate: string;
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @ArrayMinSize(1)
-  @Type(() => Slot)
-  slots: Slot[];
+  @IsDateString()
+  pickupTime: string;
 }

@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { BookedSlotsService } from './booked-slots.service';
 import { findAllByMonthDto } from './dto/findAllByMonth.dto';
 import ValidatorPipe from 'src/core/utils/pipes/ValidatorPipe';

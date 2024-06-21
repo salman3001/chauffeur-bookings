@@ -1,10 +1,13 @@
 import Mailgen from 'mailgen';
+import { Config } from '../config/config';
 
-export const mailGenerator = new Mailgen({
-  product: {
-    name: 'Chauffeur Bookings',
-    link: 'http://localhost:3000/',
-    copyright: `Copyright © ${new Date(Date.now()).getFullYear()} chauffeur Booking. All rights reserved.`,
-  },
-  theme: 'default',
-});
+export const mailGenerator = (config: Config) => {
+  return new Mailgen({
+    product: {
+      name: config.envs().APP_NAME,
+      link: config.envs().APP_URL,
+      copyright: `Copyright © ${new Date(Date.now()).getFullYear()} ${config.envs().APP_NAME}. All rights reserved.`,
+    },
+    theme: 'default',
+  });
+};

@@ -9,11 +9,10 @@ import { BookingStatus } from 'src/core/utils/enums/BookingStatus';
 import { BookingFilterQuery, BookingRepository } from './booking.repository';
 import { UserRepository } from 'src/users/user.repository';
 import { BookedSlotRepository } from 'src/booked-slots/booked-slot.repository';
-import { Availability } from 'src/chauffeur-profiles/fixtures/availability';
-import { CustomHttpException } from 'src/core/utils/Exceptions/CustomHttpException';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
+import { UsersService } from 'src/users/users.service';
+import { add } from 'date-fns';
 
 @Injectable()
 export class BookingsService {
@@ -23,6 +22,7 @@ export class BookingsService {
     private bookingRepo: BookingRepository,
     private readonly bookedSlotRepo: BookedSlotRepository,
     private userRepo: UserRepository,
+    private userService: UsersService,
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
@@ -36,7 +36,8 @@ export class BookingsService {
       },
     });
 
-    const { chauffeurId, slots, pickupDate, ...payload } = createBookingDto;
+    const { chauffeurId, pickupDate, pickupTime, ...payload } =
+      createBookingDto;
 
     // get chauffeur
     const chauffeur = await this.userRepo.findOneOrFail({
@@ -49,17 +50,15 @@ export class BookingsService {
       },
     });
 
-    // get bookedSlots
-    const alreadyBookedSlots =
-      await this.bookedSlotRepo.getChauffeurBookedSlotsByDate(
+    await this.userService.checkAvailabilty(
+      {
         chauffeurId,
-        new Date(pickupDate),
-      );
-
-    // validate incoming slots
-    slots.forEach((slot) => {
-      this.validateSlot(chauffeurId, alreadyBookedSlots, slot);
-    });
+        date: pickupDate,
+        time: pickupTime,
+        duration: createBookingDto.bookedForHours,
+      },
+      authUser,
+    );
 
     const pricePerHour = chauffeur.chauffeurProfile.pricePerHour;
 
@@ -69,17 +68,16 @@ export class BookingsService {
 
     return this.dataSource.transaction(async (manager) => {
       // create slots
-      const bookedSlots: BookedSlot[] = [];
-      for (const slot of slots) {
-        const bookedSlot = this.bookedSlotRepo.create({
-          date: pickupDate,
-          slotName: slot.name,
-          time: slot.time,
-        });
+      const pickupDateTimeFrom = new Date(`${pickupDate} ${pickupTime}`);
+      const pickupDateTimeTo = new Date(`${pickupDate} ${pickupTime}`);
+      add(pickupDateTimeTo, { hours: 3 });
 
-        await manager.save(bookedSlot);
-        bookedSlots.push(bookedSlot);
-      }
+      const bookedSlot = this.bookedSlotRepo.create({
+        dateTimeFrom: pickupDateTimeFrom,
+        dateTimeTo: pickupDateTimeTo,
+      });
+
+      const savedBookedSlot = await manager.save(bookedSlot);
 
       // create booking and assign properties
       const booking = this.bookingRepo.create(createBookingDto);
@@ -88,7 +86,7 @@ export class BookingsService {
       booking.chauffeurProfile = chauffeur.chauffeurProfile;
       booking.customerProfile = customer.profile;
       booking.status = BookingStatus.BOOKED;
-      booking.bookedSlot = bookedSlots;
+      booking.bookedSlot = savedBookedSlot;
       booking.history = [
         {
           dateTime: new Date(Date.now()),
@@ -268,23 +266,5 @@ export class BookingsService {
     });
     await this.bookingRepo.save(booking);
     return booking;
-  }
-
-  validateSlot(
-    chauffeurId: number,
-    alreadyBookedSlots: BookedSlot[],
-    slot: Availability['friday'][0],
-  ) {
-    const validSlot = alreadyBookedSlots.filter((s) => {
-      s.slotName === slot.name;
-    });
-
-    if (validSlot.length === 0) {
-      throw new CustomHttpException({
-        code: 400,
-        success: false,
-        message: 'Invalid booking slots provided',
-      });
-    }
   }
 }

@@ -19,6 +19,7 @@ export class Config implements IConfig {
       SMTP_PORT: process.env.SMTP_PORT as unknown as number,
       SMTP_USERNAME: process.env.SMTP_USERNAME as string,
       SMTP_PASSWORD: process.env.SMTP_PASSWORD as string,
+      EMAIL_FROM: process.env.SMTP_PASSWORD as string,
       KAFKA_BROKER: process.env.KAFKA_BROKER as string,
       ENABLE_BULLMQ: process.env.ENABLE_BULLMQ === 'true',
       REDIS_HOST: process.env.REDIS_HOST as string,

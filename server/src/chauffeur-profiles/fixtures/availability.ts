@@ -1,6 +1,6 @@
 export interface Availability {
   sunday: AvailabilityByDay;
-  moday: AvailabilityByDay;
+  monday: AvailabilityByDay;
   tuesday: AvailabilityByDay;
   wednesday: AvailabilityByDay;
   thursday: AvailabilityByDay;
@@ -24,7 +24,7 @@ const availabilityByDay: AvailabilityByDay = {
 
 export const defaultAvailability: Availability = {
   sunday: availabilityByDay,
-  moday: availabilityByDay,
+  monday: availabilityByDay,
   tuesday: availabilityByDay,
   wednesday: availabilityByDay,
   thursday: availabilityByDay,

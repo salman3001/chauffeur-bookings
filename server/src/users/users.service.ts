@@ -19,6 +19,7 @@ import { BookedSlotRepository } from 'src/booked-slots/booked-slot.repository';
 import { CheckAvailabiltyDto } from './dto/check-availabilty.dto';
 import User from './entities/user.entity';
 import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
+import { add, parse } from 'date-fns';
 
 @Injectable()
 export class UsersService {
@@ -243,16 +244,21 @@ export class UsersService {
     time: string,
     duration: number,
   ) {
-    const requestedDateToCheck = new Date(date);
-    const requestedDay = requestedDateToCheck.getDay();
+    const requestedDateTimeForm = parse(
+      `${date} ${time}`,
+      'yyyy-MM-dd HH:mm',
+      new Date(),
+    );
+
+    const requestedDateTimeTo = parse(
+      `${date} ${time}`,
+      'yyyy-MM-dd HH:mm',
+      new Date(),
+    );
+    add(requestedDateTimeForm, { hours: duration });
+
+    const requestedDay = requestedDateTimeForm.getDay();
     const requestedWeekDay = weekDays[requestedDay] as 'sunday';
-    const requestedDateTimeForm = new Date(date);
-    const [hours, minutes] = time.split(':');
-    requestedDateTimeForm.setHours(parseInt(hours));
-    requestedDateTimeForm.setMinutes(parseInt(minutes));
-    const requestedDateTimeTo = new Date(date);
-    requestedDateTimeTo.setHours(parseInt(hours) + duration);
-    requestedDateTimeTo.setMinutes(parseInt(minutes));
 
     const isChauffeurAvailableOnThisDay =
       chauffeur.chauffeurProfile?.availability[requestedWeekDay]?.available;
@@ -268,14 +274,16 @@ export class UsersService {
     let isWithinRange = false;
 
     if (chauffeurAvailableFrom && chauffeurAvailableTo) {
-      const chauffeurAvailableFromDateTime = new Date(date);
-      chauffeurAvailableFromDateTime.setHours(
-        parseInt(chauffeurAvailableFrom.split(':')[0]),
+      const chauffeurAvailableFromDateTime = parse(
+        chauffeurAvailableFrom,
+        'HH:mm',
+        new Date(date),
       );
 
-      const chauffeurAvailableToDateTime = new Date(date);
-      chauffeurAvailableToDateTime.setHours(
-        parseInt(chauffeurAvailableFrom.split(':')[1]),
+      const chauffeurAvailableToDateTime = parse(
+        chauffeurAvailableTo,
+        'HH:mm',
+        new Date(date),
       );
 
       if (
@@ -301,13 +309,18 @@ export class UsersService {
     duration: number,
     bookedSlots: BookedSlot[],
   ) {
-    const requestedDateTimeForm = new Date(date);
-    const [hours, minutes] = time.split(':');
-    requestedDateTimeForm.setHours(parseInt(hours));
-    requestedDateTimeForm.setMinutes(parseInt(minutes));
-    const requestedDateTimeTo = new Date(date);
-    requestedDateTimeTo.setHours(parseInt(hours) + duration);
-    requestedDateTimeTo.setMinutes(parseInt(minutes));
+    const requestedDateTimeForm = parse(
+      `${date} ${time}`,
+      'yyyy-MM-dd HH:mm',
+      new Date(),
+    );
+
+    const requestedDateTimeTo = parse(
+      `${date} ${time}`,
+      'yyyy-MM-dd HH:mm',
+      new Date(),
+    );
+    add(requestedDateTimeForm, { hours: duration });
 
     let isBookedOrOverlapping = false;
 

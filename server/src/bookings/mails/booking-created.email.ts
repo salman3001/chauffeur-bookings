@@ -1,14 +1,14 @@
 import { NestMail } from '@salman3001/nest-mailer';
 import Mailgen, { Content } from 'mailgen';
-import { Config } from 'src/core/config/config';
 import { mailGenerator } from 'src/core/utils/mailGenerator';
+import { Booking } from '../entities/booking.entity';
+import { Config } from 'src/core/config/config';
 
-interface ConfirmationEmailPayload {
-  name: string;
-  link: string;
+interface BookingCreatedEmailPayload {
+  booking: Booking;
 }
 
-export class ConfirmationEmail implements NestMail {
+export class BookingCreatedEmail implements NestMail {
   config: Config;
   mailGen: Mailgen;
   to: string;
@@ -17,27 +17,28 @@ export class ConfirmationEmail implements NestMail {
   text: string;
   html: string;
 
-  constructor(to: string, payload: ConfirmationEmailPayload) {
+  constructor(to: string, payload: BookingCreatedEmailPayload) {
     this.config = new Config();
     this.mailGen = mailGenerator(this.config);
     this.to = to;
     this.from = this.config.envs().EMAIL_FROM;
-    this.subject = `Welcome to ${this.config.envs().APP_NAME}`;
+    this.subject = 'Your Booking has created';
     this.setHtml(payload);
   }
 
-  setHtml(payload: ConfirmationEmailPayload): void {
+  setHtml(payload: BookingCreatedEmailPayload): void {
+    const customerName = payload?.booking?.customerProfile?.user?.firstName;
     const mail: Content = {
       body: {
-        name: payload.name,
-        title: `Welcome to ${this.config.envs().APP_NAME}`,
-        intro: 'Your account has been created successfully!',
+        name: customerName,
+        title: 'Booking Created',
+        intro: '',
         action: {
-          instructions: 'Click to verify your email',
+          instructions: `Hi, ${customerName}. Your booking has been crreated! Our chauffeur will review and send confirmation soon`,
           button: {
             color: '#22BC66', // otpional action button color
-            text: 'Verify Email',
-            link: payload.link,
+            text: 'View Booking',
+            link: 'booking link',
           },
         },
       },

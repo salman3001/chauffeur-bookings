@@ -4,69 +4,86 @@ import {
   ArrayMinSize,
   IsArray,
   IsBoolean,
+  IsDateString,
   IsNotEmpty,
   IsOptional,
-  IsString,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class Slot {
-  @IsNotEmpty()
-  @IsString()
-  name: string;
-
-  @IsNotEmpty()
-  @IsString()
-  time: string;
-
+export class AvailabilityByDay {
   @IsNotEmpty()
   @IsBoolean()
   available: boolean;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  fullDay: boolean;
+
+  @ValidateIf((o) => {
+    if (o.available === true && o.fullDay === false) {
+      return true;
+    } else {
+      return false;
+    }
+  })
+  @IsDateString()
+  from: string | null;
+
+  @ValidateIf((o) => {
+    if (o.available === true && o.fullDay === false) {
+      return true;
+    } else {
+      return false;
+    }
+  })
+  @IsDateString()
+  to: string | null;
 }
 
 class Availability {
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayMinSize(24)
-  @Type(() => Slot)
-  sunday: Slot[];
+  @Type(() => AvailabilityByDay)
+  sunday: AvailabilityByDay;
 
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayMinSize(24)
-  @Type(() => Slot)
-  moday: Slot[];
+  @Type(() => AvailabilityByDay)
+  monday: AvailabilityByDay;
 
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayMinSize(24)
-  @Type(() => Slot)
-  tuesday: Slot[];
+  @Type(() => AvailabilityByDay)
+  tuesday: AvailabilityByDay;
 
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayMinSize(24)
-  @Type(() => Slot)
-  wednesday: Slot[];
+  @Type(() => AvailabilityByDay)
+  wednesday: AvailabilityByDay;
 
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayMinSize(24)
-  @Type(() => Slot)
-  thursday: Slot[];
+  @Type(() => AvailabilityByDay)
+  thursday: AvailabilityByDay;
 
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayMinSize(24)
-  @Type(() => Slot)
-  friday: Slot[];
+  @Type(() => AvailabilityByDay)
+  friday: AvailabilityByDay;
 
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayMinSize(24)
-  @Type(() => Slot)
-  saturday: Slot[];
+  @Type(() => AvailabilityByDay)
+  saturday: AvailabilityByDay;
 }
 
 export class UpdateChauffeurProfileDto extends PartialType(

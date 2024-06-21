@@ -17,6 +17,8 @@ import { AdminProfileRepository } from 'src/admin-profiles/admin-profile.reposit
 import { weekDays } from 'src/core/utils/helpers';
 import { BookedSlotRepository } from 'src/booked-slots/booked-slot.repository';
 import { CheckAvailabiltyDto } from './dto/check-availabilty.dto';
+import User from './entities/user.entity';
+import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
 
 @Injectable()
 export class UsersService {
@@ -168,77 +170,61 @@ export class UsersService {
 
     const { chauffeurId, date, time, duration } = dto;
 
-    const chauffeur = await this.userRepository.findOneByOrFail({
-      id: chauffeurId,
-      userType: UserType.CHAUFFEUR,
+    const chauffeur = await this.userRepository.findOneOrFail({
+      where: {
+        id: chauffeurId,
+        userType: UserType.CHAUFFEUR,
+      },
+      relations: {
+        chauffeurProfile: true,
+      },
     });
 
-    const dateToCheck = new Date(date);
-    const day = dateToCheck.getDay();
-    const weekDay = weekDays[day] as 'sunday';
+    const isChauffeurAvailableOnRequestedDateTime =
+      this.isChauffeurAvailableOnRequestedDateTime(
+        chauffeur,
+        date,
+        time,
+        duration,
+      );
 
-    const isAvailableOnThisDay =
-      chauffeur.chauffeurProfile?.availability[weekDay]?.available;
-
-    const isAvailableFullDay =
-      chauffeur.chauffeurProfile?.availability[weekDay]?.fullDay;
-
-    const isWithinRange = true;
-
-    if (!isAvailableOnThisDay) {
+    if (!isChauffeurAvailableOnRequestedDateTime) {
       throw new CustomHttpException({
         code: HttpStatus.BAD_GATEWAY,
         success: false,
-        message: 'Chauffeur not available on this date',
+        message:
+          'Chauffeur not available Request date or time. Please change the date or time',
       });
     }
 
-    if (!isAvailableFullDay || !isWithinRange) {
+    const bookedSlots = await this.bookedSlotRepo.find({
+      where: {
+        chauffeurProfile: {
+          id: chauffeur?.chauffeurProfile?.id,
+        },
+        dateTimeFrom: new Date(date),
+      },
+    });
+
+    const isRequestedTimeBookedOrOverlapping =
+      this.isRequestedTimeBookedOrOverlapping(
+        date,
+        time,
+        duration,
+        bookedSlots,
+      );
+
+    if (!isRequestedTimeBookedOrOverlapping) {
       throw new CustomHttpException({
         code: HttpStatus.BAD_GATEWAY,
         success: false,
-        message: 'Chauffeur not available on this date',
+        message:
+          'Selected time is overlapping with existing bookings. please review the booked slots and choose the available time',
       });
     }
 
     return true;
   }
-
-  // async getAvailableSlots(
-  //   chauffeurId: number,
-  //   date: Date,
-  //   authUser: AuthUserType,
-  // ) {
-  //   this.userPolicy.authorize('getAvailableSlots', authUser);
-
-  //   const chauffeur = await this.userRepository.findOneOrFail({
-  //     where: { id: chauffeurId, userType: UserType.CHAUFFEUR },
-  //     relations: { chauffeurProfile: true },
-  //   });
-
-  //   const alreadyBookedSlots =
-  //     await this.bookedSlotRepo.getChauffeurBookedSlotsByDate(
-  //       chauffeur.id,
-  //       date,
-  //     );
-
-  //   const dayToCheck = new Date(date).getDay();
-
-  //   const availableSlots = chauffeur.chauffeurProfile.availability[
-  //     weekDays[dayToCheck] as 'sunday'
-  //   ].filter((slot) => {
-  //     const isBookedSlotExist = alreadyBookedSlots.filter(
-  //       (bs) => bs.slotName === slot.name,
-  //     );
-
-  //     if (isBookedSlotExist.length > 0) {
-  //       return false;
-  //     }
-  //     return true;
-  //   });
-
-  //   return availableSlots;
-  // }
 
   async getCustomer(authUser: AuthUserType, query: UserFilterQuery) {
     this.userPolicy.authorize('getCustomer', authUser);
@@ -249,5 +235,110 @@ export class UsersService {
     } = await this.userRepository.getCustomer(query);
 
     return { customers, count, perPage };
+  }
+
+  private isChauffeurAvailableOnRequestedDateTime(
+    chauffeur: User,
+    date: string,
+    time: string,
+    duration: number,
+  ) {
+    const requestedDateToCheck = new Date(date);
+    const requestedDay = requestedDateToCheck.getDay();
+    const requestedWeekDay = weekDays[requestedDay] as 'sunday';
+    const requestedDateTimeForm = new Date(date);
+    const [hours, minutes] = time.split(':');
+    requestedDateTimeForm.setHours(parseInt(hours));
+    requestedDateTimeForm.setMinutes(parseInt(minutes));
+    const requestedDateTimeTo = new Date(date);
+    requestedDateTimeTo.setHours(parseInt(hours) + duration);
+    requestedDateTimeTo.setMinutes(parseInt(minutes));
+
+    const isChauffeurAvailableOnThisDay =
+      chauffeur.chauffeurProfile?.availability[requestedWeekDay]?.available;
+
+    const isChauffeurAvailableFullDay =
+      chauffeur.chauffeurProfile?.availability[requestedWeekDay]?.fullDay;
+
+    const chauffeurAvailableFrom =
+      chauffeur.chauffeurProfile?.availability[requestedWeekDay]?.from;
+    const chauffeurAvailableTo =
+      chauffeur.chauffeurProfile?.availability[requestedWeekDay]?.to;
+
+    let isWithinRange = false;
+
+    if (chauffeurAvailableFrom && chauffeurAvailableTo) {
+      const chauffeurAvailableFromDateTime = new Date(date);
+      chauffeurAvailableFromDateTime.setHours(
+        parseInt(chauffeurAvailableFrom.split(':')[0]),
+      );
+
+      const chauffeurAvailableToDateTime = new Date(date);
+      chauffeurAvailableToDateTime.setHours(
+        parseInt(chauffeurAvailableFrom.split(':')[1]),
+      );
+
+      if (
+        requestedDateTimeForm >= chauffeurAvailableFromDateTime &&
+        requestedDateTimeTo <= chauffeurAvailableToDateTime
+      ) {
+        isWithinRange = true;
+      }
+    }
+
+    if (isChauffeurAvailableOnThisDay && isChauffeurAvailableFullDay) {
+      return true;
+    } else if (isChauffeurAvailableOnThisDay && isWithinRange) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private isRequestedTimeBookedOrOverlapping(
+    date: string,
+    time: string,
+    duration: number,
+    bookedSlots: BookedSlot[],
+  ) {
+    const requestedDateTimeForm = new Date(date);
+    const [hours, minutes] = time.split(':');
+    requestedDateTimeForm.setHours(parseInt(hours));
+    requestedDateTimeForm.setMinutes(parseInt(minutes));
+    const requestedDateTimeTo = new Date(date);
+    requestedDateTimeTo.setHours(parseInt(hours) + duration);
+    requestedDateTimeTo.setMinutes(parseInt(minutes));
+
+    let isBookedOrOverlapping = false;
+
+    bookedSlots.forEach((slot) => {
+      const slotDateTimeFrom = slot.dateTimeFrom;
+
+      const slotDateTimeTo = slot.dateTimeTo;
+
+      const isRequestedFromTimeOverLap =
+        requestedDateTimeForm >= slotDateTimeFrom &&
+        requestedDateTimeForm <= slotDateTimeTo;
+
+      const isRequestedToTimeOverLap =
+        requestedDateTimeTo >= slotDateTimeFrom &&
+        requestedDateTimeTo <= slotDateTimeTo;
+
+      const isTimeSlotInBetween =
+        requestedDateTimeForm <= slotDateTimeFrom &&
+        requestedDateTimeTo >= slotDateTimeTo;
+
+      if (
+        isRequestedFromTimeOverLap ||
+        isRequestedToTimeOverLap ||
+        isTimeSlotInBetween
+      ) {
+        isBookedOrOverlapping = true;
+      } else {
+        isBookedOrOverlapping = false;
+      }
+    });
+
+    return isBookedOrOverlapping;
   }
 }

@@ -15,7 +15,7 @@ import { AuthUser } from 'src/core/utils/decorators/user/authUser.decorator';
 import { AuthUserType } from 'src/core/utils/types/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { GetAvailableSlotsDto } from './dto/get-available-slots.dto';
+import { CheckAvailabiltyDto } from './dto/check-availabilty.dto';
 
 @Controller('users')
 export class UsersController {
@@ -104,22 +104,19 @@ export class UsersController {
     });
   }
 
-  @Get('chauffeurs/:id/available-slots')
+  @Get('chauffeurs/:id/availabilty')
   async getAvailableSlots(
     @Param('id') chauffeurId: string,
     @AuthUser() authUser: AuthUserType,
     @Query() query: any,
-    @Query(new ValidatorPipe()) dto: GetAvailableSlotsDto,
+    @Query(new ValidatorPipe()) dto: CheckAvailabiltyDto,
   ) {
-    const results = await this.usersService.getAvailableSlots(
-      +chauffeurId,
-      dto.date,
-      authUser,
-    );
+    const results = await this.usersService.checkAvailabilty(dto, authUser);
     return CustomRes({
       code: 200,
       data: results,
       success: true,
+      message: 'slot is available',
     });
   }
 

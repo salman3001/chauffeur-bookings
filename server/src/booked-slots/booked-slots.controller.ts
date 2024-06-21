@@ -1,34 +1,64 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { BookedSlotsService } from './booked-slots.service';
-import { CreateBookedSlotDto } from './dto/create-booked-slot.dto';
-import { UpdateBookedSlotDto } from './dto/update-booked-slot.dto';
+import { findAllByMonthDto } from './dto/findAllByMonth.dto';
+import ValidatorPipe from 'src/core/utils/pipes/ValidatorPipe';
+import { AuthUser } from 'src/core/utils/decorators/user/authUser.decorator';
+import { AuthUserType } from 'src/core/utils/types/common';
+import CustomRes from 'src/core/utils/CustomRes';
 
 @Controller('booked-slots')
 export class BookedSlotsController {
   constructor(private readonly bookedSlotsService: BookedSlotsService) {}
 
-  @Post()
-  create(@Body() createBookedSlotDto: CreateBookedSlotDto) {
-    return this.bookedSlotsService.create(createBookedSlotDto);
+  @Get('by-month')
+  async findAllByMonth(
+    @Query(new ValidatorPipe()) query: findAllByMonthDto,
+    @AuthUser() authUser: AuthUserType,
+  ) {
+    const slots = await this.bookedSlotsService.findAllByMonth(query, authUser);
+    return CustomRes({
+      code: 200,
+      success: true,
+      data: slots,
+    });
   }
 
-  @Get()
-  findAll() {
-    return this.bookedSlotsService.findAll();
+  @Get('chauffeur/:id/by-month')
+  async findAllForChauffeurByMonth(
+    @Param('id') id: string,
+    @Query(new ValidatorPipe()) query: findAllByMonthDto,
+    @AuthUser() authUser: AuthUserType,
+  ) {
+    const slots = await this.bookedSlotsService.findAllForChauffeurByMonth(
+      +id,
+      query,
+      authUser,
+    );
+
+    return slots;
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.bookedSlotsService.findOne(+id);
-  }
+  @Get('chauffeur/:id')
+  async findChauffeurBookedSlotsByDate(
+    @Param('id') id: string,
+    @Query(new ValidatorPipe()) query: findAllByMonthDto,
+    @AuthUser() authUser: AuthUserType,
+  ) {
+    const slots = await this.bookedSlotsService.findAllForChauffeurByMonth(
+      +id,
+      query,
+      authUser,
+    );
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBookedSlotDto: UpdateBookedSlotDto) {
-    return this.bookedSlotsService.update(+id, updateBookedSlotDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.bookedSlotsService.remove(+id);
+    return slots;
   }
 }

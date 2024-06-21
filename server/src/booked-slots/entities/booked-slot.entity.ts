@@ -14,14 +14,11 @@ export class BookedSlot {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('date')
-  date: string;
-
-  @Column('time')
-  time: string;
+  @Column('datetime')
+  dateTimeFrom: Date;
 
   @Column()
-  duration: number;
+  dateTimeTo: Date;
 
   @OneToOne(() => Booking, (booking) => booking.bookedSlot)
   @JoinColumn()

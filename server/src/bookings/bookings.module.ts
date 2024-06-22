@@ -11,6 +11,9 @@ import { UserRepository } from 'src/users/user.repository';
 import { UsersService } from 'src/users/users.service';
 import { BookedSlotRepository } from 'src/booked-slots/booked-slot.repository';
 import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
+import { NotificationsModule } from 'src/notifications/notifications.module';
+import { MailsModule } from 'src/mails/mails.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -18,13 +21,15 @@ import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
     PolicyModule.register([
       { token: 'BookingsPolicy', policy: BookingsPolicy },
     ]),
+    NotificationsModule,
+    MailsModule,
+    UsersModule,
   ],
   controllers: [BookingsController],
   providers: [
     BookingRepository,
     BookedSlotRepository,
     UserRepository,
-    UsersService,
     BookingsService,
   ],
 })

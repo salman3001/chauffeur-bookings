@@ -13,19 +13,17 @@ import { IJwtPayload } from 'src/core/utils/types/common';
 import User from '../users/entities/user.entity';
 import { DataSource } from 'typeorm';
 import { compareSync } from 'bcrypt';
-import { ForgorPasswordEmail } from './mails/forgorPassword.email';
-import { ConfirmationEmail } from './mails/confirmation.email';
 import { confirmEmailDto } from './dto/confirmEmail.dto';
-import { MailService } from '@salman3001/nest-mailer';
 import { UserRepository } from 'src/users/user.repository';
 import { ProfileRepository } from 'src/profiles/profile.repository';
+import { MailsService } from 'src/mails/mails.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectDataSource() private readonly dataSource: DataSource,
     private config: ConfigService,
-    private mailservice: MailService,
+    private mailservice: MailsService,
     private userRepo: UserRepository,
     private profileRepo: ProfileRepository,
   ) {}
@@ -96,12 +94,10 @@ export class AuthService {
 
       const link = `${this.config.get<Config>().envs().APP_URL}/auth/confirm-email?jwt=${token}`;
 
-      const email = new ConfirmationEmail(user.email, {
+      await this.mailservice.sendAccountCreatedEmail(user.email, {
         name: user.firstName,
         link,
       });
-
-      await this.mailservice.queue([email]);
 
       return user;
     });
@@ -132,12 +128,10 @@ export class AuthService {
     );
     const link = `${this.config.get<Config>().envs().APP_URL}/auth/reset-password?jwt=${token}`;
 
-    const email = new ForgorPasswordEmail(user.email, {
+    await this.mailservice.sendForgotPassqordEmail(user.email, {
       name: user.firstName,
       link,
     });
-
-    await this.mailservice.queue([email]);
   }
 
   async resetPassword(dto: resetPasswordDto): Promise<User> {

@@ -35,5 +35,6 @@ import { ChauffeurProfileRepository } from 'src/chauffeur-profiles/chuffeur-prof
     AdminProfileRepository,
     BookedSlotRepository,
   ],
+  exports: [UsersService],
 })
 export class UsersModule {}

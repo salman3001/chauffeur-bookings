@@ -14,7 +14,7 @@ export class BookedSlot {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('datetime')
+  @Column('timestamp')
   dateTimeFrom: Date;
 
   @Column()

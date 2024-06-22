@@ -7,6 +7,7 @@ import {
   BeforeInsert,
   OneToOne,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import {
   IsBoolean,
@@ -22,6 +23,7 @@ import { Exclude, instanceToPlain } from 'class-transformer';
 import Profile from 'src/profiles/entities/profile.entity';
 import { ChauffeurProfile } from 'src/chauffeur-profiles/entities/chauffeur-profile.entity';
 import { AdminProfile } from 'src/admin-profiles/entities/admin-profile.entity';
+import { Notification } from 'src/notifications/entities/notification.entity';
 
 @Entity()
 export default class User {
@@ -84,6 +86,9 @@ export default class User {
     onDelete: 'CASCADE',
   })
   chauffeurProfile: ChauffeurProfile;
+
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notifications: Notification[];
 
   toJSON() {
     return instanceToPlain(this);

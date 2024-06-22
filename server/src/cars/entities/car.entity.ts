@@ -28,7 +28,7 @@ export class Car {
   @Min(1950)
   year: number;
 
-  @Column('json', { nullable: true })
+  @Column('jsonb', { nullable: true })
   image?: Image;
 
   @ManyToOne(() => AdminProfile, (adminProfile) => adminProfile.cars)

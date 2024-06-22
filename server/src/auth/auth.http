@@ -9,14 +9,14 @@ Content-Type: application/json
 ###
 POST {{base_url}}/auth/logout
 
-###
+### 
 POST {{base_url}}/auth/register
 Content-Type: application/json
 
 {
     "firstName": "salman",
     "lastName": "khan",   
-    "email": "salman@gmail.com",
+    "email": "saslman@gmail.com",
     "password":"Salman@123",
     "phone": "+919805893577"
 }

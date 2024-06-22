@@ -10,6 +10,8 @@ import { AdminProfilesModule } from './admin-profiles/admin-profiles.module';
 import { PaymentsModule } from './payments/payments.module';
 import { RefundsModule } from './refunds/refunds.module';
 import { BookedSlotsModule } from './booked-slots/booked-slots.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { MailsModule } from './mails/mails.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { BookedSlotsModule } from './booked-slots/booked-slots.module';
     PaymentsModule,
     RefundsModule,
     BookedSlotsModule,
+    NotificationsModule,
+    MailsModule,
   ],
   controllers: [],
   providers: [],

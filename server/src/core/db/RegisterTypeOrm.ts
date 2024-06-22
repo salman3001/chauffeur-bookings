@@ -10,6 +10,7 @@ import { Payment } from 'src/payments/entities/payment.entity';
 import { Refund } from 'src/refunds/entities/refund.entity';
 import { AdminProfile } from 'src/admin-profiles/entities/admin-profile.entity';
 import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
+import { Notification } from 'src/notifications/entities/notification.entity';
 
 export default function registerTypeOrm() {
   return TypeOrmModule.forRootAsync({
@@ -31,6 +32,7 @@ export default function registerTypeOrm() {
         Payment,
         Refund,
         BookedSlot,
+        Notification,
       ],
       synchronize: true,
     }),

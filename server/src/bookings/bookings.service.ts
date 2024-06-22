@@ -13,6 +13,8 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
 import { add } from 'date-fns';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { MailsService } from 'src/mails/mails.service';
 
 @Injectable()
 export class BookingsService {
@@ -24,6 +26,8 @@ export class BookingsService {
     private userRepo: UserRepository,
     private userService: UsersService,
     @InjectDataSource() private dataSource: DataSource,
+    private notificationService: NotificationsService,
+    private mailservice: MailsService,
   ) {}
 
   async create(createBookingDto: CreateBookingDto, authUser: AuthUserType) {
@@ -96,6 +100,34 @@ export class BookingsService {
       ];
 
       const savedBooking = await manager.save(booking);
+
+      //mails and notifications
+      await this.mailservice.sendBookingCreatedEmail(customer.email, {
+        customerName: customer.firstName,
+      });
+
+      await this.notificationService.sendBookingCreated(
+        customer,
+        savedBooking.id,
+      );
+
+      await this.notificationService.sendBookingRecieved(
+        chauffeur,
+        savedBooking.id,
+      );
+
+      const admins = await this.userRepo.findBy({
+        userType: UserType.ADMIN,
+        isActive: true,
+      });
+
+      for (const admin of admins) {
+        await this.notificationService.sendBookingRecieved(
+          admin,
+          savedBooking.id,
+        );
+      }
+
       return savedBooking;
     });
   }
@@ -173,6 +205,9 @@ export class BookingsService {
       detail: `Booking rejected`,
     });
     await this.bookingRepo.save(booking);
+
+    //mails and notifications
+
     return booking;
   }
 

@@ -22,7 +22,7 @@ export class ChauffeurProfile {
   @IsNumber()
   pricePerHour: string;
 
-  @Column('json', { default: defaultAvailability })
+  @Column('jsonb', { default: defaultAvailability })
   availability: Availability;
 
   @OneToMany(() => Booking, (booking) => booking.chauffeurProfile, {

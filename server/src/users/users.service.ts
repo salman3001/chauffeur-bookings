@@ -25,8 +25,7 @@ import { add, parse } from 'date-fns';
 export class UsersService {
   constructor(
     private readonly config: ConfigService,
-    @Inject('userPolicy')
-    private readonly userPolicy: PolicyService<IUserPolicy>,
+    @Inject('userPolicy') private userPolicy: PolicyService<IUserPolicy>,
     @InjectDataSource() private readonly dataSource: DataSource,
     private readonly userRepository: UserRepository,
     private readonly profileRepository: ProfileRepository,

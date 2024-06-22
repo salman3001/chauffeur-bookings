@@ -35,7 +35,7 @@ export class Booking {
   @Length(5, 256)
   pickupAddress: string;
 
-  @Column('json', { transformer: jsonTransformer })
+  @Column('jsonb', { transformer: jsonTransformer })
   @ValidateNested()
   pickupCords: Geometry;
 
@@ -43,7 +43,7 @@ export class Booking {
   @Length(5, 256)
   dropoffAddress: string;
 
-  @Column('json', { transformer: jsonTransformer })
+  @Column('jsonb', { transformer: jsonTransformer })
   @ValidateNested()
   dropoffCords: Geometry;
 

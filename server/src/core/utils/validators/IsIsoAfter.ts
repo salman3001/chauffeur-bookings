@@ -1,9 +1,5 @@
-import {
-  registerDecorator,
-  ValidationOptions,
-  ValidationArguments,
-} from 'class-validator';
-import { isAfter, isValid, parseISO } from 'date-fns';
+import { registerDecorator, ValidationOptions } from 'class-validator';
+import { isAfter, isValid, parse } from 'date-fns';
 
 export function IsIsoAfter(
   specifiedDate: Date,
@@ -16,11 +12,11 @@ export function IsIsoAfter(
       propertyName: propertyName,
       options: validationOptions,
       validator: {
-        validate(value: any, args: ValidationArguments) {
+        validate(value: any /*,args: ValidationArguments*/) {
           if (typeof value !== 'string') {
             return false;
           }
-          const date = parseISO(value);
+          const date = parse(value, 'yyyy-MM-dd', new Date());
           return isValid(date) && isAfter(date, specifiedDate);
         },
         defaultMessage(/*args: ValidationArguments*/) {

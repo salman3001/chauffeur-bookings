@@ -6,11 +6,13 @@ import { profilePolicy } from './pofilePolicy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import Profile from './entities/profile.entity';
 import { ProfileRepository } from './profile.repository';
+import { FileModule } from 'src/core/files/file.module';
 
 @Module({
   imports: [
     PolicyModule.register([{ token: 'profilePolicy', policy: profilePolicy }]),
     TypeOrmModule.forFeature([Profile]),
+    FileModule,
   ],
   controllers: [ProfilesController],
   providers: [ProfilesService, ProfileRepository],

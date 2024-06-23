@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, Length, Min } from 'class-validator';
 import { AdminProfile } from 'src/admin-profiles/entities/admin-profile.entity';
 import { ChauffeurProfile } from 'src/chauffeur-profiles/entities/chauffeur-profile.entity';
@@ -16,14 +17,17 @@ export class Car {
   id: number;
 
   @Column()
+  @ApiProperty()
   @Length(2, 50)
   name: string;
 
   @Column()
+  @ApiProperty()
   @Length(2, 50)
   make: string;
 
   @Column()
+  @ApiProperty()
   @IsNumber()
   @Min(1950)
   year: number;

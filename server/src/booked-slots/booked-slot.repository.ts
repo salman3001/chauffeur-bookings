@@ -2,13 +2,9 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookedSlot } from './entities/booked-slot.entity';
-import {
-  BaseQueryFilter,
-  BaseRepository,
-} from 'src/cars/entities/base.repository';
 import { ConfigService } from '@salman3001/nest-config-module';
-import { UserType } from 'src/core/utils/enums/userType';
 import { endOfMonth, startOfMonth } from 'date-fns';
+import { BaseQueryFilter, BaseRepository } from 'src/core/db/base.repository';
 
 @Injectable()
 export class BookedSlotRepository extends BaseRepository<BookedSlot> {

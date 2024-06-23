@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEnum,
   IsNumber,
@@ -32,22 +33,27 @@ export class Booking {
   id: number;
 
   @Column()
+  @ApiProperty()
   @Length(5, 256)
   pickupAddress: string;
 
   @Column('jsonb', { transformer: jsonTransformer })
+  @ApiProperty()
   @ValidateNested()
   pickupCords: Geometry;
 
   @Column()
+  @ApiProperty()
   @Length(5, 256)
   dropoffAddress: string;
 
   @Column('jsonb', { transformer: jsonTransformer })
+  @ApiProperty()
   @ValidateNested()
   dropoffCords: Geometry;
 
   @Column()
+  @ApiProperty()
   @IsNumber()
   @Min(1)
   bookedForHours: number;
@@ -67,6 +73,7 @@ export class Booking {
   status: BookingStatus;
 
   @Column('enum', { enum: PaymentMode })
+  @ApiProperty()
   @IsEnum(PaymentMode)
   paymentMode: PaymentMode;
 

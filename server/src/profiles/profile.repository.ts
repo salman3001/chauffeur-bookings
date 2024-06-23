@@ -2,8 +2,8 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import Profile from './entities/profile.entity';
-import { BaseRepository } from 'src/cars/entities/base.repository';
 import { ConfigService } from '@salman3001/nest-config-module';
+import { BaseRepository } from 'src/core/db/base.repository';
 
 @Injectable()
 export class ProfileRepository extends BaseRepository<Profile> {

@@ -1,26 +1,26 @@
-import { PartialType, PickType } from '@nestjs/mapped-types';
-import { ChauffeurProfile } from '../entities/chauffeur-profile.entity';
 import {
-  ArrayMinSize,
-  IsArray,
   IsBoolean,
   IsDateString,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class AvailabilityByDay {
+  @ApiProperty({ default: false })
   @IsNotEmpty()
   @IsBoolean()
   available: boolean;
 
+  @ApiProperty({ default: false })
   @IsNotEmpty()
   @IsBoolean()
   fullDay: boolean;
 
+  @ApiProperty({ default: null, type: String })
   @ValidateIf((o) => {
     if (o.available === true && o.fullDay === false) {
       return true;
@@ -31,6 +31,7 @@ export class AvailabilityByDay {
   @IsDateString()
   from: string | null;
 
+  @ApiProperty({ default: null, type: String })
   @ValidateIf((o) => {
     if (o.available === true && o.fullDay === false) {
       return true;
@@ -43,52 +44,41 @@ export class AvailabilityByDay {
 }
 
 class Availability {
-  @IsArray()
-  @ValidateNested({ each: true })
-  @ArrayMinSize(24)
-  @Type(() => AvailabilityByDay)
+  @ApiProperty()
+  @ValidateNested()
   sunday: AvailabilityByDay;
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @ArrayMinSize(24)
-  @Type(() => AvailabilityByDay)
+  @ApiProperty()
+  @ValidateNested()
   monday: AvailabilityByDay;
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @ArrayMinSize(24)
-  @Type(() => AvailabilityByDay)
+  @ApiProperty()
+  @ValidateNested()
   tuesday: AvailabilityByDay;
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @ArrayMinSize(24)
-  @Type(() => AvailabilityByDay)
+  @ApiProperty()
+  @ValidateNested()
   wednesday: AvailabilityByDay;
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @ArrayMinSize(24)
-  @Type(() => AvailabilityByDay)
+  @ApiProperty()
+  @ValidateNested()
   thursday: AvailabilityByDay;
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @ArrayMinSize(24)
-  @Type(() => AvailabilityByDay)
+  @ApiProperty()
+  @ValidateNested()
   friday: AvailabilityByDay;
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @ArrayMinSize(24)
-  @Type(() => AvailabilityByDay)
+  @ApiProperty()
+  @ValidateNested()
   saturday: AvailabilityByDay;
 }
 
-export class UpdateChauffeurProfileDto extends PartialType(
-  PickType(ChauffeurProfile, []),
-) {
+export class UpdateChauffeurProfileDto {
+  @ApiProperty()
+  @IsNumber()
+  pricePerHour: string;
+
+  @ApiProperty()
   @IsOptional()
   availability?: Availability;
 }

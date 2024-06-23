@@ -5,11 +5,11 @@ import { Config } from 'src/core/config/config';
 import { ConfigService } from '@salman3001/nest-config-module';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { forgotPasswordOtpDto } from './dto/resetPassword.dto';
-import { resetPasswordDto } from './dto/forgotPasswordOtp.dto';
 import ValidatorPipe from 'src/core/utils/pipes/ValidatorPipe';
 import CustomRes from 'src/core/utils/CustomRes';
 import { confirmEmailDto } from './dto/confirmEmail.dto';
+import { forgotPasswordOtpDto } from './dto/forgotPasswordOtp.dto';
+import { resetPasswordDto } from './dto/resetPassword.dto';
 
 @Controller('auth')
 export class AuthController {

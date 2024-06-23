@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigService } from '@salman3001/nest-config-module';
 import { Car } from './entities/car.entity';
-import { BaseQueryFilter, BaseRepository } from './entities/base.repository';
+import { BaseQueryFilter, BaseRepository } from 'src/core/db/base.repository';
 
 @Injectable()
 export class CarRepository extends BaseRepository<Car> {

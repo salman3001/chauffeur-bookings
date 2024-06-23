@@ -34,6 +34,7 @@ export class GlobalHttpExceptionsFilter implements ExceptionFilter {
           message: message,
           data: null,
           code: status,
+          cause: exception.cause,
         });
       }
     } else if (exception instanceof TypeORMError) {
@@ -50,6 +51,7 @@ export class GlobalHttpExceptionsFilter implements ExceptionFilter {
           message: exception?.message || 'Server error',
           data: null,
           code: 500,
+          cause: exception,
         });
       }
     } else if (exception instanceof NestPolicyError) {
@@ -65,6 +67,7 @@ export class GlobalHttpExceptionsFilter implements ExceptionFilter {
         message: (exception as any).message,
         data: null,
         code: 500,
+        cause: exception,
       });
     }
   }

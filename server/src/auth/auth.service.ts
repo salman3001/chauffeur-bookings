@@ -3,10 +3,8 @@ import { LoginDto } from './dto/login.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import * as jwt from 'jsonwebtoken';
 import { Config } from 'src/core/config/config';
-import { resetPasswordDto } from './dto/forgotPasswordOtp.dto';
 import { UserType } from 'src/core/utils/enums/userType';
 import { RegisterDto } from './dto/register.dto';
-import { forgotPasswordOtpDto } from './dto/resetPassword.dto';
 import { ConfigService } from '@salman3001/nest-config-module';
 import { CustomHttpException } from 'src/core/utils/Exceptions/CustomHttpException';
 import { IJwtPayload } from 'src/core/utils/types/common';
@@ -17,6 +15,8 @@ import { confirmEmailDto } from './dto/confirmEmail.dto';
 import { UserRepository } from 'src/users/user.repository';
 import { ProfileRepository } from 'src/profiles/profile.repository';
 import { MailsService } from 'src/mails/mails.service';
+import { forgotPasswordOtpDto } from './dto/forgotPasswordOtp.dto';
+import { resetPasswordDto } from './dto/resetPassword.dto';
 
 @Injectable()
 export class AuthService {

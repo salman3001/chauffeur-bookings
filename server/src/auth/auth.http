@@ -2,7 +2,7 @@ POST {{base_url}}/auth/login
 Content-Type: application/json  
 
 {
- "email":"salman@gmail.com",
+ "email":"saslman@gmail.com",
  "password":"Salman@123"
 }
 
@@ -26,7 +26,7 @@ POST {{base_url}}/auth/confirm-email
 Content-Type: application/json
 
 {  
-    "jwt":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEsInVzZXJUeXBlIjozLCJpYXQiOjE3MTg2NjczMjYsImV4cCI6MTc1MDIwMzMyNn0.fbwmiZeUxL_ghPipvuYq1-oQwrfGv3R5K6o9DsQfiUM"
+    "jwt":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOjIsImlhdCI6MTcxOTA2NzMyMiwiZXhwIjoxNzUwNjAzMzIyfQ.yWW60WRtq40S7HeUyWENaECt7qIp_BbbEeUIXWLEfyk"
 }
 
 

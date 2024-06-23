@@ -4,9 +4,9 @@ import { UpdateCarDto } from './dto/update-car.dto';
 import { PolicyService } from '@salman3001/nest-policy-module';
 import { ICarsPolicy } from './cars.policy';
 import { AuthUserType } from 'src/core/utils/types/common';
-
 import { CarFilterQuery, CarRepository } from './car.repository';
 import { AdminProfileRepository } from 'src/admin-profiles/admin-profile.repository';
+import { FileService } from 'src/core/files/file.service';
 
 @Injectable()
 export class CarsService {
@@ -15,9 +15,14 @@ export class CarsService {
     private readonly carsPolicy: PolicyService<ICarsPolicy>,
     private readonly carRepo: CarRepository,
     private readonly adminProfileRepo: AdminProfileRepository,
+    private readonly fileservice: FileService,
   ) {}
 
-  async create(createCarDto: CreateCarDto, authUser: AuthUserType) {
+  async create(
+    createCarDto: CreateCarDto,
+    authUser: AuthUserType,
+    image?: Express.Multer.File,
+  ) {
     this.carsPolicy.authorize('create', authUser);
     const car = this.carRepo.create(createCarDto);
 
@@ -28,6 +33,9 @@ export class CarsService {
     });
 
     car.owner = adminProfile;
+    if (image) {
+      car.image = await this.fileservice.uploadImage(image, '/images/cars');
+    }
     await this.carRepo.save(car);
     return car;
   }

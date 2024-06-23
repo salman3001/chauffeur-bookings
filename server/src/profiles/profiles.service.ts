@@ -1,23 +1,23 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
 import { PolicyService } from '@salman3001/nest-policy-module';
 import { IProfilePolicy } from './pofilePolicy';
 import { AuthUserType } from 'src/core/utils/types/common';
-import Profile from './entities/profile.entity';
+import { FileService } from 'src/core/files/file.service';
+import { ProfileRepository } from './profile.repository';
 
 @Injectable()
 export class ProfilesService {
   constructor(
-    @InjectDataSource() private readonly dataSource: DataSource,
     @Inject('profilePolicy')
     private readonly profilePolicy: PolicyService<IProfilePolicy>,
+    private profileRepo: ProfileRepository,
+    private fileSearvice: FileService,
   ) {}
 
   async findOne(authUser: AuthUserType) {
     this.profilePolicy.authorize('find', authUser);
-    const profile = await this.dataSource.manager.findOneOrFail(Profile, {
+    const profile = await this.profileRepo.findOneOrFail({
       where: {
         user: {
           id: authUser?.id,
@@ -28,9 +28,13 @@ export class ProfilesService {
     return profile;
   }
 
-  async update(updateProfileDto: UpdateProfileDto, authUser: AuthUserType) {
+  async update(
+    updateProfileDto: UpdateProfileDto,
+    authUser: AuthUserType,
+    avatar?: Express.Multer.File,
+  ) {
     this.profilePolicy.authorize('update', authUser);
-    const profile = await this.dataSource.manager.findOneOrFail(Profile, {
+    const profile = await this.profileRepo.findOneOrFail({
       where: {
         user: {
           id: authUser?.id,
@@ -38,8 +42,17 @@ export class ProfilesService {
       },
     });
 
-    Object.assign(profile, updateProfileDto);
-    await this.dataSource.manager.save(Profile, profile);
+    if (avatar) {
+      const image = await this.fileSearvice.uploadImage(
+        avatar,
+        '/images/avatars',
+      );
+
+      profile.avatar = image;
+    }
+
+    this.profileRepo.merge(profile, updateProfileDto);
+    await this.profileRepo.save(profile);
 
     return profile;
   }

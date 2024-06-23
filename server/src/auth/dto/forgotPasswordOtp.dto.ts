@@ -1,13 +1,9 @@
-import { IsEmail, IsJWT, IsNotEmpty, IsStrongPassword } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 
-export class resetPasswordDto {
+export class forgotPasswordOtpDto {
+  @ApiProperty()
   @IsEmail()
   @IsNotEmpty()
   email: string;
-
-  @IsStrongPassword()
-  password: string;
-
-  @IsJWT()
-  jwt: string;
 }

@@ -1,4 +1,3 @@
-import { IsNumber } from 'class-validator';
 import { Booking } from 'src/bookings/entities/booking.entity';
 import { Car } from 'src/cars/entities/car.entity';
 import User from 'src/users/entities/user.entity';
@@ -19,7 +18,6 @@ export class ChauffeurProfile {
   id: number;
 
   @Column('decimal', { precision: 10, scale: 2 })
-  @IsNumber()
   pricePerHour: string;
 
   @Column('jsonb', { default: defaultAvailability })

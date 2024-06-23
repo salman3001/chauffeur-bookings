@@ -40,6 +40,7 @@ export class FileService {
 
   async deleteFile(fileUrl: string): Promise<void> {
     const filePath = join(
+      process.cwd(),
       this.configService.get<Config>().envs().UPLOAD_PATH,
       fileUrl,
     );
@@ -48,7 +49,7 @@ export class FileService {
     }
   }
 
-  async resizeImageAndSave(
+  private async resizeImageAndSave(
     file: Express.Multer.File,
     folder: string = '',
     width?: number,
@@ -62,14 +63,17 @@ export class FileService {
     return await this.writeFile(folder, resizedBuffer, 'webp');
   }
 
-  async writeFile(
+  private async writeFile(
     folder: string = '',
     buffer: Buffer,
     extName: string,
   ): Promise<string> {
     const fileName = Date.now() + uuidv4() + `.${extName}`;
     const url = join(folder, fileName);
-    const uploadPath = this.configService.get<Config>().envs().UPLOAD_PATH;
+    const uploadPath = join(
+      process.cwd(),
+      this.configService.get<Config>().envs().UPLOAD_PATH,
+    );
     const outputPath = join(uploadPath, folder, fileName);
 
     if (!existsSync(dirname(outputPath))) {

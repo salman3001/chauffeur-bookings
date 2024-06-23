@@ -7,6 +7,8 @@ export const userPolicy = {
   },
 
   findAll(user: AuthUserType) {
+    console.log(user);
+
     return user?.userType === UserType.ADMIN;
   },
 

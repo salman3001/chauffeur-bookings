@@ -17,16 +17,22 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "npx typeorm-ts-node-esm",
+    "migration:generate": "typeorm migration:generate -n <MigrationName>",
+    "migration:run": "typeorm migration:run",
+    "migration:revert": "typeorm migration:revert"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
     "@nestjs/bullmq": "^10.1.1",
     "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^3.2.2",
     "@nestjs/core": "^10.0.0",
     "@nestjs/mapped-types": "^2.0.5",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/platform-socket.io": "^10.3.9",
+    "@nestjs/swagger": "^7.3.1",
     "@nestjs/typeorm": "^10.0.2",
     "@nestjs/websockets": "^10.3.9",
     "@salman3001/nest-config-module": "^1.0.3",
@@ -38,6 +44,7 @@
     "class-validator": "^0.14.1",
     "cookie-parser": "^1.4.6",
     "date-fns": "^3.6.0",
+    "dotenv": "^16.4.5",
     "jsonwebtoken": "^9.0.2",
     "kafkajs": "^2.2.4",
     "mailgen": "^2.0.28",
@@ -48,6 +55,7 @@
     "sharp": "^0.33.4",
     "socket.io": "^4.7.5",
     "typeorm": "^0.3.20",
+    "typeorm-seeding": "^1.6.1",
     "uuid": "^10.0.0"
   },
   "devDependencies": {

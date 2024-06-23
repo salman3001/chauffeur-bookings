@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { CoreModule } from './core/core.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -12,6 +12,7 @@ import { RefundsModule } from './refunds/refunds.module';
 import { BookedSlotsModule } from './booked-slots/booked-slots.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { MailsModule } from './mails/mails.module';
+import { AuthMiddleware } from './core/utils/middlewares/auth/auth.middleware';
 
 @Module({
   imports: [
@@ -32,4 +33,8 @@ import { MailsModule } from './mails/mails.module';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes('*');
+  }
+}

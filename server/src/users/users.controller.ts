@@ -45,42 +45,6 @@ export class UsersController {
     });
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string, @AuthUser() authUser: AuthUserType) {
-    const user = await this.usersService.findOne(+id, authUser);
-    return CustomRes({
-      code: 200,
-      data: user,
-      success: true,
-    });
-  }
-
-  @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body(new ValidatorPipe()) updateUserDto: UpdateUserDto,
-    @AuthUser() authUser: AuthUserType,
-  ) {
-    const user = await this.usersService.update(+id, updateUserDto, authUser);
-    return CustomRes({
-      code: 200,
-      data: user,
-      success: true,
-      message: 'User Updated',
-    });
-  }
-
-  @Delete(':id')
-  async remove(@Param('id') id: string, @AuthUser() authUser: AuthUserType) {
-    const user = await this.usersService.remove(+id, authUser);
-    return CustomRes({
-      code: 200,
-      data: user,
-      success: true,
-      message: 'User removed',
-    });
-  }
-
   @Get('chauffeurs')
   async getchauffeur(@AuthUser() authUser: AuthUserType, @Query() query: any) {
     const results = await this.usersService.getChauffeur(authUser, query);
@@ -127,6 +91,42 @@ export class UsersController {
       code: 200,
       data: results,
       success: true,
+    });
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: string, @AuthUser() authUser: AuthUserType) {
+    const user = await this.usersService.findOne(+id, authUser);
+    return CustomRes({
+      code: 200,
+      data: user,
+      success: true,
+    });
+  }
+
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body(new ValidatorPipe()) updateUserDto: UpdateUserDto,
+    @AuthUser() authUser: AuthUserType,
+  ) {
+    const user = await this.usersService.update(+id, updateUserDto, authUser);
+    return CustomRes({
+      code: 200,
+      data: user,
+      success: true,
+      message: 'User Updated',
+    });
+  }
+
+  @Delete(':id')
+  async remove(@Param('id') id: string, @AuthUser() authUser: AuthUserType) {
+    const user = await this.usersService.remove(+id, authUser);
+    return CustomRes({
+      code: 200,
+      data: user,
+      success: true,
+      message: 'User removed',
     });
   }
 }

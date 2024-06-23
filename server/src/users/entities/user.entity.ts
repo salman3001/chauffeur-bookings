@@ -24,6 +24,7 @@ import Profile from 'src/profiles/entities/profile.entity';
 import { ChauffeurProfile } from 'src/chauffeur-profiles/entities/chauffeur-profile.entity';
 import { AdminProfile } from 'src/admin-profiles/entities/admin-profile.entity';
 import { Notification } from 'src/notifications/entities/notification.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export default class User {
@@ -31,31 +32,38 @@ export default class User {
   id: number;
 
   @Column({ length: 50 })
+  @ApiProperty()
   @Length(2, 50)
   firstName: string;
 
   @Column({ length: 50 })
+  @ApiProperty()
   @Length(2, 50)
   lastName: string;
 
   @Column({ length: 50, unique: true })
+  @ApiProperty()
   @IsEmail()
   email: string;
 
   @Exclude({ toPlainOnly: true })
   @Column({ length: 256 })
+  @ApiProperty()
   @IsStrongPassword()
   password: string;
 
   @Column({ length: 15, nullable: true })
+  @ApiProperty()
   @IsPhoneNumber('IN')
   phone?: string;
 
   @Column('enum', { enum: UserType })
+  @ApiProperty()
   @IsEnum(UserType)
   userType: UserType;
 
   @Column('boolean', { default: false })
+  @ApiProperty({ default: false })
   @IsBoolean()
   isActive: boolean;
 

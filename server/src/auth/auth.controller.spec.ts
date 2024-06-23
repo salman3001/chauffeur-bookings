@@ -3,10 +3,10 @@ import { AuthService } from 'src/auth/auth.service';
 import { LoginDto } from 'src/auth/dto/login.dto';
 import { RegisterDto } from 'src/auth/dto/register.dto';
 import { TestBed } from '@automock/jest';
-import { ConfigService } from '@salman3001/nest-config-module';
 import { HttpStatus } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { userFactory } from '../users/userFactory';
+import { ConfigService } from '@nestjs/config';
 
 describe('AuthController', () => {
   let controller: AuthController;

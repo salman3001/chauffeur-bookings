@@ -1,7 +1,5 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { DataSource, ILike, Not } from 'typeorm';
-import { ConfigService } from '@salman3001/nest-config-module';
-import { Config } from 'src/core/config/config';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { PolicyService } from '@salman3001/nest-policy-module';
 import { IUserPolicy } from './user.policy';
@@ -20,6 +18,8 @@ import { CheckAvailabiltyDto } from './dto/check-availabilty.dto';
 import User from './entities/user.entity';
 import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
 import { add, parse } from 'date-fns';
+import { ConfigService } from '@nestjs/config';
+import { AppConfig } from 'src/core/config/app.config';
 
 @Injectable()
 export class UsersService {
@@ -84,7 +84,8 @@ export class UsersService {
     },
   ) {
     this.userPolicy.authorize('findAll', authUser);
-    const take = query?.perPage || this.config.get<Config>().defaultPerPage;
+    const take =
+      query?.perPage || this.config.get<AppConfig>('appConfig')!.defaultPerPage;
     const skip = ((query?.page || 1) - 1) * take;
 
     const [orderBy, orderDirection] = query?.orderBy

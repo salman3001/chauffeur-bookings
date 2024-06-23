@@ -11,7 +11,9 @@ describe('ChauffeurProfilesController', () => {
       providers: [ChauffeurProfilesService],
     }).compile();
 
-    controller = module.get<ChauffeurProfilesController>(ChauffeurProfilesController);
+    controller = module.get<ChauffeurProfilesController>(
+      ChauffeurProfilesController,
+    );
   });
 
   it('should be defined', () => {

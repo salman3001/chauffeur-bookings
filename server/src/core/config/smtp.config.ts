@@ -1,10 +1,14 @@
 import { registerAs } from '@nestjs/config';
 
-const smtpConfig = {
-  smtpHost: process.env.SMTP_HOST as string,
-  smtpPort: process.env.SMTP_PORT as unknown as number,
-  smtpUsername: process.env.SMTP_USERNAME as string,
-  smtpPassword: process.env.SMTP_PASSWORD as string,
-};
+const smtpConfig = registerAs('smtpConfig', () => ({
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USERNAME,
+    pass: process.env.SMTP_PASSWORD,
+  },
+}));
 
-export default registerAs('smtpConfig', () => smtpConfig);
+export type SmtpConfig = ReturnType<typeof smtpConfig>;
+export default smtpConfig;

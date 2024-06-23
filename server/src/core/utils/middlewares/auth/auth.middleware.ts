@@ -1,8 +1,8 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { ConfigService } from '@salman3001/nest-config-module';
+import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { Config } from 'src/core/config/config';
+import { AppConfig } from 'src/core/config/app.config';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -28,7 +28,7 @@ export class AuthMiddleware implements NestMiddleware {
     try {
       const payload = jwt.verify(
         token,
-        this.config.get<Config>().envs().APP_SECRETE,
+        this.config.get<AppConfig>('appConfig')!.appSecrete,
       );
       return payload;
     } catch (error) {

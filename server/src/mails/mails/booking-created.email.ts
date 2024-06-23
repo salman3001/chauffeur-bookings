@@ -1,8 +1,8 @@
 import { Content } from 'mailgen';
-import { Config } from 'src/core/config/config';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@salman3001/nest-config-module';
 import { MailGenerator } from '../mailgenerator';
+import { ConfigService } from '@nestjs/config';
+import { EmailsConfig } from 'src/core/config/emails.config';
 
 export interface BookingCreatedEmailPayload {
   customerName: string;
@@ -23,7 +23,7 @@ export class BookingCreatedEmail {
 
   create(to: string, payload: BookingCreatedEmailPayload) {
     this.to = to;
-    this.from = this.config.get<Config>().envs().EMAIL_FROM;
+    this.from = this.config.get<EmailsConfig>('emailsConfig')!.emailFrom;
     this.subject = 'Your Booking has created';
 
     const customerName = payload?.customerName;

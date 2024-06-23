@@ -8,7 +8,6 @@ import User from 'src/users/entities/user.entity';
 import { Booking } from './entities/booking.entity';
 import { BookingRepository } from './booking.repository';
 import { UserRepository } from 'src/users/user.repository';
-import { UsersService } from 'src/users/users.service';
 import { BookedSlotRepository } from 'src/booked-slots/booked-slot.repository';
 import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
 import { NotificationsModule } from 'src/notifications/notifications.module';

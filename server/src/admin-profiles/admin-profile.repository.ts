@@ -2,8 +2,8 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AdminProfile } from './entities/admin-profile.entity';
-import { ConfigService } from '@salman3001/nest-config-module';
 import { BaseRepository } from 'src/core/db/base.repository';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AdminProfileRepository extends BaseRepository<AdminProfile> {

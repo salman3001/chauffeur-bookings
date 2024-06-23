@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@salman3001/nest-config-module';
 import {
   existsSync,
   mkdirSync,
@@ -8,9 +7,10 @@ import {
   writeFileSync,
 } from 'fs';
 import { join, dirname, extname } from 'path';
-import { Config } from '../config/config';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
+import { ConfigService } from '@nestjs/config';
+import { AppConfig } from '../config/app.config';
 
 @Injectable()
 export class FileService {
@@ -41,7 +41,7 @@ export class FileService {
   async deleteFile(fileUrl: string): Promise<void> {
     const filePath = join(
       process.cwd(),
-      this.configService.get<Config>().envs().UPLOAD_PATH,
+      this.configService.get<AppConfig>('appConfig')!.uploadsPath,
       fileUrl,
     );
     if (existsSync(filePath)) {
@@ -72,7 +72,7 @@ export class FileService {
     const url = join(folder, fileName);
     const uploadPath = join(
       process.cwd(),
-      this.configService.get<Config>().envs().UPLOAD_PATH,
+      this.configService.get<AppConfig>('appConfig')!.uploadsPath,
     );
     const outputPath = join(uploadPath, folder, fileName);
 

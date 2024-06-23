@@ -1,16 +1,60 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@salman3001/nest-config-module';
-import { Config } from './config/config';
-import registerTypeOrm from './db/RegisterTypeOrm';
 import { BullModule } from '@nestjs/bullmq';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import appConfig from './config/app.config';
+import bullMqConfig from './config/bullMq.config';
+import emailsConfig from './config/emails.config';
+import redisConfig from './config/redis.config';
+import smtpConfig from './config/smtp.config';
+import typeormConfig, { TypeormConfig } from './config/typeorm.config';
+import { configValidator } from './config/configValidator';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import User from 'src/users/entities/user.entity';
+import Profile from 'src/profiles/entities/profile.entity';
+import { ChauffeurProfile } from 'src/chauffeur-profiles/entities/chauffeur-profile.entity';
+import { AdminProfile } from 'src/admin-profiles/entities/admin-profile.entity';
+import { Car } from 'src/cars/entities/car.entity';
+import { Booking } from 'src/bookings/entities/booking.entity';
+import { Payment } from 'src/payments/entities/payment.entity';
+import { Refund } from 'src/refunds/entities/refund.entity';
+import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
+import { Notification } from 'src/notifications/entities/notification.entity';
 
 @Module({
   imports: [
-    ConfigModule.register({
-      config: new Config(),
-      envFile: '.env',
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+      load: [
+        appConfig,
+        bullMqConfig,
+        emailsConfig,
+        redisConfig,
+        smtpConfig,
+        typeormConfig,
+      ],
+      validate: configValidator,
     }),
-    registerTypeOrm(),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        ...config.get<TypeormConfig>('typeormConfig'),
+        entities: [
+          User,
+          Profile,
+          ChauffeurProfile,
+          AdminProfile,
+          Car,
+          Booking,
+          Payment,
+          Refund,
+          BookedSlot,
+          Notification,
+        ],
+        autoLoadEntities: false,
+        synchronize: true,
+      }),
+    }),
     BullModule.forRoot({
       connection: {},
     }),
@@ -24,25 +68,6 @@ import { BullModule } from '@nestjs/bullmq';
     //     },
     //   }),
     //   inject: [ConfigService],
-    // }),
-    // MailModule.registerAsync({
-    //   inject: [ConfigService],
-    //   useFactory: (config: ConfigService) => ({
-    //     transporter: 'nodemailer',
-    //     options: {
-    //       host: config.get<Config>().envs().SMTP_HOST,
-    //       port: config.get<Config>().envs().SMTP_PORT,
-    //       secure: false,
-    //       auth: {
-    //         user: config.get<Config>().envs().SMTP_USERNAME,
-    //         pass: config.get<Config>().envs().SMTP_PASSWORD,
-    //       },
-    //     },
-    //     // queueAdapter: {
-    //     //   name: 'BullMq',
-    //     //   options: { connection: {} },
-    //     // },
-    //   }),
     // }),
   ],
   providers: [],

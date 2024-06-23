@@ -1,8 +1,6 @@
 import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
-import { Config } from 'src/core/config/config';
-import { ConfigService } from '@salman3001/nest-config-module';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import ValidatorPipe from 'src/core/utils/pipes/ValidatorPipe';
@@ -10,6 +8,8 @@ import CustomRes from 'src/core/utils/CustomRes';
 import { confirmEmailDto } from './dto/confirmEmail.dto';
 import { forgotPasswordOtpDto } from './dto/forgotPasswordOtp.dto';
 import { resetPasswordDto } from './dto/resetPassword.dto';
+import { ConfigService } from '@nestjs/config';
+import { AppConfig } from 'src/core/config/app.config';
 
 @Controller('auth')
 export class AuthController {
@@ -33,12 +33,16 @@ export class AuthController {
     res.cookie('auth_token', token, {
       httpOnly: true,
       secure:
-        this.config.get<Config>().envs().NODE_ENV !== 'prod' ? false : true,
+        this.config.get<AppConfig>('appConfig')?.nodeEnv !== 'prod'
+          ? false
+          : true,
     });
 
     res.cookie('user', JSON.stringify(user), {
       secure:
-        this.config.get<Config>().envs().NODE_ENV !== 'prod' ? false : true,
+        this.config.get<AppConfig>('appConfig')?.nodeEnv !== 'prod'
+          ? false
+          : true,
     });
 
     return CustomRes({
@@ -89,12 +93,16 @@ export class AuthController {
     res.cookie('auth_token', token, {
       httpOnly: true,
       secure:
-        this.config.get<Config>().envs().NODE_ENV !== 'prod' ? false : true,
+        this.config.get<AppConfig>('appConfig')?.nodeEnv !== 'prod'
+          ? false
+          : true,
     });
 
     res.cookie('user', JSON.stringify(user), {
       secure:
-        this.config.get<Config>().envs().NODE_ENV !== 'prod' ? false : true,
+        this.config.get<AppConfig>('appConfig')?.nodeEnv !== 'prod'
+          ? false
+          : true,
     });
 
     return CustomRes({

@@ -1,7 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@salman3001/nest-config-module';
 import nodemailer, { Transporter } from 'nodemailer';
-import { Config } from 'src/core/config/config';
+
 import {
   BookingCreatedEmail,
   BookingCreatedEmailPayload,
@@ -14,6 +13,7 @@ import {
   AccountCreatedEmail,
   AccountCreatedEmailPayload,
 } from './mails/account-created.email';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MailsService implements OnModuleInit {
@@ -54,14 +54,8 @@ export class MailsService implements OnModuleInit {
   }
 
   onModuleInit() {
-    this.transporter = nodemailer.createTransport({
-      host: this.config.get<Config>().envs().SMTP_HOST,
-      port: this.config.get<Config>().envs().SMTP_PORT,
-      secure: false,
-      auth: {
-        user: this.config.get<Config>().envs().SMTP_USERNAME,
-        pass: this.config.get<Config>().envs().SMTP_PASSWORD,
-      },
-    });
+    this.transporter = nodemailer.createTransport(
+      this.config.get('smtpConfig'),
+    );
   }
 }

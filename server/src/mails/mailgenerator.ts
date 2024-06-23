@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@salman3001/nest-config-module';
+import { ConfigService } from '@nestjs/config';
 import Mailgen from 'mailgen';
-import { Config } from 'src/core/config/config';
+import { AppConfig } from 'src/core/config/app.config';
 
 @Injectable()
 export class MailGenerator {
@@ -9,9 +9,9 @@ export class MailGenerator {
   constructor(private config: ConfigService) {
     this.mg = new Mailgen({
       product: {
-        name: this.config.get<Config>().envs().APP_NAME,
-        link: this.config.get<Config>().envs().APP_URL,
-        copyright: `Copyright © ${new Date(Date.now()).getFullYear()} ${config.get<Config>().envs().APP_NAME}. All rights reserved.`,
+        name: this.config.get<AppConfig>('appConfig')!.appName,
+        link: this.config.get<AppConfig>('appConfig')!.appUrl,
+        copyright: `Copyright © ${new Date(Date.now()).getFullYear()} ${this.config.get<AppConfig>('appConfig')?.appName}. All rights reserved.`,
       },
       theme: 'default',
     });

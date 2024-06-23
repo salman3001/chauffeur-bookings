@@ -2,10 +2,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import * as jwt from 'jsonwebtoken';
-import { Config } from 'src/core/config/config';
 import { UserType } from 'src/core/utils/enums/userType';
 import { RegisterDto } from './dto/register.dto';
-import { ConfigService } from '@salman3001/nest-config-module';
 import { CustomHttpException } from 'src/core/utils/Exceptions/CustomHttpException';
 import { IJwtPayload } from 'src/core/utils/types/common';
 import User from '../users/entities/user.entity';
@@ -17,6 +15,8 @@ import { ProfileRepository } from 'src/profiles/profile.repository';
 import { MailsService } from 'src/mails/mails.service';
 import { forgotPasswordOtpDto } from './dto/forgotPasswordOtp.dto';
 import { resetPasswordDto } from './dto/resetPassword.dto';
+import { ConfigService } from '@nestjs/config';
+import { AppConfig } from 'src/core/config/app.config';
 
 @Injectable()
 export class AuthService {
@@ -92,7 +92,7 @@ export class AuthService {
         { expiresIn: 60 * 60 * 24 * 365 },
       );
 
-      const link = `${this.config.get<Config>().envs().APP_URL}/auth/confirm-email?jwt=${token}`;
+      const link = `${this.config.get<AppConfig>('appConfig')?.appUrl}/auth/confirm-email?jwt=${token}`;
 
       await this.mailservice.sendAccountCreatedEmail(user.email, {
         name: user.firstName,
@@ -126,7 +126,7 @@ export class AuthService {
       { id: user.id, userType: user.userType },
       { expiresIn: 60 * 10 },
     );
-    const link = `${this.config.get<Config>().envs().APP_URL}/auth/reset-password?jwt=${token}`;
+    const link = `${this.config.get<AppConfig>('appConfig')!.appUrl}/auth/reset-password?jwt=${token}`;
 
     await this.mailservice.sendForgotPassqordEmail(user.email, {
       name: user.firstName,
@@ -155,14 +155,18 @@ export class AuthService {
   }
 
   getToken(payload: IJwtPayload, opt?: jwt.SignOptions) {
-    return jwt.sign(payload, this.config.get<Config>().envs().APP_SECRETE, opt);
+    return jwt.sign(
+      payload,
+      this.config.get<AppConfig>('appConfig')!.appSecrete,
+      opt,
+    );
   }
 
   varifyToken(token: string): jwt.JwtPayload | string | null {
     try {
       const payload = jwt.verify(
         token,
-        this.config.get<Config>().envs().APP_SECRETE,
+        this.config.get<AppConfig>('appConfig')!.appSecrete,
       );
       return payload;
     } catch (error) {

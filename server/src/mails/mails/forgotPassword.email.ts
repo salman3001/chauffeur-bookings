@@ -1,8 +1,9 @@
-import { ConfigService } from '@salman3001/nest-config-module';
 import { Content } from 'mailgen';
-import { Config } from 'src/core/config/config';
 import { MailGenerator } from '../mailgenerator';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { EmailsConfig } from 'src/core/config/emails.config';
+import { AppConfig } from 'src/core/config/app.config';
 
 export interface ForgotPasswordEmailPayload {
   name: string;
@@ -24,8 +25,8 @@ export class ForgotPasswordEmail {
 
   create(to: string, payload: ForgotPasswordEmailPayload) {
     this.to = to;
-    this.from = this.config.get<Config>().envs().EMAIL_FROM;
-    this.subject = `Welcome to ${this.config.get<Config>().envs().APP_NAME}`;
+    this.from = this.config.get<EmailsConfig>('emailsConfig')!.emailFrom;
+    this.subject = `Welcome to ${this.config.get<AppConfig>('appConfig')?.appName}`;
 
     const mail: Content = {
       body: {

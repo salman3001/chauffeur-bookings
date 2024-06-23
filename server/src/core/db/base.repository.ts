@@ -1,7 +1,6 @@
+import { ConfigService } from '@nestjs/config';
 import { ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
-
-import { ConfigService } from '@salman3001/nest-config-module';
-import { Config } from 'src/core/config/config';
+import { AppConfig } from '../config/app.config';
 
 export class BaseRepository<T extends ObjectLiteral> extends Repository<T> {
   constructor(
@@ -12,7 +11,8 @@ export class BaseRepository<T extends ObjectLiteral> extends Repository<T> {
   }
 
   async paginate(qb: SelectQueryBuilder<T>, query?: BaseQueryFilter) {
-    const take = query?.perPage || this.config.get<Config>().defaultPerPage;
+    const take =
+      query?.perPage || this.config.get<AppConfig>('appConfig')!.defaultPerPage;
     const skip = ((query?.page || 1) - 1) * take;
 
     const [orderBy, orderDirection] = query?.orderBy

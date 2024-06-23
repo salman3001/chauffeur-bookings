@@ -1,17 +1,17 @@
 import { DataSource } from 'typeorm';
 import { getDataSourceToken } from '@nestjs/typeorm';
 import * as jwt from 'jsonwebtoken';
-import { ConfigService } from '@salman3001/nest-config-module';
 import { TestBed } from '@automock/jest';
 import { CustomHttpException } from 'src/core/utils/Exceptions/CustomHttpException';
 import { LoginDto } from 'src/auth/dto/login.dto';
 import { RegisterDto } from 'src/auth/dto/register.dto';
-import { forgotPasswordOtpDto } from 'src/auth/dto/resetPassword.dto';
-import { resetPasswordDto } from 'src/auth/dto/forgotPasswordOtp.dto';
 import { UserType } from 'src/core/utils/enums/userType';
 import { mockedDataSource } from 'src/core/utils/mocks/mockedDatasource';
 import { AuthService } from './auth.service';
 import { userFactory } from '../users/userFactory';
+import { ConfigService } from '@nestjs/config';
+import { resetPasswordDto } from './dto/resetPassword.dto';
+import { forgotPasswordOtpDto } from './dto/forgotPasswordOtp.dto';
 
 describe('AuthService', () => {
   let service: AuthService;

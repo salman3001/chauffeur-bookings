@@ -3,8 +3,8 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { GlobalHttpExceptionsFilter } from './core/utils/Exceptions/GlobalHttpExceptionsFilter';
-import { ConfigService } from '@salman3001/nest-config-module';
-import { Config } from './core/config/config';
+import { ConfigService } from '@nestjs/config';
+import { AppConfig } from './core/config/app.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,13 +13,13 @@ async function bootstrap() {
 
   const config = app.get<ConfigService>(ConfigService);
 
-  if (config.get<Config>().envs().NODE_ENV === 'dev') {
+  if (config.get<AppConfig>('appConfig')!.nodeEnv === 'dev') {
     // swagger
     const swaggerConfig = new DocumentBuilder()
-      .setTitle(config.get<Config>().envs().APP_NAME)
+      .setTitle(config.get<AppConfig>('appConfig')!.appName)
       .setDescription('All server apis documented here')
       .setVersion('1.0')
-      .addTag(config.get<Config>().envs().APP_NAME)
+      .addTag(config.get<AppConfig>('appConfig')!.appName)
       .build();
 
     const document = SwaggerModule.createDocument(app, swaggerConfig);

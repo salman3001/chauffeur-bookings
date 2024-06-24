@@ -2,9 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { PolicyService } from '@salman3001/nest-policy-module';
 import { IProfilePolicy } from './pofilePolicy';
-import { AuthUserType } from 'src/core/utils/types/common';
-import { FileService } from 'src/core/files/file.service';
+import { AuthUserType } from 'src/utils/types/common';
 import { ProfileRepository } from './profile.repository';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class ProfilesService {
@@ -12,7 +12,7 @@ export class ProfilesService {
     @Inject('profilePolicy')
     private readonly profilePolicy: PolicyService<IProfilePolicy>,
     private profileRepo: ProfileRepository,
-    private fileSearvice: FileService,
+    private fileSearvice: FilesService,
   ) {}
 
   async findOne(authUser: AuthUserType) {

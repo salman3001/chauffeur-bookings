@@ -1,7 +1,7 @@
-import { AuthUserType } from 'src/core/utils/types/common';
+import { AuthUserType } from 'src/utils/types/common';
 import { Booking } from './entities/booking.entity';
-import { UserType } from 'src/core/utils/enums/userType';
-import { BookingStatus } from 'src/core/utils/enums/BookingStatus';
+import { UserType } from 'src/utils/enums/userType';
+import { BookingStatus } from 'src/utils/enums/BookingStatus';
 
 export const BookingsPolicy = {
   find(user: AuthUserType, booking: Booking) {

@@ -1,4 +1,4 @@
-import { AuthUserType } from 'src/core/utils/types/common';
+import { AuthUserType } from 'src/utils/types/common';
 
 export const profilePolicy = {
   find(user: AuthUserType) {

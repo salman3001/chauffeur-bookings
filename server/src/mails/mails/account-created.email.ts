@@ -2,8 +2,8 @@ import { Content } from 'mailgen';
 import { MailGenerator } from '../mailgenerator';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EmailsConfig } from 'src/core/config/emails.config';
-import { AppConfig } from 'src/core/config/app.config';
+import { EmailsConfig } from 'src/config/emails.config';
+import { AppConfig } from 'src/config/app.config';
 
 export interface AccountCreatedEmailPayload {
   name: string;

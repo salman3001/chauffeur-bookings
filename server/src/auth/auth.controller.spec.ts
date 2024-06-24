@@ -1,4 +1,4 @@
-import { CustomHttpException } from 'src/core/utils/Exceptions/CustomHttpException';
+import { CustomHttpException } from 'src/utils/Exceptions/CustomHttpException';
 import { AuthService } from 'src/auth/auth.service';
 import { LoginDto } from 'src/auth/dto/login.dto';
 import { RegisterDto } from 'src/auth/dto/register.dto';

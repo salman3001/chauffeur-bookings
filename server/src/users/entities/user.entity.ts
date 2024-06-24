@@ -17,7 +17,7 @@ import {
   IsStrongPassword,
   Length,
 } from 'class-validator';
-import { UserType } from '../../core/utils/enums/userType';
+import { UserType } from '../../utils/enums/userType';
 import { hashSync } from 'bcrypt';
 import { Exclude, instanceToPlain } from 'class-transformer';
 import Profile from 'src/profiles/entities/profile.entity';

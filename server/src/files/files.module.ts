@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { FileService } from './file.service';
+import { FilesService } from './files.service';
 import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
@@ -8,7 +8,7 @@ import { MulterModule } from '@nestjs/platform-express';
       dest: './temp',
     }),
   ],
-  providers: [FileService],
-  exports: [FileService],
+  providers: [FilesService],
+  exports: [FilesService],
 })
-export class FileModule {}
+export class FilesModule {}

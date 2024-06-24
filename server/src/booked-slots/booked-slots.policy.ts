@@ -1,5 +1,5 @@
-import { UserType } from '../core/utils/enums/userType';
-import { AuthUserType } from 'src/core/utils/types/common';
+import { UserType } from '../utils/enums/userType';
+import { AuthUserType } from 'src/utils/types/common';
 
 export const BookedSlotsPolicy = {
   findAllByMonth(user: AuthUserType) {

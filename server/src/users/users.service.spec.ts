@@ -1,11 +1,11 @@
 import { DataSource, EntityNotFoundError } from 'typeorm';
 import { TestBed } from '@automock/jest';
-import { ConfigService } from '@salman3001/nest-config-module';
 import { getDataSourceToken } from '@nestjs/typeorm';
-import { mockedDataSource } from 'src/core/utils/mocks/mockedDatasource';
+import { mockedDataSource } from 'src/utils/mocks/mockedDatasource';
 import { UsersService } from './users.service';
-import { userFactory } from './userFactory';
 import User from './entities/user.entity';
+import { ConfigService } from '@nestjs/config';
+import { userFactory } from './factory/user.factory';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -53,7 +53,7 @@ describe('UsersService', () => {
       .spyOn(dataSource.manager, 'findAndCount')
       .mockResolvedValueOnce([fakeUsers, 3]);
 
-    const { users, count } = await service.findAll();
+    const { users, count } = await service.findAll(fakeUsers[0]);
     expect(dataSource.manager.findAndCount).toHaveBeenCalled();
     expect(users).toHaveLength(3);
     expect(count).toBe(3);
@@ -64,7 +64,7 @@ describe('UsersService', () => {
     jest
       .spyOn(dataSource.manager, 'findOneByOrFail')
       .mockResolvedValueOnce(fakeUser);
-    const user = await service.findOne(1);
+    const user = await service.findOne(1, fakeUser);
     expect(dataSource.manager.findOneByOrFail).toHaveBeenCalled();
     expect(user).toMatchObject(fakeUser);
   });
@@ -78,7 +78,7 @@ describe('UsersService', () => {
 
     expect.assertions(2);
     try {
-      await service.findOne(1);
+      await service.findOne(1, userFactory.build());
     } catch (error) {
       expect(dataSource.manager.findOneByOrFail).toHaveBeenCalled();
       expect(error).toBeInstanceOf(EntityNotFoundError);

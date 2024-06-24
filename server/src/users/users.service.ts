@@ -3,23 +3,23 @@ import { DataSource, ILike, Not } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { PolicyService } from '@salman3001/nest-policy-module';
 import { IUserPolicy } from './user.policy';
-import { CustomHttpException } from 'src/core/utils/Exceptions/CustomHttpException';
-import { AuthUserType } from 'src/core/utils/types/common';
+import { CustomHttpException } from 'src/utils/Exceptions/CustomHttpException';
+import { AuthUserType } from 'src/utils/types/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserType } from 'src/core/utils/enums/userType';
+import { UserType } from 'src/utils/enums/userType';
 import { UserFilterQuery, UserRepository } from './user.repository';
 import { ProfileRepository } from 'src/profiles/profile.repository';
 import { ChauffeurProfileRepository } from 'src/chauffeur-profiles/chuffeur-profile.repository';
 import { AdminProfileRepository } from 'src/admin-profiles/admin-profile.repository';
-import { weekDays } from 'src/core/utils/helpers';
+import { weekDays } from 'src/utils/helpers';
 import { BookedSlotRepository } from 'src/booked-slots/booked-slot.repository';
 import { CheckAvailabiltyDto } from './dto/check-availabilty.dto';
 import User from './entities/user.entity';
 import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
 import { add, parse } from 'date-fns';
 import { ConfigService } from '@nestjs/config';
-import { AppConfig } from 'src/core/config/app.config';
+import { AppConfig } from 'src/config/app.config';
 
 @Injectable()
 export class UsersService {

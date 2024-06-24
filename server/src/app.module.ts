@@ -1,5 +1,4 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { CoreModule } from './core/core.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProfilesModule } from './profiles/profiles.module';
@@ -12,11 +11,15 @@ import { RefundsModule } from './refunds/refunds.module';
 import { BookedSlotsModule } from './booked-slots/booked-slots.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { MailsModule } from './mails/mails.module';
-import { AuthMiddleware } from './core/utils/middlewares/auth/auth.middleware';
+import { AuthMiddleware } from './utils/middlewares/auth/auth.middleware';
+import { ConfigModule } from './config/config.module';
+import { FilesModule } from './files/files.module';
+import { DbModule } from './db/db.module';
 
 @Module({
   imports: [
-    CoreModule,
+    ConfigModule,
+    DbModule,
     AuthModule,
     UsersModule,
     ProfilesModule,
@@ -29,6 +32,7 @@ import { AuthMiddleware } from './core/utils/middlewares/auth/auth.middleware';
     BookedSlotsModule,
     NotificationsModule,
     MailsModule,
+    FilesModule,
   ],
   controllers: [],
   providers: [],

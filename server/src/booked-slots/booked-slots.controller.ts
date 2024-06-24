@@ -1,10 +1,10 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { BookedSlotsService } from './booked-slots.service';
 import { findAllByMonthDto } from './dto/findAllByMonth.dto';
-import ValidatorPipe from 'src/core/utils/pipes/ValidatorPipe';
-import { AuthUser } from 'src/core/utils/decorators/user/authUser.decorator';
-import { AuthUserType } from 'src/core/utils/types/common';
-import CustomRes from 'src/core/utils/CustomRes';
+import ValidatorPipe from 'src/utils/pipes/ValidatorPipe';
+import { AuthUser } from 'src/utils/decorators/user/authUser.decorator';
+import { AuthUserType } from 'src/utils/types/common';
+import CustomRes from 'src/utils/CustomRes';
 
 @Controller('booked-slots')
 export class BookedSlotsController {

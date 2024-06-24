@@ -9,8 +9,8 @@ import {
 } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
-import { AuthUser } from 'src/core/utils/decorators/user/authUser.decorator';
-import { AuthUserType } from 'src/core/utils/types/common';
+import { AuthUser } from 'src/utils/decorators/user/authUser.decorator';
+import { AuthUserType } from 'src/utils/types/common';
 
 @Controller('bookings')
 export class BookingsController {

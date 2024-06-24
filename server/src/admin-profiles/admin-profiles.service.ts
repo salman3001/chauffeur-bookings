@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { UpdateAdminProfileDto } from './dto/update-admin-profile.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { PolicyService } from '@salman3001/nest-policy-module';
-import { AuthUserType } from 'src/core/utils/types/common';
+import { AuthUserType } from 'src/utils/types/common';
 import { IadminProfilesPolicy } from './admin-profiles.policy';
 import { AdminProfileRepository } from './admin-profile.repository';
 

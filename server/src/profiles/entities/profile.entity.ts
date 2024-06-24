@@ -6,7 +6,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import Image from '../../core/utils/enities/Image.entity';
+import Image from '../../utils/enities/Image.entity';
 import User from 'src/users/entities/user.entity';
 import { Booking } from 'src/bookings/entities/booking.entity';
 

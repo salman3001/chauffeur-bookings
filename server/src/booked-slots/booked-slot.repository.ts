@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookedSlot } from './entities/booked-slot.entity';
 import { endOfMonth, startOfMonth } from 'date-fns';
-import { BaseQueryFilter, BaseRepository } from 'src/core/db/base.repository';
+import { BaseQueryFilter, BaseRepository } from 'src/db/base.repository';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()

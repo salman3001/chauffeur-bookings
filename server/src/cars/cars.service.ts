@@ -3,10 +3,10 @@ import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
 import { PolicyService } from '@salman3001/nest-policy-module';
 import { ICarsPolicy } from './cars.policy';
-import { AuthUserType } from 'src/core/utils/types/common';
+import { AuthUserType } from 'src/utils/types/common';
 import { CarFilterQuery, CarRepository } from './car.repository';
 import { AdminProfileRepository } from 'src/admin-profiles/admin-profile.repository';
-import { FileService } from 'src/core/files/file.service';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class CarsService {
@@ -15,7 +15,7 @@ export class CarsService {
     private readonly carsPolicy: PolicyService<ICarsPolicy>,
     private readonly carRepo: CarRepository,
     private readonly adminProfileRepo: AdminProfileRepository,
-    private readonly fileservice: FileService,
+    private readonly fileservice: FilesService,
   ) {}
 
   async create(

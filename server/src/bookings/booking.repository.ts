@@ -2,7 +2,7 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Booking } from './entities/booking.entity';
-import { BaseQueryFilter, BaseRepository } from 'src/core/db/base.repository';
+import { BaseQueryFilter, BaseRepository } from 'src/db/base.repository';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()

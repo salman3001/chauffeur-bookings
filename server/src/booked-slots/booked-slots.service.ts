@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PolicyService } from '@salman3001/nest-policy-module';
 import { IBookedSlotsPolicy } from './booked-slots.policy';
-import { AuthUserType } from 'src/core/utils/types/common';
+import { AuthUserType } from 'src/utils/types/common';
 import { BookedSlotRepository } from './booked-slot.repository';
 import { findAllByMonthDto } from './dto/findAllByMonth.dto';
 

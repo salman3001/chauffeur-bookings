@@ -2,7 +2,7 @@ import { Content } from 'mailgen';
 import { Injectable } from '@nestjs/common';
 import { MailGenerator } from '../mailgenerator';
 import { ConfigService } from '@nestjs/config';
-import { EmailsConfig } from 'src/core/config/emails.config';
+import { EmailsConfig } from 'src/config/emails.config';
 
 export interface BookingCreatedEmailPayload {
   customerName: string;

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Mailgen from 'mailgen';
-import { AppConfig } from 'src/core/config/app.config';
+import { AppConfig } from 'src/config/app.config';
 
 @Injectable()
 export class MailGenerator {

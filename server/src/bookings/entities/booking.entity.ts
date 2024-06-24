@@ -9,11 +9,11 @@ import {
 } from 'class-validator';
 import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
 import { ChauffeurProfile } from 'src/chauffeur-profiles/entities/chauffeur-profile.entity';
-import { jsonTransformer } from 'src/core/db/helpers/jsonTransformer';
-import BookingHistory from 'src/core/utils/enities/bookingHistory.entity';
-import Geometry from 'src/core/utils/enities/geometry.entity';
-import { BookingStatus } from 'src/core/utils/enums/BookingStatus';
-import { PaymentMode } from 'src/core/utils/enums/PaymentMode';
+import { jsonTransformer } from 'src/db/helpers/jsonTransformer';
+import BookingHistory from 'src/utils/enities/bookingHistory.entity';
+import Geometry from 'src/utils/enities/geometry.entity';
+import { BookingStatus } from 'src/utils/enums/BookingStatus';
+import { PaymentMode } from 'src/utils/enums/PaymentMode';
 import { Payment } from 'src/payments/entities/payment.entity';
 import Profile from 'src/profiles/entities/profile.entity';
 import {

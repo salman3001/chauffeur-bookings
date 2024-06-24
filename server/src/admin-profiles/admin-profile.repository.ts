@@ -2,7 +2,7 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AdminProfile } from './entities/admin-profile.entity';
-import { BaseRepository } from 'src/core/db/base.repository';
+import { BaseRepository } from 'src/db/base.repository';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()

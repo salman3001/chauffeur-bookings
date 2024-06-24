@@ -8,7 +8,7 @@ import { Car } from './entities/car.entity';
 import { AdminProfile } from 'src/admin-profiles/entities/admin-profile.entity';
 import { CarRepository } from './car.repository';
 import { AdminProfileRepository } from 'src/admin-profiles/admin-profile.repository';
-import { FileModule } from 'src/core/files/file.module';
+import { FilesModule } from 'src/files/files.module';
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { FileModule } from 'src/core/files/file.module';
         policy: CarsPolicy,
       },
     ]),
-    FileModule,
+    FilesModule,
   ],
   controllers: [CarsController],
   providers: [CarsService, CarRepository, AdminProfileRepository],

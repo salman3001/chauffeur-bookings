@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { AuthUser } from 'src/core/utils/decorators/user/authUser.decorator';
-import { AuthUserType } from 'src/core/utils/types/common';
+import { AuthUser } from 'src/utils/decorators/user/authUser.decorator';
+import { AuthUserType } from 'src/utils/types/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { UploadAvatarDto } from './dto/upload-avatar.dto';

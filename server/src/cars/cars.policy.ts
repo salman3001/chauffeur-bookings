@@ -1,5 +1,5 @@
-import { AuthUserType } from 'src/core/utils/types/common';
-import { UserType } from 'src/core/utils/enums/userType';
+import { AuthUserType } from 'src/utils/types/common';
+import { UserType } from 'src/utils/enums/userType';
 
 export const CarsPolicy = {
   find(user: AuthUserType) {

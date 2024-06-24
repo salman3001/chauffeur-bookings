@@ -13,7 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '../config/app.config';
 
 @Injectable()
-export class FileService {
+export class FilesService {
   constructor(private configService: ConfigService) {}
 
   async uploadFile(

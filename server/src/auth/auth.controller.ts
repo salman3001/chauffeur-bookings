@@ -3,13 +3,13 @@ import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import ValidatorPipe from 'src/core/utils/pipes/ValidatorPipe';
-import CustomRes from 'src/core/utils/CustomRes';
+import ValidatorPipe from 'src/utils/pipes/ValidatorPipe';
+import CustomRes from 'src/utils/CustomRes';
 import { confirmEmailDto } from './dto/confirmEmail.dto';
 import { forgotPasswordOtpDto } from './dto/forgotPasswordOtp.dto';
 import { resetPasswordDto } from './dto/resetPassword.dto';
 import { ConfigService } from '@nestjs/config';
-import { AppConfig } from 'src/core/config/app.config';
+import { AppConfig } from 'src/config/app.config';
 
 @Controller('auth')
 export class AuthController {

@@ -2,10 +2,10 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import * as jwt from 'jsonwebtoken';
-import { UserType } from 'src/core/utils/enums/userType';
+import { UserType } from 'src/utils/enums/userType';
 import { RegisterDto } from './dto/register.dto';
-import { CustomHttpException } from 'src/core/utils/Exceptions/CustomHttpException';
-import { IJwtPayload } from 'src/core/utils/types/common';
+import { CustomHttpException } from 'src/utils/Exceptions/CustomHttpException';
+import { IJwtPayload } from 'src/utils/types/common';
 import User from '../users/entities/user.entity';
 import { DataSource } from 'typeorm';
 import { compareSync } from 'bcrypt';
@@ -16,7 +16,7 @@ import { MailsService } from 'src/mails/mails.service';
 import { forgotPasswordOtpDto } from './dto/forgotPasswordOtp.dto';
 import { resetPasswordDto } from './dto/resetPassword.dto';
 import { ConfigService } from '@nestjs/config';
-import { AppConfig } from 'src/core/config/app.config';
+import { AppConfig } from 'src/config/app.config';
 
 @Injectable()
 export class AuthService {

@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { UpdateChauffeurProfileDto } from './dto/update-chauffeur-profile.dto';
 import { PolicyService } from '@salman3001/nest-policy-module';
 import { IChauffeurProfilesPolicy } from './chauffeur-profiles.policy';
-import { AuthUserType } from 'src/core/utils/types/common';
+import { AuthUserType } from 'src/utils/types/common';
 import { ChauffeurProfileRepository } from './chuffeur-profile.repository';
 
 @Injectable()

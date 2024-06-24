@@ -4,8 +4,6 @@ import { Job } from 'bullmq';
 @Processor('email-queue', {})
 export class EmailQueueProcessor extends WorkerHost {
   constructor() {
-    console.log('ran');
-
     super();
   }
 

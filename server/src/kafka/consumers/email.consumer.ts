@@ -3,12 +3,12 @@ import {
   OnApplicationShutdown,
   OnModuleInit,
 } from '@nestjs/common';
-import { KafkaClient } from 'src/core/kafka/kafka-client/kafka-client';
-import { Topics } from '../kafka/enums/topics';
-import { Groups } from '../kafka/enums/Groups';
+import { KafkaClient } from 'src/kafka/kafka-client/kafka-client';
+import { Topics } from '../enums/topics';
+import { Groups } from '../enums/Groups';
 import { MailService } from '@salman3001/nest-mailer';
-import { EmailMessage } from '../kafka/interfaces/EmailMessage';
-import { retryWrapper } from '../utils/retryWrapper';
+import { EmailMessage } from '../interfaces/EmailMessage';
+import { retryWrapper } from '../../utils/retryWrapper';
 import { Consumer } from 'kafkajs';
 
 @Injectable()

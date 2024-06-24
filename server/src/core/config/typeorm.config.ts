@@ -16,10 +16,14 @@ const typeormConfig: TypeOrmModuleOptions = {
   migrations: ['src/core/db/migrations/**/*{.ts,.js}'],
   autoLoadEntities: true,
   synchronize: false,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  seeds: ['src/**/seeds/*{.ts,.js}'],
+  factories: ['src/**/factory/*{.ts,.js}'],
 };
 export type TypeormConfig = typeof typeormConfig;
 
-export default registerAs('typeormConfig', () => typeormConfig);
 export const connectionSource = new DataSource(
   typeormConfig as DataSourceOptions,
 );
+export default registerAs('typeormConfig', () => typeormConfig);

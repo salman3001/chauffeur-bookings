@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
-import { NotificationRepository } from './notification.repository';
+import {
+  NotificationFilterQuery,
+  NotificationRepository,
+} from './notification.repository';
 import User from 'src/users/entities/user.entity';
 import { NotificationsGateway } from './notifications-gateway/notifications.gateway';
 import { NotificationType } from './enums/NotificationType';
 import { Notification } from './entities/notification.entity';
+import { AuthUserType } from 'src/utils/types/common';
 
 @Injectable()
 export class NotificationsService {
@@ -12,6 +15,37 @@ export class NotificationsService {
     private norificationRepo: NotificationRepository,
     private notificationGateWay: NotificationsGateway,
   ) {}
+
+  async myNotifications(
+    authUser: AuthUserType,
+    query: NotificationFilterQuery,
+  ) {
+    return this.norificationRepo.getUserNotifications(authUser!.id, query);
+  }
+
+  async getMenuNotifications(authUser: AuthUserType) {
+    return this.norificationRepo.getMenuNotifications(authUser!.id);
+  }
+
+  async removeOne(id: number, authUser: AuthUserType) {
+    return this.norificationRepo.removeOneForUser(id, authUser!.id);
+  }
+
+  async removeRead(authUser: AuthUserType) {
+    return this.norificationRepo.removeReadForUser(authUser!.id);
+  }
+
+  async removeAll(authUser: AuthUserType) {
+    return this.norificationRepo.removeAllForUser(authUser!.id);
+  }
+
+  async markAsRead(id: number, authUser: AuthUserType) {
+    return this.norificationRepo.markAsRead(id, authUser!.id);
+  }
+
+  async markAsUnread(id: number, authUser: AuthUserType) {
+    return this.norificationRepo.markAsUnRead(id, authUser!.id);
+  }
 
   async sendBookingCreated(user: User, bookingId: number) {
     const notification = this.norificationRepo.create({
@@ -166,22 +200,6 @@ export class NotificationsService {
       readAt: null,
     });
     await this.saveAndSend(notification, user);
-  }
-
-  findAll() {
-    return `This action returns all notifications`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} notification`;
-  }
-
-  update(id: number, updateNotificationDto: UpdateNotificationDto) {
-    return `This action updates a #${id} notification`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} notification`;
   }
 
   private async saveAndSend(notification: Notification, user: User) {

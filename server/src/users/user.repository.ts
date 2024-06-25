@@ -5,6 +5,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserType } from 'src/utils/enums/userType';
 import { BaseQueryFilter, BaseRepository } from 'src/db/base.repository';
 import { ConfigService } from '@nestjs/config';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 
 @Injectable()
 export class UserRepository extends BaseRepository<User> {
@@ -56,7 +59,7 @@ export class UserRepository extends BaseRepository<User> {
     }
 
     if (query?.active) {
-      qb.andWhere('User.isActive = true');
+      qb.andWhere('User.isActive = :active', { active: query.active });
     }
 
     if (query?.userType) {
@@ -65,8 +68,17 @@ export class UserRepository extends BaseRepository<User> {
   }
 }
 
-export interface UserFilterQuery extends BaseQueryFilter {
+export class UserFilterQuery extends BaseQueryFilter {
+  @ApiPropertyOptional()
+  @IsOptional()
   search?: string;
+
+  @ApiPropertyOptional()
   active?: boolean;
+
+  @ApiPropertyOptional({ enum: UserType })
+  @IsEnum(UserType)
+  @IsOptional()
+  @Type(() => Number)
   userType?: UserType;
 }

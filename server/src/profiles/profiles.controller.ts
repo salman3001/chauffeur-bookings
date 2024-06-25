@@ -8,11 +8,11 @@ import {
 } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { AuthUser } from 'src/utils/decorators/user/authUser.decorator';
 import { AuthUserType } from 'src/utils/types/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { UploadAvatarDto } from './dto/upload-avatar.dto';
+import { AuthUser } from 'src/utils/decorators/authUser.decorator';
 
 @Controller('my-profile')
 export class ProfilesController {

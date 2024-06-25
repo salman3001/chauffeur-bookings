@@ -2,10 +2,11 @@ import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { config as dotenvConfig } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
+import { SeederOptions } from 'typeorm-extension';
 
 dotenvConfig({ path: '.env' });
 
-const typeormConfig: TypeOrmModuleOptions = {
+const typeormConfig: TypeOrmModuleOptions & SeederOptions = {
   type: 'postgres',
   host: process.env.PG_HOST,
   port: parseInt(process.env.PG_PORT || '5432'),
@@ -13,12 +14,10 @@ const typeormConfig: TypeOrmModuleOptions = {
   password: process.env.PG_PASSWORD,
   database: process.env.PG_DB,
   entities: ['src/**/entities/*.entity{.ts,.js}'],
-  migrations: ['src/core/db/migrations/**/*{.ts,.js}'],
+  migrations: ['src/db/migrations/**/*{.ts,.js}'],
   autoLoadEntities: true,
   synchronize: false,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  seeds: ['src/**/seeds/*{.ts,.js}'],
+  seeds: ['src/db/seeds/*{.ts,.js}'],
   factories: ['src/**/factory/*{.ts,.js}'],
 };
 export type TypeormConfig = typeof typeormConfig;

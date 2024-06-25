@@ -72,7 +72,7 @@ export class Booking {
   @IsEnum(BookingStatus)
   status: BookingStatus;
 
-  @Column('enum', { enum: PaymentMode })
+  @Column('enum', { enum: PaymentMode, nullable: true })
   @ApiProperty()
   @IsEnum(PaymentMode)
   paymentMode: PaymentMode;
@@ -81,7 +81,7 @@ export class Booking {
   @ValidateNested()
   history: BookingHistory[];
 
-  @OneToOne(() => Payment, (payment) => payment.booking)
+  @OneToOne(() => Payment, (payment) => payment.booking, { nullable: true })
   @JoinColumn()
   payment: Payment;
 

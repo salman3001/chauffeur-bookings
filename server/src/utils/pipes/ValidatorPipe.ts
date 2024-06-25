@@ -16,7 +16,8 @@ export default class ValidatorPipe implements PipeTransform {
       return value;
     }
     const object = plainToInstance(metatype, value);
-    const errors = await validate(object);
+
+    const errors = await validate(object, { whitelist: true });
     if (errors.length > 0) {
       throw new CustomHttpException({
         code: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -25,7 +26,7 @@ export default class ValidatorPipe implements PipeTransform {
         errors: generateClassValidatorErrors(errors),
       });
     }
-    return value;
+    return object;
   }
 
   private toValidate(metatype: object): boolean {

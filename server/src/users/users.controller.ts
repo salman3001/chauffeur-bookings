@@ -11,11 +11,12 @@ import {
 import { UsersService } from './users.service';
 import ValidatorPipe from 'src/utils/pipes/ValidatorPipe';
 import CustomRes from 'src/utils/CustomRes';
-import { AuthUser } from 'src/utils/decorators/user/authUser.decorator';
 import { AuthUserType } from 'src/utils/types/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CheckAvailabiltyDto } from './dto/check-availabilty.dto';
+import { AuthUser } from 'src/utils/decorators/authUser.decorator';
+import { UserFilterQuery } from './user.repository';
 
 @Controller('users')
 export class UsersController {
@@ -36,7 +37,10 @@ export class UsersController {
   }
 
   @Get()
-  async findAll(@AuthUser() authUser: AuthUserType, @Query() query: any) {
+  async findAll(
+    @AuthUser() authUser: AuthUserType,
+    @Query(new ValidatorPipe()) query: UserFilterQuery,
+  ) {
     const users = await this.usersService.findAll(authUser, query);
     return CustomRes({
       code: 200,

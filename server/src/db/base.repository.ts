@@ -1,6 +1,9 @@
 import { ConfigService } from '@nestjs/config';
 import { ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
 import { AppConfig } from '../config/app.config';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class BaseRepository<T extends ObjectLiteral> extends Repository<T> {
   constructor(
@@ -38,8 +41,21 @@ export class BaseRepository<T extends ObjectLiteral> extends Repository<T> {
   }
 }
 
-export interface BaseQueryFilter {
+export class BaseQueryFilter {
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  @Transform(({ value }) => Number(value))
   page?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  @Transform(({ value }) => Number(value))
   perPage?: number;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
   orderBy?: string;
 }

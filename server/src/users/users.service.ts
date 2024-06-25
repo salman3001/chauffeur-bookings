@@ -74,37 +74,11 @@ export class UsersService {
     });
   }
 
-  async findAll(
-    authUser: AuthUserType,
-    query?: {
-      page?: number;
-      perPage?: number;
-      search?: string;
-      orderBy?: string;
-    },
-  ) {
+  async findAll(authUser: AuthUserType, query?: UserFilterQuery) {
     this.userPolicy.authorize('findAll', authUser);
-    const take =
-      query?.perPage || this.config.get<AppConfig>('appConfig')!.defaultPerPage;
-    const skip = ((query?.page || 1) - 1) * take;
-
-    const [orderBy, orderDirection] = query?.orderBy
-      ? query?.orderBy.split(':')
-      : [];
-
-    const [users, count] = await this.userRepository.findAndCount({
-      where: query?.search
-        ? {
-            firstName: ILike(`%${query.search}%`),
-            lastName: ILike(`%${query.search}%`),
-          }
-        : {},
-      order: orderBy ? { [orderBy]: orderDirection } : {},
-      skip,
-      take,
-    });
-
-    return { users, count, perPage: take };
+    const qb = this.userRepository.createQueryBuilder();
+    this.userRepository.applySearch(qb, query);
+    return this.userRepository.paginate(qb, query);
   }
 
   async findOne(id: number, authUser: AuthUserType) {

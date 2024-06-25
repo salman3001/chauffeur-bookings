@@ -1,31 +1,80 @@
-import { Controller, Get, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Patch, Param, Delete, Query } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
+import { AuthUser } from 'src/utils/decorators/authUser.decorator';
+import { AuthUserType } from 'src/utils/types/common';
+import CustomRes from 'src/utils/CustomRes';
 
 @Controller('notifications')
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
   @Get()
-  findAll() {
-    return this.notificationsService.findAll();
+  async myNotifications(@AuthUser() user: AuthUserType, @Query() query: any) {
+    const data = await this.notificationsService.myNotifications(user, query);
+    return CustomRes({
+      code: 200,
+      success: true,
+      data,
+    });
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.notificationsService.findOne(+id);
+  @Get('menu')
+  async menuNotifications(@AuthUser() user: AuthUserType) {
+    const data = await this.notificationsService.getMenuNotifications(user);
+    return CustomRes({
+      code: 200,
+      success: true,
+      data,
+    });
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateNotificationDto: UpdateNotificationDto,
-  ) {
-    return this.notificationsService.update(+id, updateNotificationDto);
+  @Delete('remove-read')
+  async removeRead(@AuthUser() user: AuthUserType) {
+    await this.notificationsService.removeRead(user);
+    return CustomRes({
+      code: 200,
+      success: true,
+      message: 'Notifications removed',
+    });
+  }
+
+  @Delete('remove-all')
+  async removeAll(@AuthUser() user: AuthUserType) {
+    await this.notificationsService.removeAll(user);
+    return CustomRes({
+      code: 200,
+      success: true,
+      message: 'Notifications removed',
+    });
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.notificationsService.remove(+id);
+  async removeOne(@Param('id') id: string, @AuthUser() user: AuthUserType) {
+    await this.notificationsService.removeOne(+id, user);
+    return CustomRes({
+      code: 200,
+      success: true,
+      message: 'Notification removed',
+    });
+  }
+
+  @Patch(':id/mark-as-read')
+  async markAsRead(@Param('id') id: string, @AuthUser() user: AuthUserType) {
+    await this.notificationsService.markAsRead(+id, user);
+    return CustomRes({
+      code: 200,
+      success: true,
+      message: 'Notification marked as read',
+    });
+  }
+
+  @Patch(':id/mark-as-unread')
+  async markAsUnread(@Param('id') id: string, @AuthUser() user: AuthUserType) {
+    await this.notificationsService.markAsUnread(+id, user);
+    return CustomRes({
+      code: 200,
+      success: true,
+      message: 'Notification marked as unread',
+    });
   }
 }

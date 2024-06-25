@@ -28,7 +28,7 @@ export class ChauffeurProfile {
   })
   bookings: Booking[];
 
-  @OneToOne(() => Car, (car) => car.chauffeurProfile)
+  @OneToOne(() => Car, (car) => car.chauffeurProfile, { nullable: true })
   @JoinColumn()
   car: Car;
 

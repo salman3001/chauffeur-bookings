@@ -13,12 +13,12 @@ import {
 import { CarsService } from './cars.service';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
-import { AuthUser } from 'src/utils/decorators/user/authUser.decorator';
 import { AuthUserType } from 'src/utils/types/common';
 import ValidatorPipe from 'src/utils/pipes/ValidatorPipe';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, IntersectionType } from '@nestjs/swagger';
 import { UploadImageDto } from './dto/upload-image.dto';
+import { AuthUser } from 'src/utils/decorators/authUser.decorator';
 
 @Controller('cars')
 export class CarsController {

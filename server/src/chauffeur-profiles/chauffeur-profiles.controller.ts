@@ -1,9 +1,9 @@
 import { Controller, Get, Body, Patch } from '@nestjs/common';
 import { ChauffeurProfilesService } from './chauffeur-profiles.service';
 import { UpdateChauffeurProfileDto } from './dto/update-chauffeur-profile.dto';
-import { AuthUser } from 'src/utils/decorators/user/authUser.decorator';
 import { AuthUserType } from 'src/utils/types/common';
 import ValidatorPipe from 'src/utils/pipes/ValidatorPipe';
+import { AuthUser } from 'src/utils/decorators/authUser.decorator';
 
 @Controller('my-chauffeur-profiles')
 export class ChauffeurProfilesController {

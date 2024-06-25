@@ -6,6 +6,8 @@ import {
   IsStrongPassword,
   Length,
 } from 'class-validator';
+import { ToLowercase } from 'src/utils/validators/ToLowercase';
+import { Trim } from 'src/utils/validators/Trim';
 
 export class RegisterDto {
   @ApiProperty()
@@ -19,6 +21,8 @@ export class RegisterDto {
   @ApiProperty()
   @IsEmail()
   @IsNotEmpty()
+  @Trim()
+  @ToLowercase()
   email: string;
 
   @ApiProperty()

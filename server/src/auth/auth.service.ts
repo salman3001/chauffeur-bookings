@@ -5,7 +5,11 @@ import * as jwt from 'jsonwebtoken';
 import { UserType } from 'src/utils/enums/userType';
 import { RegisterDto } from './dto/register.dto';
 import { CustomHttpException } from 'src/utils/Exceptions/CustomHttpException';
-import { IJwtPayload } from 'src/utils/types/common';
+import {
+  IJwtPayload,
+  JWTConfirmEmailPayload,
+  JWTResetPasswordPayload,
+} from 'src/utils/types/common';
 import User from '../users/entities/user.entity';
 import { DataSource } from 'typeorm';
 import { compareSync } from 'bcrypt';
@@ -17,6 +21,10 @@ import { forgotPasswordOtpDto } from './dto/forgotPasswordOtp.dto';
 import { resetPasswordDto } from './dto/resetPassword.dto';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from 'src/config/app.config';
+import {
+  EMAIL_VERIFY_TOKEN_EXPIRY,
+  PASSWORD_RESET_TOKEN_EXPIRY,
+} from 'src/utils/consts';
 
 @Injectable()
 export class AuthService {
@@ -29,7 +37,7 @@ export class AuthService {
   ) {}
 
   async login(dto: LoginDto): Promise<User> {
-    const user = await this.userRepo.findOneBy({
+    const user = await this.userRepo.findOneByOrFail({
       email: dto.email,
     });
 
@@ -41,11 +49,11 @@ export class AuthService {
       });
     }
 
-    if (!user.isActive) {
+    if (!user.isActive || !user.emailVerfied) {
       throw new CustomHttpException({
         code: HttpStatus.UNAUTHORIZED,
         success: false,
-        message: 'Account is inactive',
+        message: 'Account is inactive or unverified',
       });
     }
 
@@ -79,7 +87,7 @@ export class AuthService {
     return this.dataSource.transaction(async (manager) => {
       const user = this.userRepo.create(dto);
       user.userType = UserType.CUSTOMER;
-      user.isActive = false;
+      user.isActive = true;
 
       const savedUser = await manager.save(user);
       const profile = this.profileRepo.create({});
@@ -88,8 +96,8 @@ export class AuthService {
       await manager.save(profile);
 
       const token = this.getToken(
-        { id: user.id, userType: user.userType },
-        { expiresIn: 60 * 60 * 24 * 365 },
+        { tokenType: 'confirm-email', email: user.email },
+        { expiresIn: EMAIL_VERIFY_TOKEN_EXPIRY },
       );
 
       const link = `${this.config.get<AppConfig>('appConfig')?.appUrl}/auth/confirm-email?jwt=${token}`;
@@ -104,13 +112,21 @@ export class AuthService {
   }
 
   async confirmEmail(dto: confirmEmailDto): Promise<User> {
-    const payload = this.varifyToken(dto.jwt) as IJwtPayload;
+    const payload = this.varifyToken(dto.jwt) as JWTConfirmEmailPayload;
+
+    if (payload.tokenType !== 'confirm-email') {
+      throw new CustomHttpException({
+        code: HttpStatus.BAD_REQUEST,
+        success: false,
+        message: 'Invalid Token',
+      });
+    }
 
     const user = await this.userRepo.findOneByOrFail({
-      id: payload.id,
+      email: payload.email,
     });
 
-    user.isActive = true;
+    user.emailVerfied = true;
     await this.userRepo.save(user);
     return user;
   }
@@ -123,8 +139,8 @@ export class AuthService {
     await this.userRepo.save(user);
 
     const token = this.getToken(
-      { id: user.id, userType: user.userType },
-      { expiresIn: 60 * 10 },
+      { tokenType: 'reset-password', id: user.id },
+      { expiresIn: PASSWORD_RESET_TOKEN_EXPIRY },
     );
     const link = `${this.config.get<AppConfig>('appConfig')!.appUrl}/auth/reset-password?jwt=${token}`;
 
@@ -135,19 +151,19 @@ export class AuthService {
   }
 
   async resetPassword(dto: resetPasswordDto): Promise<User> {
-    const user = await this.userRepo.findOneByOrFail({
-      email: dto.email,
-    });
+    const payload = this.varifyToken(dto.jwt) as JWTResetPasswordPayload;
 
-    const payload = this.varifyToken(dto.jwt) as IJwtPayload;
-
-    if (payload?.id !== user.id) {
+    if (payload.tokenType !== 'reset-password' && !payload?.id) {
       throw new CustomHttpException({
         code: 400,
         success: false,
         message: 'Invalid token',
       });
     }
+
+    const user = await this.userRepo.findOneByOrFail({
+      id: payload.id,
+    });
 
     user.password = dto.password;
     await this.userRepo.save(user);

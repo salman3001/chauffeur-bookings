@@ -13,6 +13,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { UploadAvatarDto } from './dto/upload-avatar.dto';
 import { AuthUser } from 'src/utils/decorators/authUser.decorator';
+import { fileFilter } from 'src/files/helpers/fileFIlter';
 
 @Controller('my-profile')
 export class ProfilesController {
@@ -25,7 +26,15 @@ export class ProfilesController {
   }
 
   @Patch()
-  @UseInterceptors(FileInterceptor('avatar'))
+  @UseInterceptors(
+    FileInterceptor(
+      'avatar',
+      fileFilter({
+        maxSizeInMb: 3,
+        mimeType: ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'],
+      }),
+    ),
+  )
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'File upload',
@@ -34,8 +43,11 @@ export class ProfilesController {
   async update(
     @Body() updateProfileDto: UpdateProfileDto,
     @AuthUser() authUser: AuthUserType,
-    @UploadedFile() avatar?: Express.Multer.File,
+    @UploadedFile()
+    avatar?: Express.Multer.File,
   ) {
+    console.log(avatar);
+
     const profile = this.profilesService.update(
       updateProfileDto,
       authUser,

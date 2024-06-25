@@ -1,6 +1,27 @@
-export interface IJwtPayload {
-  id: number;
-  userType: number;
+import { UserType } from '../enums/userType';
+
+interface BaseJWTPayload {
+  tokenType: 'auth' | 'confirm-email' | 'reset-password';
 }
 
-export type AuthUserType = IJwtPayload | null;
+export interface JwtUserPayload extends BaseJWTPayload {
+  tokenType: 'auth';
+  id: number;
+  userType: UserType;
+}
+
+export interface JWTConfirmEmailPayload extends BaseJWTPayload {
+  tokenType: 'confirm-email';
+  email: string;
+}
+
+export interface JWTResetPasswordPayload extends BaseJWTPayload {
+  tokenType: 'reset-password';
+  id: number;
+}
+
+export type AuthUserType = JwtUserPayload | null;
+export type IJwtPayload =
+  | JwtUserPayload
+  | JWTConfirmEmailPayload
+  | JWTResetPasswordPayload;

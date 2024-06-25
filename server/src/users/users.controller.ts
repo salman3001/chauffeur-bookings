@@ -9,7 +9,6 @@ import {
   Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import ValidatorPipe from 'src/utils/pipes/ValidatorPipe';
 import CustomRes from 'src/utils/CustomRes';
 import { AuthUserType } from 'src/utils/types/common';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -24,7 +23,7 @@ export class UsersController {
 
   @Post()
   async create(
-    @Body(new ValidatorPipe()) createUserDto: CreateUserDto,
+    @Body() createUserDto: CreateUserDto,
     @AuthUser() authUser: AuthUserType,
   ) {
     const user = await this.usersService.create(createUserDto, authUser);
@@ -39,7 +38,7 @@ export class UsersController {
   @Get()
   async findAll(
     @AuthUser() authUser: AuthUserType,
-    @Query(new ValidatorPipe()) query: UserFilterQuery,
+    @Query() query: UserFilterQuery,
   ) {
     const users = await this.usersService.findAll(authUser, query);
     return CustomRes({
@@ -76,10 +75,13 @@ export class UsersController {
   async getAvailableSlots(
     @Param('id') chauffeurId: string,
     @AuthUser() authUser: AuthUserType,
-    @Query() query: any,
-    @Query(new ValidatorPipe()) dto: CheckAvailabiltyDto,
+    @Query() query: CheckAvailabiltyDto,
   ) {
-    const results = await this.usersService.checkAvailabilty(dto, authUser);
+    const results = await this.usersService.checkAvailabilty(
+      +chauffeurId,
+      query,
+      authUser,
+    );
     return CustomRes({
       code: 200,
       data: results,
@@ -111,7 +113,7 @@ export class UsersController {
   @Patch(':id')
   async update(
     @Param('id') id: string,
-    @Body(new ValidatorPipe()) updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserDto,
     @AuthUser() authUser: AuthUserType,
   ) {
     const user = await this.usersService.update(+id, updateUserDto, authUser);

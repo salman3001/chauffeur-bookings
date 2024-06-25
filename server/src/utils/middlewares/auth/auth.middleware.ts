@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { AppConfig } from 'src/config/app.config';
+import { JwtUserPayload } from 'src/utils/types/common';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -13,8 +14,8 @@ export class AuthMiddleware implements NestMiddleware {
     if (!auth_token) {
       req['user'] = null;
     } else {
-      const payload = this.varifyToken(auth_token);
-      if (!payload) {
+      const payload = this.varifyToken(auth_token) as JwtUserPayload;
+      if (!payload || payload.tokenType !== 'auth') {
         req['user'] = null;
       } else {
         req['user'] = payload;

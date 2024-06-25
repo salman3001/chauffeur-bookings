@@ -29,7 +29,7 @@ export class FilesService {
     folder: string = '',
   ): Promise<{ url: string; thumbnailUrl: string }> {
     const url = await this.resizeImageAndSave(file, folder);
-    const thumbnailUrl = await this.resizeImageAndSave(file, folder, 320, 240);
+    const thumbnailUrl = await this.resizeImageAndSave(file, folder, 640, 640);
     return { url, thumbnailUrl };
   }
 
@@ -55,7 +55,7 @@ export class FilesService {
     width?: number,
     height?: number,
   ): Promise<string> {
-    const resizedBuffer = await sharp(file.path)
+    const resizedBuffer = await sharp(file.buffer)
       .resize(width, height, { fit: 'cover' })
       .toFormat('webp')
       .toBuffer();

@@ -26,12 +26,14 @@ export class AuthController {
     const user = await this.authService.login(dto);
 
     const token = this.authService.getToken({
+      tokenType: 'auth',
       id: user.id,
       userType: user.userType,
     });
 
     res.cookie('auth_token', token, {
       httpOnly: true,
+      sameSite: true,
       secure:
         this.config.get<AppConfig>('appConfig')?.nodeEnv !== 'prod'
           ? false
@@ -39,6 +41,7 @@ export class AuthController {
     });
 
     res.cookie('user', JSON.stringify(user), {
+      sameSite: true,
       secure:
         this.config.get<AppConfig>('appConfig')?.nodeEnv !== 'prod'
           ? false
@@ -86,12 +89,14 @@ export class AuthController {
     const user = await this.authService.confirmEmail(dto);
 
     const token = this.authService.getToken({
+      tokenType: 'auth',
       id: user.id,
       userType: user.userType,
     });
 
     res.cookie('auth_token', token, {
       httpOnly: true,
+      sameSite: true,
       secure:
         this.config.get<AppConfig>('appConfig')?.nodeEnv !== 'prod'
           ? false
@@ -99,6 +104,7 @@ export class AuthController {
     });
 
     res.cookie('user', JSON.stringify(user), {
+      sameSite: true,
       secure:
         this.config.get<AppConfig>('appConfig')?.nodeEnv !== 'prod'
           ? false

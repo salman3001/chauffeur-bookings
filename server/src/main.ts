@@ -5,11 +5,15 @@ import cookieParser from 'cookie-parser';
 import { GlobalHttpExceptionsFilter } from './utils/Exceptions/GlobalHttpExceptionsFilter';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from './config/app.config';
+import ValidatorPipe from './utils/pipes/ValidatorPipe';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
   app.use(cookieParser());
   app.useGlobalFilters(new GlobalHttpExceptionsFilter());
+  app.useGlobalPipes(new ValidatorPipe());
 
   const config = app.get<ConfigService>(ConfigService);
 
@@ -26,6 +30,6 @@ async function bootstrap() {
     SwaggerModule.setup('documentation', app, document);
   }
 
-  await app.listen(3000);
+  await app.listen(config.get<AppConfig>('appConfig')!.port);
 }
 bootstrap();

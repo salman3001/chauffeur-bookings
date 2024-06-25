@@ -43,15 +43,21 @@ export class ProfilesService {
     });
 
     if (avatar) {
-      const image = await this.fileSearvice.uploadImage(
+      const oldImages = profile.avatar;
+      const images = await this.fileSearvice.uploadImage(
         avatar,
         '/images/avatars',
       );
 
-      profile.avatar = image;
+      profile.avatar = images;
+
+      if (oldImages) {
+        await this.fileSearvice.deleteFile(oldImages.url);
+        await this.fileSearvice.deleteFile(oldImages.thumbnailUrl);
+      }
     }
 
-    this.profileRepo.merge(profile, updateProfileDto);
+    this.profileRepo.merge(profile, {});
     await this.profileRepo.save(profile);
 
     return profile;

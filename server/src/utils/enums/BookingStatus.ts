@@ -1,8 +1,8 @@
 export enum BookingStatus {
-  BOOKED,
-  REJECTED,
-  ACCEPTED,
-  CANCLED,
-  TRIP_STARTED,
-  COMPLETE,
+  BOOKED = 'booked',
+  REJECTED = 'rejected',
+  ACCEPTED = 'accepted',
+  CANCLED = 'cancled',
+  TRIP_STARTED = 'trip started',
+  COMPLETE = 'completed',
 }

@@ -3,7 +3,7 @@ import { ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
 import { AppConfig } from '../config/app.config';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Type } from 'class-transformer';
 
 export class BaseRepository<T extends ObjectLiteral> extends Repository<T> {
   constructor(
@@ -14,17 +14,12 @@ export class BaseRepository<T extends ObjectLiteral> extends Repository<T> {
   }
 
   async paginate(qb: SelectQueryBuilder<T>, query?: BaseQueryFilter) {
-    const take =
-      query?.perPage || this.config.get<AppConfig>('appConfig')!.defaultPerPage;
-    const skip = ((query?.page || 1) - 1) * take;
-
-    const [orderBy, orderDirection] = query?.orderBy
-      ? query?.orderBy.split(':')
-      : [];
-
-    if (orderBy) {
-      qb.orderBy(orderBy, orderDirection as 'ASC');
+    let take = this.config.get<AppConfig>('appConfig')!.defaultPerPage;
+    if (query?.perPage) {
+      take = query.perPage;
     }
+
+    const skip = ((query?.page || 1) - 1) * take;
 
     if (skip) {
       qb.skip(skip);
@@ -39,19 +34,29 @@ export class BaseRepository<T extends ObjectLiteral> extends Repository<T> {
 
     return { results, count, perPage: take };
   }
+
+  orderBy(qb: SelectQueryBuilder<T>, alias: string, query?: BaseQueryFilter) {
+    const [orderBy, orderDirection] = query?.orderBy
+      ? query?.orderBy.split(':')
+      : [];
+
+    if (orderBy) {
+      qb.orderBy(`${alias}.${orderBy}`, orderDirection as 'DESC');
+    }
+  }
 }
 
 export class BaseQueryFilter {
   @ApiPropertyOptional()
   @IsNumber()
   @IsOptional()
-  @Transform(({ value }) => Number(value))
+  @Type(() => Number)
   page?: number;
 
   @ApiPropertyOptional()
   @IsNumber()
   @IsOptional()
-  @Transform(({ value }) => Number(value))
+  @Type(() => Number)
   perPage?: number;
 
   @ApiPropertyOptional()

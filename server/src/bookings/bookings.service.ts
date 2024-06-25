@@ -55,8 +55,8 @@ export class BookingsService {
     });
 
     await this.userService.checkAvailabilty(
+      chauffeurId,
       {
-        chauffeurId,
         date: pickupDate,
         time: pickupTime,
         duration: createBookingDto.bookedForHours,

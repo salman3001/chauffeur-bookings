@@ -1,5 +1,5 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { DataSource, ILike, Not } from 'typeorm';
+import { DataSource, Not } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { PolicyService } from '@salman3001/nest-policy-module';
 import { IUserPolicy } from './user.policy';
@@ -19,7 +19,6 @@ import User from './entities/user.entity';
 import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
 import { add, parse } from 'date-fns';
 import { ConfigService } from '@nestjs/config';
-import { AppConfig } from 'src/config/app.config';
 
 @Injectable()
 export class UsersService {
@@ -53,6 +52,7 @@ export class UsersService {
 
     return await this.dataSource.transaction(async (manager) => {
       const user = this.userRepository.create(createUserDto);
+      user.emailVerfied = true;
       const savedUser = await manager.save(user);
       const profile = this.profileRepository.create({});
       profile.user = savedUser;
@@ -77,7 +77,8 @@ export class UsersService {
   async findAll(authUser: AuthUserType, query?: UserFilterQuery) {
     this.userPolicy.authorize('findAll', authUser);
     const qb = this.userRepository.createQueryBuilder();
-    this.userRepository.applySearch(qb, query);
+    this.userRepository.applyFilters(qb, query);
+    this.userRepository.orderBy(qb, 'User', query);
     return this.userRepository.paginate(qb, query);
   }
 
@@ -95,17 +96,19 @@ export class UsersService {
     const user = await this.userRepository.findOneByOrFail({ id });
     this.userPolicy.authorize('update', authUser);
 
-    const emailExist = await this.userRepository.findOne({
-      where: { email: updateUserDto.email, id: Not(id) },
-    });
-
-    if (emailExist) {
-      throw new CustomHttpException({
-        code: 400,
-        success: false,
-        message: 'User Email Already exist',
+    if (updateUserDto.email) {
+      const emailExist = await this.userRepository.findOne({
+        where: { email: updateUserDto.email, id: Not(id) },
       });
+      if (emailExist) {
+        throw new CustomHttpException({
+          code: 400,
+          success: false,
+          message: 'User Email Already exist',
+        });
+      }
     }
+
     this.userRepository.merge(user, updateUserDto);
     await this.userRepository.save(user);
     return user;
@@ -140,10 +143,14 @@ export class UsersService {
     return { chauffeurs, count, perPage };
   }
 
-  async checkAvailabilty(dto: CheckAvailabiltyDto, authUser: AuthUserType) {
+  async checkAvailabilty(
+    chauffeurId: number,
+    query: CheckAvailabiltyDto,
+    authUser: AuthUserType,
+  ) {
     this.userPolicy.authorize('checkAvailabilty', authUser);
 
-    const { chauffeurId, date, time, duration } = dto;
+    const { date, time, duration } = query;
 
     const chauffeur = await this.userRepository.findOneOrFail({
       where: {
@@ -165,7 +172,7 @@ export class UsersService {
 
     if (!isChauffeurAvailableOnRequestedDateTime) {
       throw new CustomHttpException({
-        code: HttpStatus.BAD_GATEWAY,
+        code: HttpStatus.BAD_REQUEST,
         success: false,
         message:
           'Chauffeur not available Request date or time. Please change the date or time',

@@ -17,7 +17,7 @@ export class ChauffeurProfile {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
   pricePerHour: string;
 
   @Column('jsonb', { default: defaultAvailability })

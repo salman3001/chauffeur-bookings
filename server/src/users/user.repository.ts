@@ -6,7 +6,7 @@ import { UserType } from 'src/utils/enums/userType';
 import { BaseQueryFilter, BaseRepository } from 'src/db/base.repository';
 import { ConfigService } from '@nestjs/config';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class UserRepository extends BaseRepository<User> {
     const qb = this.createQueryBuilder();
     qb.where('User.userType = :userType', { userType: UserType.CHAUFFEUR });
 
-    this.applySearch(qb, query);
+    this.applyFilters(qb, query);
     return this.paginate(qb, query);
   }
 
@@ -31,7 +31,7 @@ export class UserRepository extends BaseRepository<User> {
     qb.where('User.userType = :userType', {
       userType: UserType.CHAUFFEUR,
     }).andWhere('User.isActive = true');
-    this.applySearch(qb, query);
+    this.applyFilters(qb, query);
 
     return this.paginate(qb, query);
   }
@@ -39,12 +39,12 @@ export class UserRepository extends BaseRepository<User> {
   getCustomer(query?: UserFilterQuery) {
     const qb = this.createQueryBuilder();
     qb.where('User.userType = :userType', { userType: UserType.CUSTOMER });
-    this.applySearch(qb, query);
+    this.applyFilters(qb, query);
 
     return this.paginate(qb, query);
   }
 
-  applySearch(qb: SelectQueryBuilder<User>, query?: UserFilterQuery) {
+  applyFilters(qb: SelectQueryBuilder<User>, query?: UserFilterQuery) {
     if (query?.search) {
       qb.andWhere(
         new Brackets((qb) => {
@@ -70,15 +70,18 @@ export class UserRepository extends BaseRepository<User> {
 
 export class UserFilterQuery extends BaseQueryFilter {
   @ApiPropertyOptional()
+  @IsString()
   @IsOptional()
   search?: string;
 
   @ApiPropertyOptional()
+  @IsBoolean()
+  @IsOptional()
+  @Type(() => Boolean)
   active?: boolean;
 
   @ApiPropertyOptional({ enum: UserType })
   @IsEnum(UserType)
   @IsOptional()
-  @Type(() => Number)
   userType?: UserType;
 }

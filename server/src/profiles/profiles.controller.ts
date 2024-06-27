@@ -30,7 +30,7 @@ export class ProfilesController {
     FileInterceptor(
       'avatar',
       fileFilter({
-        maxSizeInMb: 3,
+        maxSizeInMb: 5,
         mimeType: ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'],
       }),
     ),

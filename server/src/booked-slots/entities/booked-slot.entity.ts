@@ -17,7 +17,7 @@ export class BookedSlot {
   @Column('timestamp')
   dateTimeFrom: Date;
 
-  @Column()
+  @Column('timestamp')
   dateTimeTo: Date;
 
   @OneToOne(() => Booking, (booking) => booking.bookedSlot)

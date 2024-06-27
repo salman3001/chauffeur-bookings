@@ -5,16 +5,18 @@ import { faker } from '@faker-js/faker';
 
 const factory = new Factory<BookedSlot>();
 
-let date = new Date();
+const dateTimeFrom = faker.date.past({ years: 1 });
+const dateTimeTo = new Date(dateTimeFrom);
+dateTimeTo.setHours(dateTimeTo.getHours() + 1);
 
 export const bookedSlotFactory = factory
   .attr('dateTimeFrom', () => {
-    date = faker.date.past();
-    return date;
+    dateTimeFrom.setHours(dateTimeFrom.getHours() + 1);
+    return dateTimeFrom;
   })
   .attr('dateTimeTo', () => {
-    date.setHours(date.getHours() + 3);
-    return date;
+    dateTimeTo.setHours(dateTimeTo.getHours() + 1);
+    return dateTimeTo;
   });
 
 export default setSeederFactory(BookedSlot, () => {

@@ -1,11 +1,10 @@
-import { Controller, Get, Body, Patch } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param } from '@nestjs/common';
 import { ChauffeurProfilesService } from './chauffeur-profiles.service';
 import { UpdateChauffeurProfileDto } from './dto/update-chauffeur-profile.dto';
 import { AuthUserType } from 'src/utils/types/common';
-import ValidatorPipe from 'src/utils/pipes/ValidatorPipe';
 import { AuthUser } from 'src/utils/decorators/authUser.decorator';
 
-@Controller('my-chauffeur-profiles')
+@Controller('chauffeur-profiles')
 export class ChauffeurProfilesController {
   constructor(
     private readonly chauffeurProfilesService: ChauffeurProfilesService,
@@ -18,13 +17,15 @@ export class ChauffeurProfilesController {
     return chauffeurProfile;
   }
 
-  @Patch()
+  @Patch(':id')
   async update(
-    @Body(new ValidatorPipe())
+    @Param('id') id: string,
+    @Body()
     updateChauffeurProfileDto: UpdateChauffeurProfileDto,
     @AuthUser() authUser: AuthUserType,
   ) {
     const chauffeurProfile = await this.chauffeurProfilesService.update(
+      +id,
       updateChauffeurProfileDto,
       authUser,
     );

@@ -33,9 +33,11 @@ export class CarsService {
     });
 
     car.owner = adminProfile;
+
     if (image) {
       car.image = await this.fileservice.uploadImage(image, '/images/cars');
     }
+
     await this.carRepo.save(car);
     return car;
   }
@@ -55,18 +57,36 @@ export class CarsService {
     return car;
   }
 
-  async update(id: number, updateCarDto: UpdateCarDto, authUser: AuthUserType) {
+  async update(
+    id: number,
+    updateCarDto: UpdateCarDto,
+    authUser: AuthUserType,
+    image?: Express.Multer.File,
+  ) {
     this.carsPolicy.authorize('update', authUser);
     const car = await this.carRepo.findOneByOrFail({ id: id });
     this.carRepo.merge(car, updateCarDto);
-    await this.carRepo.save(car);
+
+    if (image) {
+      const oldImage = car.image;
+      car.image = await this.fileservice.uploadImage(image, '/images/cars');
+
+      await this.carRepo.save(car);
+      if (oldImage) {
+        await this.fileservice.deleteImage(oldImage);
+      }
+    }
+
     return car;
   }
 
   async remove(id: number, authUser: AuthUserType) {
     const car = await this.carRepo.findOneByOrFail({ id });
+    if (car.image) {
+      await this.fileservice.deleteImage(car.image);
+    }
     this.carsPolicy.authorize('remove', authUser);
-    const deletedCar = await this.carRepo.softRemove(car);
+    const deletedCar = await this.carRepo.delete(car);
     return deletedCar;
   }
 }

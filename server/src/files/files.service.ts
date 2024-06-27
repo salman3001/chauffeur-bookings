@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '../config/app.config';
+import Image from 'src/utils/enities/Image.entity';
 
 @Injectable()
 export class FilesService {
@@ -33,9 +34,9 @@ export class FilesService {
     return { url, thumbnailUrl };
   }
 
-  async deleteImage(imageUrl: string, thumbnailUrl: string): Promise<void> {
-    await this.deleteFile(imageUrl);
-    await this.deleteFile(thumbnailUrl);
+  async deleteImage(image: Image): Promise<void> {
+    await this.deleteFile(image.url);
+    await this.deleteFile(image.thumbnailUrl);
   }
 
   async deleteFile(fileUrl: string): Promise<void> {

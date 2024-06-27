@@ -17,8 +17,8 @@ import { BookedSlotRepository } from 'src/booked-slots/booked-slot.repository';
 import { CheckAvailabiltyDto } from './dto/check-availabilty.dto';
 import User from './entities/user.entity';
 import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
-import { add, parse } from 'date-fns';
 import { ConfigService } from '@nestjs/config';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class UsersService {
@@ -150,7 +150,7 @@ export class UsersService {
   ) {
     this.userPolicy.authorize('checkAvailabilty', authUser);
 
-    const { date, time, duration } = query;
+    const { dateTime, duration } = query;
 
     const chauffeur = await this.userRepository.findOneOrFail({
       where: {
@@ -165,8 +165,7 @@ export class UsersService {
     const isChauffeurAvailableOnRequestedDateTime =
       this.isChauffeurAvailableOnRequestedDateTime(
         chauffeur,
-        date,
-        time,
+        dateTime,
         duration,
       );
 
@@ -179,24 +178,15 @@ export class UsersService {
       });
     }
 
-    const bookedSlots = await this.bookedSlotRepo.find({
-      where: {
-        chauffeurProfile: {
-          id: chauffeur?.chauffeurProfile?.id,
-        },
-        dateTimeFrom: new Date(date),
-      },
-    });
+    const bookedSlots = await this.bookedSlotRepo.getChauffeurBookedSlotsByDate(
+      chauffeurId,
+      dateTime,
+    );
 
     const isRequestedTimeBookedOrOverlapping =
-      this.isRequestedTimeBookedOrOverlapping(
-        date,
-        time,
-        duration,
-        bookedSlots,
-      );
+      this.isRequestedTimeBookedOrOverlapping(dateTime, duration, bookedSlots);
 
-    if (!isRequestedTimeBookedOrOverlapping) {
+    if (isRequestedTimeBookedOrOverlapping) {
       throw new CustomHttpException({
         code: HttpStatus.BAD_GATEWAY,
         success: false,
@@ -221,24 +211,15 @@ export class UsersService {
 
   private isChauffeurAvailableOnRequestedDateTime(
     chauffeur: User,
-    date: string,
-    time: string,
+    dateTime: string,
     duration: number,
   ) {
-    const requestedDateTimeForm = parse(
-      `${date} ${time}`,
-      'yyyy-MM-dd HH:mm',
-      new Date(),
-    );
+    const requestedDateTimeForm = DateTime.fromISO(dateTime);
+    const requestedDateTimeTo = DateTime.fromISO(dateTime).plus({
+      hour: duration,
+    });
 
-    const requestedDateTimeTo = parse(
-      `${date} ${time}`,
-      'yyyy-MM-dd HH:mm',
-      new Date(),
-    );
-    add(requestedDateTimeForm, { hours: duration });
-
-    const requestedDay = requestedDateTimeForm.getDay();
+    const requestedDay = requestedDateTimeForm.day;
     const requestedWeekDay = weekDays[requestedDay] as 'sunday';
 
     const isChauffeurAvailableOnThisDay =
@@ -255,17 +236,15 @@ export class UsersService {
     let isWithinRange = false;
 
     if (chauffeurAvailableFrom && chauffeurAvailableTo) {
-      const chauffeurAvailableFromDateTime = parse(
-        chauffeurAvailableFrom,
-        'HH:mm',
-        new Date(date),
-      );
+      const chauffeurAvailableFromDateTime = requestedDateTimeForm.set({
+        hour: Number(chauffeurAvailableFrom.split(':')[0]),
+        minute: Number(chauffeurAvailableFrom.split(':')[1]),
+      });
 
-      const chauffeurAvailableToDateTime = parse(
-        chauffeurAvailableTo,
-        'HH:mm',
-        new Date(date),
-      );
+      const chauffeurAvailableToDateTime = requestedDateTimeForm.set({
+        hour: Number(chauffeurAvailableFrom.split(':')[0]),
+        minute: Number(chauffeurAvailableFrom.split(':')[1]),
+      });
 
       if (
         requestedDateTimeForm >= chauffeurAvailableFromDateTime &&
@@ -285,30 +264,21 @@ export class UsersService {
   }
 
   private isRequestedTimeBookedOrOverlapping(
-    date: string,
-    time: string,
+    dateTime: string,
     duration: number,
     bookedSlots: BookedSlot[],
   ) {
-    const requestedDateTimeForm = parse(
-      `${date} ${time}`,
-      'yyyy-MM-dd HH:mm',
-      new Date(),
-    );
-
-    const requestedDateTimeTo = parse(
-      `${date} ${time}`,
-      'yyyy-MM-dd HH:mm',
-      new Date(),
-    );
-    add(requestedDateTimeForm, { hours: duration });
+    const requestedDateTimeForm = DateTime.fromISO(dateTime);
+    const requestedDateTimeTo = DateTime.fromISO(dateTime).plus({
+      hour: duration,
+    });
 
     let isBookedOrOverlapping = false;
 
     bookedSlots.forEach((slot) => {
-      const slotDateTimeFrom = slot.dateTimeFrom;
+      const slotDateTimeFrom = DateTime.fromJSDate(slot.dateTimeFrom);
 
-      const slotDateTimeTo = slot.dateTimeTo;
+      const slotDateTimeTo = DateTime.fromJSDate(slot.dateTimeTo);
 
       const isRequestedFromTimeOverLap =
         requestedDateTimeForm >= slotDateTimeFrom &&

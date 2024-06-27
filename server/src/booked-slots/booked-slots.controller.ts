@@ -5,6 +5,7 @@ import ValidatorPipe from 'src/utils/pipes/ValidatorPipe';
 import { AuthUserType } from 'src/utils/types/common';
 import CustomRes from 'src/utils/CustomRes';
 import { AuthUser } from 'src/utils/decorators/authUser.decorator';
+import { findChauffeurSlotsByDate } from './dto/findChauffeurSlotsByDate.dto';
 
 @Controller('booked-slots')
 export class BookedSlotsController {
@@ -26,7 +27,7 @@ export class BookedSlotsController {
   @Get('chauffeur/:id/by-month')
   async findAllForChauffeurByMonth(
     @Param('id') id: string,
-    @Query(new ValidatorPipe()) query: findAllByMonthDto,
+    @Query() query: findAllByMonthDto,
     @AuthUser() authUser: AuthUserType,
   ) {
     const slots = await this.bookedSlotsService.findAllForChauffeurByMonth(
@@ -41,12 +42,12 @@ export class BookedSlotsController {
   @Get('chauffeur/:id')
   async findChauffeurBookedSlotsByDate(
     @Param('id') id: string,
-    @Query(new ValidatorPipe()) query: findAllByMonthDto,
+    @Query() query: findChauffeurSlotsByDate,
     @AuthUser() authUser: AuthUserType,
   ) {
-    const slots = await this.bookedSlotsService.findAllForChauffeurByMonth(
+    const slots = await this.bookedSlotsService.findChauffeurBookedSlotsByDate(
       +id,
-      query,
+      query.date,
       authUser,
     );
 

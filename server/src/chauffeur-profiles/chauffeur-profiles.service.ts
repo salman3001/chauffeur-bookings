@@ -4,6 +4,7 @@ import { PolicyService } from '@salman3001/nest-policy-module';
 import { IChauffeurProfilesPolicy } from './chauffeur-profiles.policy';
 import { AuthUserType } from 'src/utils/types/common';
 import { ChauffeurProfileRepository } from './chuffeur-profile.repository';
+import { CarRepository } from 'src/cars/car.repository';
 
 @Injectable()
 export class ChauffeurProfilesService {
@@ -11,6 +12,7 @@ export class ChauffeurProfilesService {
     @Inject('ChauffeurProfilesPolicy')
     private readonly chauffeurProfilesPolicy: PolicyService<IChauffeurProfilesPolicy>,
     private chauffeurProfileRepo: ChauffeurProfileRepository,
+    private carRepo: CarRepository,
   ) {}
 
   async findOne(authUser: AuthUserType) {
@@ -24,11 +26,12 @@ export class ChauffeurProfilesService {
   }
 
   async update(
+    id: number,
     updateChauffeurProfileDto: UpdateChauffeurProfileDto,
     authUser: AuthUserType,
   ) {
     const chauffeurProfile = await this.chauffeurProfileRepo.findOneOrFail({
-      where: { id: authUser?.id },
+      where: { id: id },
       relations: { user: true },
     });
 
@@ -38,9 +41,14 @@ export class ChauffeurProfilesService {
       chauffeurProfile,
     );
 
-    const { availability, ...restPayload } = updateChauffeurProfileDto;
+    const { availability, carId, ...restPayload } = updateChauffeurProfileDto;
 
     this.chauffeurProfileRepo.merge(chauffeurProfile, restPayload);
+
+    if (carId) {
+      const car = await this.carRepo.findOneByOrFail({ id: carId });
+      chauffeurProfile.car = car;
+    }
 
     if (availability) {
       chauffeurProfile.availability = availability;

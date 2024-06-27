@@ -3,6 +3,7 @@ import { setSeederFactory } from 'typeorm-extension';
 import { faker } from '@faker-js/faker';
 import { Booking } from '../entities/booking.entity';
 import { BookingStatus } from 'src/utils/enums/BookingStatus';
+import { DateTime } from 'luxon';
 
 const factory = new Factory<Booking>();
 
@@ -33,7 +34,7 @@ export const bookingFactory = factory
   .attr('total', () => (2 * Number(faker.commerce.price())).toString())
   .attr('history', () => [
     {
-      dateTime: new Date(),
+      dateTime: DateTime.local().toISO(),
       event: 'Booking Created',
       detail: 'Booking Created',
     },

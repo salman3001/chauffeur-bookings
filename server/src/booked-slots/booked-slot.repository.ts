@@ -2,9 +2,9 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookedSlot } from './entities/booked-slot.entity';
-import { endOfMonth, startOfMonth } from 'date-fns';
 import { BaseQueryFilter, BaseRepository } from 'src/db/base.repository';
 import { ConfigService } from '@nestjs/config';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class BookedSlotRepository extends BaseRepository<BookedSlot> {
@@ -17,15 +17,16 @@ export class BookedSlotRepository extends BaseRepository<BookedSlot> {
 
   getAllByMonth(year: number, month: number) {
     const qb = this.createQueryBuilder();
-    const requestDate = new Date(year, month);
+    const startDate = DateTime.local(year, month);
+    const endDate = startDate.endOf('month');
 
     return qb
-      .leftJoinAndSelect('bookingSlot.booking', 'booking')
+      .leftJoinAndSelect('BookedSlot.booking', 'booking')
       .where(
-        'bookingSlot.dateTimeFrom >= :startDate AND bookingSlot.dateTimeFrom <= :endDate',
+        'BookedSlot.dateTimeFrom >= :startDate AND BookedSlot.dateTimeFrom <= :endDate',
         {
-          starDate: startOfMonth(requestDate),
-          endDate: endOfMonth(requestDate),
+          startDate,
+          endDate,
         },
       )
       .getMany();
@@ -33,17 +34,18 @@ export class BookedSlotRepository extends BaseRepository<BookedSlot> {
 
   getAllByMonthForChauffeur(chauffeurId: number, year: number, month: number) {
     const qb = this.createQueryBuilder();
-    const requestDate = new Date(year, month);
+    const startDate = DateTime.local(year, month);
+    const endDate = startDate.endOf('month');
 
     return qb
-      .leftJoinAndSelect('bookingSlot.booking', 'booking')
-      .leftJoin('bookingSlot.chauffeurProfile', 'chauffeurProfile')
+      .leftJoinAndSelect('BookedSlot.booking', 'booking')
+      .leftJoin('BookedSlot.chauffeurProfile', 'chauffeurProfile')
       .leftJoin('chauffeurProfile.user', 'user')
       .where(
-        'bookingSlot.dateTimeFrom >= :startDate AND bookingSlot.dateTimeFrom <= :endDate',
+        'BookedSlot.dateTimeFrom >= :startDate AND BookedSlot.dateTimeFrom <= :endDate',
         {
-          starDate: startOfMonth(requestDate),
-          endDate: endOfMonth(requestDate),
+          startDate,
+          endDate,
         },
       )
       .andWhere('user.id = :id', {
@@ -52,14 +54,21 @@ export class BookedSlotRepository extends BaseRepository<BookedSlot> {
       .getMany();
   }
 
-  getChauffeurBookedSlotsByDate(chauffeurId: number, date: Date) {
-    const dateToCheck = new Date(date);
+  getChauffeurBookedSlotsByDate(chauffeurId: number, date: string) {
+    const dateToCheck = DateTime.fromISO(date);
+    const startOfDate = dateToCheck.startOf('day');
+    const endOfDate = dateToCheck.endOf('day');
+
     return this.createQueryBuilder()
-      .leftJoin('booked_slots.chauffeurProfile', 'chauffeurProfile')
+      .leftJoin('BookedSlot.chauffeurProfile', 'chauffeurProfile')
       .where('chauffeurProfile.id = :id', { id: chauffeurId })
-      .andWhere('bookedSlots.date = :dateToCheck', {
-        dateToCheck: dateToCheck,
-      })
+      .andWhere(
+        'BookedSlot.dateTimeFrom >= :startOfDate AND BookedSlot.dateTimeFrom <= :endOfDate',
+        {
+          startOfDate,
+          endOfDate,
+        },
+      )
       .getMany();
   }
 }

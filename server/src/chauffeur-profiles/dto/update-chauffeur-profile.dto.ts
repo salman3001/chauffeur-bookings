@@ -1,13 +1,16 @@
 import {
   IsBoolean,
-  IsDateString,
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsString,
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsTimeString } from 'src/utils/validators/IsTimeString';
+import { isTimeStringAfterField } from 'src/utils/validators/isTimeStringAfterField';
 
 export class AvailabilityByDay {
   @ApiProperty({ default: false })
@@ -28,7 +31,7 @@ export class AvailabilityByDay {
       return false;
     }
   })
-  @IsDateString()
+  @IsTimeString()
   from: string | null;
 
   @ApiProperty({ default: null, type: String })
@@ -39,46 +42,61 @@ export class AvailabilityByDay {
       return false;
     }
   })
-  @IsDateString()
+  @IsTimeString()
+  @isTimeStringAfterField('from')
   to: string | null;
 }
 
 class Availability {
   @ApiProperty()
   @ValidateNested()
+  @Type(() => AvailabilityByDay)
   sunday: AvailabilityByDay;
 
   @ApiProperty()
   @ValidateNested()
+  @Type(() => AvailabilityByDay)
   monday: AvailabilityByDay;
 
   @ApiProperty()
   @ValidateNested()
+  @Type(() => AvailabilityByDay)
   tuesday: AvailabilityByDay;
 
   @ApiProperty()
   @ValidateNested()
+  @Type(() => AvailabilityByDay)
   wednesday: AvailabilityByDay;
 
   @ApiProperty()
   @ValidateNested()
+  @Type(() => AvailabilityByDay)
   thursday: AvailabilityByDay;
 
   @ApiProperty()
   @ValidateNested()
+  @Type(() => AvailabilityByDay)
   friday: AvailabilityByDay;
 
   @ApiProperty()
   @ValidateNested()
+  @Type(() => AvailabilityByDay)
   saturday: AvailabilityByDay;
 }
 
 export class UpdateChauffeurProfileDto {
   @ApiProperty()
   @IsNumber()
+  @IsOptional()
+  carId: number;
+
+  @ApiProperty()
+  @IsString()
   pricePerHour: string;
 
   @ApiProperty()
+  @ValidateNested()
+  @Type(() => Availability)
   @IsOptional()
   availability?: Availability;
 }

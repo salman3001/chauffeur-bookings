@@ -1,8 +1,11 @@
-import { IsISO8601 } from 'class-validator';
-import { IsIsoAfter } from 'src/utils/validators/IsIsoAfter';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsIsoDate } from 'src/utils/validators/IsIsoDate';
+import { IsIsoDateAfter } from 'src/utils/validators/IsIsoDateAfter';
+import { DateTime } from 'luxon';
 
 export class findChauffeurSlotsByDate {
-  @IsISO8601()
-  @IsIsoAfter(new Date())
-  date: number;
+  @ApiProperty()
+  @IsIsoDate()
+  @IsIsoDateAfter(DateTime.local().startOf('day').toISO())
+  date: string;
 }

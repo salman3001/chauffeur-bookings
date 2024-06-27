@@ -26,6 +26,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Type } from 'class-transformer';
 
 @Entity()
 export class Booking {
@@ -40,6 +41,7 @@ export class Booking {
   @Column('jsonb', { transformer: jsonTransformer })
   @ApiProperty()
   @ValidateNested()
+  @Type(() => Geometry)
   pickupCords: Geometry;
 
   @Column()
@@ -50,6 +52,7 @@ export class Booking {
   @Column('jsonb', { transformer: jsonTransformer })
   @ApiProperty()
   @ValidateNested()
+  @Type(() => Geometry)
   dropoffCords: Geometry;
 
   @Column()

@@ -11,10 +11,13 @@ export const ChauffeurProfilesPolicy = {
   },
 
   update(user: AuthUserType, chauffeurProfile: ChauffeurProfile) {
-    return (
-      user?.userType === UserType.CHAUFFEUR &&
-      chauffeurProfile?.user?.id === user.id
-    );
+    if (user?.userType === UserType.ADMIN) {
+      return true;
+    }
+    if (user?.userType === UserType.CHAUFFEUR && chauffeurProfile?.user?.id) {
+      return true;
+    }
+    return false;
   },
 
   availableSlots(user: AuthUserType) {

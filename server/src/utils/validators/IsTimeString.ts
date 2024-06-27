@@ -1,5 +1,5 @@
 import { registerDecorator, ValidationOptions } from 'class-validator';
-import { isValid, parse } from 'date-fns';
+import { DateTime } from 'luxon';
 
 export function IsTimeString(validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {
@@ -13,8 +13,8 @@ export function IsTimeString(validationOptions?: ValidationOptions) {
           if (typeof value !== 'string') {
             return false;
           }
-          const date = parse(value, 'HH:mm', new Date());
-          return isValid(date);
+          const date = DateTime.fromISO(value);
+          return date.isValid;
         },
         defaultMessage(/*args: ValidationArguments*/) {
           return `Invalid Time format! Time format should be HH:mm `;

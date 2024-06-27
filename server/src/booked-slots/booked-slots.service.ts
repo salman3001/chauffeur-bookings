@@ -47,10 +47,9 @@ export class BookedSlotsService {
     user: AuthUserType,
   ) {
     this.bookedSlotsPolicy.authorize('findChauffeurBookedSlotsByDate', user);
-    const requestedDate = new Date(date);
     const slots = await this.bookedSlotRepo.getChauffeurBookedSlotsByDate(
       chauffeurId,
-      requestedDate,
+      date,
     );
 
     return slots;

@@ -1,5 +1,6 @@
 import { plainToInstance } from 'class-transformer';
 import { type ValidationError, validate } from 'class-validator';
+import { ValidationErrorsArray } from './types/common';
 
 type EnumLike = Array<unknown> | Record<string, unknown>;
 
@@ -15,16 +16,29 @@ export function getEnumValues<T extends EnumLike>(enumType: T): Array<string> {
 
 export function generateClassValidatorErrors(
   errors: ValidationError[],
-): Record<string, string[]>[] {
-  const errArray: Record<string, string[]>[] = [];
+): ValidationErrorsArray {
+  const errArray: ValidationErrorsArray = [];
 
   if (errors.length > 0) {
     errors.forEach((err) => {
-      errArray.push({
-        [err.property]: err.constraints
-          ? Object.values(err.constraints)
-          : ['Validiation Failed'],
-      });
+      if (err?.constraints) {
+        errArray.push({
+          [err.property]: {
+            errors: err?.constraints
+              ? Object.values(err.constraints)
+              : ['Validiation Failed'],
+          },
+        });
+      }
+
+      if (err?.children) {
+        const childErrors = generateClassValidatorErrors(err.children);
+        childErrors.forEach((childError) => {
+          errArray.push({
+            [err.property]: childError,
+          });
+        });
+      }
     });
   }
 
@@ -34,7 +48,7 @@ export function generateClassValidatorErrors(
 export async function validatePartialModel<T extends new () => T>(
   model: T,
   partialModel: Partial<T>,
-): Promise<Record<string, string[]>[]> {
+): Promise<ValidationErrorsArray> {
   const partialModelInstance = plainToInstance(model, partialModel);
   const errors = await validate(partialModelInstance);
   return generateClassValidatorErrors(errors);

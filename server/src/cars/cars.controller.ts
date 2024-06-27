@@ -19,6 +19,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, IntersectionType } from '@nestjs/swagger';
 import { UploadImageDto } from './dto/upload-image.dto';
 import { AuthUser } from 'src/utils/decorators/authUser.decorator';
+import { fileFilter } from 'src/files/helpers/fileFIlter';
 
 @Controller('cars')
 export class CarsController {
@@ -29,7 +30,15 @@ export class CarsController {
   @ApiBody({
     type: IntersectionType(CreateCarDto, UploadImageDto),
   })
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileInterceptor(
+      'image',
+      fileFilter({
+        maxSizeInMb: 5,
+        mimeType: ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'],
+      }),
+    ),
+  )
   async create(
     @Body(new ValidatorPipe()) createCarDto: CreateCarDto,
     @AuthUser() authUser: AuthUserType,
@@ -52,18 +61,31 @@ export class CarsController {
   }
 
   @Patch(':id')
-  @Post()
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     type: IntersectionType(UpdateCarDto, UploadImageDto),
   })
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileInterceptor(
+      'image',
+      fileFilter({
+        maxSizeInMb: 5,
+        mimeType: ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'],
+      }),
+    ),
+  )
   async update(
     @Param('id') id: string,
     @Body() updateCarDto: UpdateCarDto,
     @AuthUser() authUser: AuthUserType,
+    @UploadedFile() image?: Express.Multer.File,
   ) {
-    const car = await this.carsService.update(+id, updateCarDto, authUser);
+    const car = await this.carsService.update(
+      +id,
+      updateCarDto,
+      authUser,
+      image,
+    );
     return car;
   }
 

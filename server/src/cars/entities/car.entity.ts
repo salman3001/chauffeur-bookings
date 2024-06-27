@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsNumber, Length, Min } from 'class-validator';
 import { AdminProfile } from 'src/admin-profiles/entities/admin-profile.entity';
 import { ChauffeurProfile } from 'src/chauffeur-profiles/entities/chauffeur-profile.entity';
@@ -29,7 +30,8 @@ export class Car {
   @Column()
   @ApiProperty()
   @IsNumber()
-  @Min(1950)
+  @Min(2000)
+  @Type(() => Number)
   year: number;
 
   @Column('jsonb', { nullable: true })

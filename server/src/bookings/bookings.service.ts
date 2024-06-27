@@ -12,9 +12,9 @@ import { BookedSlotRepository } from 'src/booked-slots/booked-slot.repository';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
-import { add } from 'date-fns';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { MailsService } from 'src/mails/mails.service';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class BookingsService {
@@ -40,8 +40,7 @@ export class BookingsService {
       },
     });
 
-    const { chauffeurId, pickupDate, pickupTime, ...payload } =
-      createBookingDto;
+    const { chauffeurId, pickupDateTime, ...payload } = createBookingDto;
 
     // get chauffeur
     const chauffeur = await this.userRepo.findOneOrFail({
@@ -57,8 +56,7 @@ export class BookingsService {
     await this.userService.checkAvailabilty(
       chauffeurId,
       {
-        date: pickupDate,
-        time: pickupTime,
+        dateTime: pickupDateTime,
         duration: createBookingDto.bookedForHours,
       },
       authUser,
@@ -72,13 +70,14 @@ export class BookingsService {
 
     return this.dataSource.transaction(async (manager) => {
       // create slots
-      const pickupDateTimeFrom = new Date(`${pickupDate} ${pickupTime}`);
-      const pickupDateTimeTo = new Date(`${pickupDate} ${pickupTime}`);
-      add(pickupDateTimeTo, { hours: 3 });
+      const pickupDateTimeFrom = DateTime.fromISO(pickupDateTime);
+      const pickupDateTimeTo = DateTime.fromISO(pickupDateTime).plus({
+        hour: payload.bookedForHours,
+      });
 
       const bookedSlot = this.bookedSlotRepo.create({
-        dateTimeFrom: pickupDateTimeFrom,
-        dateTimeTo: pickupDateTimeTo,
+        dateTimeFrom: pickupDateTimeFrom.toJSDate(),
+        dateTimeTo: pickupDateTimeTo.toJSDate(),
       });
 
       const savedBookedSlot = await manager.save(bookedSlot);
@@ -93,7 +92,7 @@ export class BookingsService {
       booking.bookedSlot = savedBookedSlot;
       booking.history = [
         {
-          dateTime: new Date(Date.now()),
+          dateTime: DateTime.local().toISO(),
           event: 'Booking Created',
           detail: `New booking created by customer ${customer.firstName}`,
         },
@@ -106,27 +105,27 @@ export class BookingsService {
         customerName: customer.firstName,
       });
 
-      await this.notificationService.sendBookingCreated(
-        customer,
-        savedBooking.id,
-      );
+      // await this.notificationService.sendBookingCreated(
+      //   customer,
+      //   savedBooking.id,
+      // );
 
-      await this.notificationService.sendBookingRecieved(
-        chauffeur,
-        savedBooking.id,
-      );
+      // await this.notificationService.sendBookingRecieved(
+      //   chauffeur,
+      //   savedBooking.id,
+      // );
 
-      const admins = await this.userRepo.findBy({
-        userType: UserType.ADMIN,
-        isActive: true,
-      });
+      // const admins = await this.userRepo.findBy({
+      //   userType: UserType.ADMIN,
+      //   isActive: true,
+      // });
 
-      for (const admin of admins) {
-        await this.notificationService.sendBookingRecieved(
-          admin,
-          savedBooking.id,
-        );
-      }
+      // for (const admin of admins) {
+      //   await this.notificationService.sendBookingRecieved(
+      //     admin,
+      //     savedBooking.id,
+      //   );
+      // }
 
       return savedBooking;
     });
@@ -200,7 +199,7 @@ export class BookingsService {
     this.bookingsPolicy.authorize('rejectBooking', authUser, booking);
     booking.status = BookingStatus.REJECTED;
     booking.history.push({
-      dateTime: new Date(Date.now()),
+      dateTime: DateTime.local().toISO(),
       event: 'Booking Rejected',
       detail: `Booking rejected`,
     });
@@ -226,7 +225,7 @@ export class BookingsService {
     this.bookingsPolicy.authorize('acceptBooking', authUser, booking);
     booking.status = BookingStatus.ACCEPTED;
     booking.history.push({
-      dateTime: new Date(Date.now()),
+      dateTime: DateTime.local().toISO(),
       event: 'Booking Accepted',
       detail: `Booking accepted`,
     });
@@ -249,7 +248,7 @@ export class BookingsService {
     this.bookingsPolicy.authorize('cancleBooking', authUser, booking);
     booking.status = BookingStatus.CANCLED;
     booking.history.push({
-      dateTime: new Date(Date.now()),
+      dateTime: DateTime.local().toISO(),
       event: 'Booking Cancled',
       detail: `Booking cancled by customer`,
     });
@@ -272,7 +271,7 @@ export class BookingsService {
     this.bookingsPolicy.authorize('startTrip', authUser, booking);
     booking.status = BookingStatus.TRIP_STARTED;
     booking.history.push({
-      dateTime: new Date(Date.now()),
+      dateTime: DateTime.local().toISO(),
       event: 'Booking trip started',
       detail: `Booking trip has started. Chauffeur is on the way`,
     });
@@ -295,7 +294,7 @@ export class BookingsService {
     this.bookingsPolicy.authorize('compeleteBooking', authUser, booking);
     booking.status = BookingStatus.COMPLETE;
     booking.history.push({
-      dateTime: new Date(Date.now()),
+      dateTime: DateTime.local().toISO(),
       event: 'Booking completed',
       detail: `Booking trip has completed`,
     });

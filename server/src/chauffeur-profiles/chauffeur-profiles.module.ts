@@ -6,6 +6,8 @@ import { ChauffeurProfilesPolicy } from './chauffeur-profiles.policy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChauffeurProfile } from './entities/chauffeur-profile.entity';
 import { ChauffeurProfileRepository } from './chuffeur-profile.repository';
+import { CarRepository } from 'src/cars/car.repository';
+import { Car } from 'src/cars/entities/car.entity';
 
 @Module({
   imports: [
@@ -15,9 +17,13 @@ import { ChauffeurProfileRepository } from './chuffeur-profile.repository';
         policy: ChauffeurProfilesPolicy,
       },
     ]),
-    TypeOrmModule.forFeature([ChauffeurProfile]),
+    TypeOrmModule.forFeature([ChauffeurProfile, Car]),
   ],
   controllers: [ChauffeurProfilesController],
-  providers: [ChauffeurProfilesService, ChauffeurProfileRepository],
+  providers: [
+    ChauffeurProfilesService,
+    ChauffeurProfileRepository,
+    CarRepository,
+  ],
 })
 export class ChauffeurProfilesModule {}

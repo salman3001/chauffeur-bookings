@@ -1,13 +1,10 @@
 import { registerDecorator, ValidationOptions } from 'class-validator';
 import { DateTime } from 'luxon';
 
-export function IsIsoAfter(
-  specifiedDateTime: string,
-  validationOptions?: ValidationOptions,
-) {
+export function IsIsoDate(validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {
     registerDecorator({
-      name: 'IsIsoAfter',
+      name: 'IsIsoDate',
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
@@ -17,16 +14,10 @@ export function IsIsoAfter(
             return false;
           }
           const date = DateTime.fromISO(value);
-          const beforeDate = DateTime.fromISO(specifiedDateTime);
-          console.log(date.toISO(), beforeDate.toISO());
-
-          const isValid = date.isValid && date >= beforeDate;
-          console.log(isValid);
-
-          return isValid;
+          return date.isValid;
         },
         defaultMessage(/*args: ValidationArguments*/) {
-          return `Invalid date! Date should be after ${specifiedDateTime}`;
+          return `Invalid date! Date format should be yyyy-MM-dd`;
         },
       },
     });

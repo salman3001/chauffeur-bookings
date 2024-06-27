@@ -7,9 +7,10 @@ export const BookedSlotsPolicy = {
   },
 
   findAllByMonthForChauffeur(user: AuthUserType, requestedChauffeurId: number) {
-    return (
-      user?.userType === UserType.CHAUFFEUR && user.id === requestedChauffeurId
-    );
+    const isAdmin = user?.userType === UserType.ADMIN;
+    const isValidChauffeur =
+      user?.userType === UserType.CHAUFFEUR && user.id === requestedChauffeurId;
+    return isAdmin || isValidChauffeur;
   },
 
   findChauffeurBookedSlotsByDate(user: AuthUserType) {

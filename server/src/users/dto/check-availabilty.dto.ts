@@ -1,16 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsISO8601, IsNumber } from 'class-validator';
-import { IsTimeString } from 'src/utils/validators/IsTimeString';
+import { IsNumber, IsDateString } from 'class-validator';
+import { DateTime } from 'luxon';
+import { IsIsoAfter } from 'src/utils/validators/IsIsoAfter';
 
 export class CheckAvailabiltyDto {
   @ApiProperty()
-  @IsISO8601()
-  date: string;
-
-  @ApiProperty()
-  @IsTimeString()
-  time: string;
+  @IsDateString({ strictSeparator: true, strict: true })
+  @IsIsoAfter(DateTime.local().toISO())
+  dateTime: string;
 
   @ApiProperty()
   @IsNumber()

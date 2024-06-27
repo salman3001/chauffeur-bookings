@@ -152,6 +152,14 @@ export class UsersService {
 
     const { dateTime, duration } = query;
 
+    if (this.isDurationExceedTomorow(dateTime, duration)) {
+      throw new CustomHttpException({
+        code: HttpStatus.BAD_REQUEST,
+        success: false,
+        message: 'Max booking hours can not exceed present day',
+      });
+    }
+
     const chauffeur = await this.userRepository.findOneOrFail({
       where: {
         id: chauffeurId,
@@ -219,7 +227,7 @@ export class UsersService {
       hour: duration,
     });
 
-    const requestedDay = requestedDateTimeForm.day;
+    const requestedDay = requestedDateTimeForm.weekday;
     const requestedWeekDay = weekDays[requestedDay] as 'sunday';
 
     const isChauffeurAvailableOnThisDay =
@@ -242,8 +250,8 @@ export class UsersService {
       });
 
       const chauffeurAvailableToDateTime = requestedDateTimeForm.set({
-        hour: Number(chauffeurAvailableFrom.split(':')[0]),
-        minute: Number(chauffeurAvailableFrom.split(':')[1]),
+        hour: Number(chauffeurAvailableTo.split(':')[0]),
+        minute: Number(chauffeurAvailableTo.split(':')[1]),
       });
 
       if (
@@ -298,11 +306,16 @@ export class UsersService {
         isTimeSlotInBetween
       ) {
         isBookedOrOverlapping = true;
-      } else {
-        isBookedOrOverlapping = false;
       }
     });
 
     return isBookedOrOverlapping;
+  }
+
+  isDurationExceedTomorow(dateTime: string, duration) {
+    const requestedDateTime = DateTime.fromISO(dateTime);
+    const endDayDateTime = requestedDateTime.endOf('day');
+    const diff = endDayDateTime.diff(requestedDateTime, 'hour');
+    return duration > diff.hours;
   }
 }

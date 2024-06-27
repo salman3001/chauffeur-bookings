@@ -92,7 +92,7 @@ export class BookingsService {
       booking.bookedSlot = savedBookedSlot;
       booking.history = [
         {
-          dateTime: DateTime.local().toISO(),
+          dateTime: DateTime.local().toJSDate(),
           event: 'Booking Created',
           detail: `New booking created by customer ${customer.firstName}`,
         },
@@ -101,9 +101,9 @@ export class BookingsService {
       const savedBooking = await manager.save(booking);
 
       //mails and notifications
-      await this.mailservice.sendBookingCreatedEmail(customer.email, {
-        customerName: customer.firstName,
-      });
+      // await this.mailservice.sendBookingCreatedEmail(customer.email, {
+      //   customerName: customer.firstName,
+      // });
 
       // await this.notificationService.sendBookingCreated(
       //   customer,
@@ -199,7 +199,7 @@ export class BookingsService {
     this.bookingsPolicy.authorize('rejectBooking', authUser, booking);
     booking.status = BookingStatus.REJECTED;
     booking.history.push({
-      dateTime: DateTime.local().toISO(),
+      dateTime: DateTime.local().toJSDate(),
       event: 'Booking Rejected',
       detail: `Booking rejected`,
     });
@@ -225,7 +225,7 @@ export class BookingsService {
     this.bookingsPolicy.authorize('acceptBooking', authUser, booking);
     booking.status = BookingStatus.ACCEPTED;
     booking.history.push({
-      dateTime: DateTime.local().toISO(),
+      dateTime: DateTime.local().toJSDate(),
       event: 'Booking Accepted',
       detail: `Booking accepted`,
     });
@@ -248,7 +248,7 @@ export class BookingsService {
     this.bookingsPolicy.authorize('cancleBooking', authUser, booking);
     booking.status = BookingStatus.CANCLED;
     booking.history.push({
-      dateTime: DateTime.local().toISO(),
+      dateTime: DateTime.local().toJSDate(),
       event: 'Booking Cancled',
       detail: `Booking cancled by customer`,
     });
@@ -271,7 +271,7 @@ export class BookingsService {
     this.bookingsPolicy.authorize('startTrip', authUser, booking);
     booking.status = BookingStatus.TRIP_STARTED;
     booking.history.push({
-      dateTime: DateTime.local().toISO(),
+      dateTime: DateTime.local().toJSDate(),
       event: 'Booking trip started',
       detail: `Booking trip has started. Chauffeur is on the way`,
     });
@@ -294,7 +294,7 @@ export class BookingsService {
     this.bookingsPolicy.authorize('compeleteBooking', authUser, booking);
     booking.status = BookingStatus.COMPLETE;
     booking.history.push({
-      dateTime: DateTime.local().toISO(),
+      dateTime: DateTime.local().toJSDate(),
       event: 'Booking completed',
       detail: `Booking trip has completed`,
     });

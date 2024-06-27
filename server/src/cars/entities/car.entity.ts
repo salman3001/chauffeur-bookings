@@ -6,10 +6,12 @@ import { ChauffeurProfile } from 'src/chauffeur-profiles/entities/chauffeur-prof
 import Image from 'src/utils/enities/Image.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -36,6 +38,12 @@ export class Car {
 
   @Column('jsonb', { nullable: true })
   image?: Image;
+
+  @CreateDateColumn({ type: 'timestamptz' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamptz' })
+  updatedAt: Date;
 
   @ManyToOne(() => AdminProfile, (adminProfile) => adminProfile.cars)
   owner: AdminProfile;

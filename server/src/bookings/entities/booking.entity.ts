@@ -100,9 +100,9 @@ export class Booking {
   @OneToOne(() => BookedSlot, (bookedSlot) => bookedSlot.booking)
   bookedSlot: BookedSlot;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   cretaedAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }

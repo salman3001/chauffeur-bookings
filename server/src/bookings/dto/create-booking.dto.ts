@@ -17,7 +17,10 @@ export class CreateBookingDto extends PickType(Booking, [
   @IsNumber()
   chauffeurId: number;
 
-  @ApiProperty({ description: 'send iso datetime eg. 2024-06-24T08:00' })
+  @ApiProperty({
+    description: 'send iso datetime eg. 2024-06-24T08:00',
+    type: Date,
+  })
   @IsISO8601()
   @IsIsoAfter(DateTime.local().plus({ minutes: 15 }).toISO())
   pickupDateTime: string;

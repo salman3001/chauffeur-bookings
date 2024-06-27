@@ -1,5 +1,5 @@
 export default class BookingHistory {
-  dateTime: string;
+  dateTime: Date;
   event: string;
   detail: string;
 }

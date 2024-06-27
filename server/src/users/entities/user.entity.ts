@@ -76,13 +76,13 @@ export default class User {
   @IsBoolean()
   emailVerfied: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   cretaedAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
-  @DeleteDateColumn({ nullable: true })
+  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
   deletedAt?: Date;
 
   @OneToOne(() => Profile, (profile) => profile.user, {

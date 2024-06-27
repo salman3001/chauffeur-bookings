@@ -18,10 +18,8 @@ export function IsIsoAfter(
           }
           const date = DateTime.fromISO(value);
           const beforeDate = DateTime.fromISO(specifiedDateTime);
-          console.log(date.toISO(), beforeDate.toISO());
 
           const isValid = date.isValid && date >= beforeDate;
-          console.log(isValid);
 
           return isValid;
         },

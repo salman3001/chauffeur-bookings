@@ -34,7 +34,7 @@ export const bookingFactory = factory
   .attr('total', () => (2 * Number(faker.commerce.price())).toString())
   .attr('history', () => [
     {
-      dateTime: DateTime.local().toISO(),
+      dateTime: DateTime.local().toJSDate(),
       event: 'Booking Created',
       detail: 'Booking Created',
     },

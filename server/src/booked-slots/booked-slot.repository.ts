@@ -22,6 +22,12 @@ export class BookedSlotRepository extends BaseRepository<BookedSlot> {
 
     return qb
       .leftJoinAndSelect('BookedSlot.booking', 'booking')
+      .select([
+        'BookedSlot.id',
+        'BookedSlot.dateTimeFrom',
+        'BookedSlot.dateTimeTo',
+        'booking.id',
+      ])
       .where(
         'BookedSlot.dateTimeFrom >= :startDate AND BookedSlot.dateTimeFrom <= :endDate',
         {
@@ -41,6 +47,13 @@ export class BookedSlotRepository extends BaseRepository<BookedSlot> {
       .leftJoinAndSelect('BookedSlot.booking', 'booking')
       .leftJoin('BookedSlot.chauffeurProfile', 'chauffeurProfile')
       .leftJoin('chauffeurProfile.user', 'user')
+      .select([
+        'BookedSlot.id',
+        'BookedSlot.dateTimeFrom',
+        'BookedSlot.dateTimeTo',
+        'booking.id',
+        'user.id',
+      ])
       .where(
         'BookedSlot.dateTimeFrom >= :startDate AND BookedSlot.dateTimeFrom <= :endDate',
         {

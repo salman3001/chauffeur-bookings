@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 import { IsIsoAfter } from 'src/utils/validators/IsIsoAfter';
 
 export class CheckAvailabiltyDto {
-  @ApiProperty()
+  @ApiProperty({ type: Date })
   @IsDateString({ strictSeparator: true, strict: true })
   @IsIsoAfter(DateTime.local().toISO())
   dateTime: string;

@@ -17,7 +17,7 @@ export class ChauffeurProfilesService {
 
   async findOne(authUser: AuthUserType) {
     const chauffeurProfile = await this.chauffeurProfileRepo.findOneOrFail({
-      where: { id: authUser?.id },
+      where: { user: { id: authUser?.id } },
       relations: { user: true },
     });
 

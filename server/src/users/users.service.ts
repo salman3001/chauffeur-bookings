@@ -187,7 +187,7 @@ export class UsersService {
     }
 
     const bookedSlots = await this.bookedSlotRepo.getChauffeurBookedSlotsByDate(
-      chauffeurId,
+      chauffeur.chauffeurProfile.id,
       dateTime,
     );
 

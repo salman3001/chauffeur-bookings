@@ -67,19 +67,19 @@ export class BookedSlotRepository extends BaseRepository<BookedSlot> {
       .getMany();
   }
 
-  getChauffeurBookedSlotsByDate(chauffeurId: number, date: string) {
+  getChauffeurBookedSlotsByDate(chauffeurProfileId: number, date: string) {
     const dateToCheck = DateTime.fromISO(date);
     const startOfDate = dateToCheck.startOf('day');
     const endOfDate = dateToCheck.endOf('day');
 
     return this.createQueryBuilder()
       .leftJoin('BookedSlot.chauffeurProfile', 'chauffeurProfile')
-      .where('chauffeurProfile.id = :id', { id: chauffeurId })
+      .where('chauffeurProfile.id = :id', { id: chauffeurProfileId })
       .andWhere(
-        'BookedSlot.dateTimeFrom >= :startOfDate AND BookedSlot.dateTimeFrom <= :endOfDate',
+        'BookedSlot.dateTimeFrom >= :startOfDate AND BookedSlot.dateTimeTo <= :endOfDate',
         {
-          startOfDate,
-          endOfDate,
+          startOfDate: startOfDate.toJSDate(),
+          endOfDate: endOfDate.toJSDate(),
         },
       )
       .getMany();

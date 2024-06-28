@@ -4,10 +4,13 @@ import { UserType } from 'src/utils/enums/userType';
 
 export const ChauffeurProfilesPolicy = {
   find(user: AuthUserType, chauffeurProfile: ChauffeurProfile) {
-    return (
-      user?.userType === UserType.CHAUFFEUR &&
-      chauffeurProfile?.user?.id === user.id
-    );
+    if (user?.userType === UserType.ADMIN) {
+      return true;
+    }
+    if (user?.userType === UserType.CHAUFFEUR && chauffeurProfile?.user?.id) {
+      return true;
+    }
+    return false;
   },
 
   update(user: AuthUserType, chauffeurProfile: ChauffeurProfile) {

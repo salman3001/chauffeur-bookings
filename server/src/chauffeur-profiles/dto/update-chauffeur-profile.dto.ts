@@ -50,36 +50,43 @@ export class AvailabilityByDay {
 class Availability {
   @ApiProperty()
   @ValidateNested()
+  @IsNotEmpty()
   @Type(() => AvailabilityByDay)
   sunday: AvailabilityByDay;
 
   @ApiProperty()
   @ValidateNested()
+  @IsNotEmpty()
   @Type(() => AvailabilityByDay)
   monday: AvailabilityByDay;
 
   @ApiProperty()
   @ValidateNested()
+  @IsNotEmpty()
   @Type(() => AvailabilityByDay)
   tuesday: AvailabilityByDay;
 
   @ApiProperty()
   @ValidateNested()
+  @IsNotEmpty()
   @Type(() => AvailabilityByDay)
   wednesday: AvailabilityByDay;
 
   @ApiProperty()
   @ValidateNested()
+  @IsNotEmpty()
   @Type(() => AvailabilityByDay)
   thursday: AvailabilityByDay;
 
   @ApiProperty()
   @ValidateNested()
+  @IsNotEmpty()
   @Type(() => AvailabilityByDay)
   friday: AvailabilityByDay;
 
   @ApiProperty()
   @ValidateNested()
+  @IsNotEmpty()
   @Type(() => AvailabilityByDay)
   saturday: AvailabilityByDay;
 }
@@ -96,6 +103,7 @@ export class UpdateChauffeurProfileDto {
 
   @ApiProperty()
   @ValidateNested()
+  @IsNotEmpty()
   @Type(() => Availability)
   @IsOptional()
   availability?: Availability;

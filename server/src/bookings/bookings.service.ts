@@ -78,6 +78,7 @@ export class BookingsService {
       const bookedSlot = this.bookedSlotRepo.create({
         dateTimeFrom: pickupDateTimeFrom.toJSDate(),
         dateTimeTo: pickupDateTimeTo.toJSDate(),
+        chauffeurProfile: chauffeur.chauffeurProfile,
       });
 
       const savedBookedSlot = await manager.save(bookedSlot);

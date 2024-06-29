@@ -3,16 +3,19 @@ import { useAuth } from './useAuth'
 import type { NavigationGuardNext } from 'vue-router'
 
 export const useNavGuard = (meta: any, next: NavigationGuardNext) => {
-  const { user, is } = useAuth()
+  const { user, isUser } = useAuth()
   const requiresAuth = meta?.requiresAuth
   const role = meta?.role as UserType
   const guest = meta?.guest as UserType
 
   if (guest && user.value) {
-    next({ name: 'Dashboard' })
+    next({ name: 'Home' })
+    return
   }
 
   if (requiresAuth && !role) {
+    console.log('ran')
+
     if (user.value) {
       next()
       return
@@ -23,7 +26,7 @@ export const useNavGuard = (meta: any, next: NavigationGuardNext) => {
   }
 
   if (requiresAuth && role) {
-    if (user.value && is(role)) {
+    if (user.value && isUser(role)) {
       next()
       return
     } else {

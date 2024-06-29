@@ -1,8 +1,12 @@
+import appConfig from '@/config/app.config'
+import { UserType } from '@/utils/enums/UserType'
+import type { RouteLocationAsRelativeGeneric } from 'vue-router'
+
 export interface Menu {
   header?: string
   title?: string
   icon?: any
-  to?: string
+  to?: string | RouteLocationAsRelativeGeneric
   chip?: string
   BgColor?: string
   chipBgColor?: string
@@ -13,47 +17,63 @@ export interface Menu {
   disabled?: boolean
   type?: string
   subCaption?: string
+  authRequired?: boolean
+  guest?: boolean
+  requiredRole?: UserType
 }
 
 const sidebarItem: Menu[] = [
-  { header: 'Home' },
   {
-    title: 'Dashboard',
-    icon: 'widget-add-line-duotone',
-    to: '/'
+    title: 'Booking',
+    icon: 'home-linear',
+    to: { name: 'Home' }
   },
-
-  { header: 'Extra' },
-  {
-    title: 'Icons',
-    icon: 'sticker-smile-circle-2-line-duotone',
-    to: '/icons'
-  },
-  {
-    title: 'Typography',
-    icon: 'text-circle-outline',
-    to: '/ui/typography'
-  },
-  {
-    title: 'Shadow',
-    icon: 'watch-square-minimalistic-charge-line-duotone',
-    to: '/ui/shadow'
-  },
-  {
-    title: 'auth',
-    header: 'auth'
-  },
-
   {
     title: 'Login',
     icon: 'login-3-line-duotone',
-    to: '/auth/login'
+    to: { name: 'Login' },
+    guest: true
   },
   {
     title: 'Register',
     icon: 'user-plus-rounded-line-duotone',
-    to: '/auth/register'
+    to: { name: 'Register' },
+    guest: true
+  },
+  { header: 'Admin', authRequired: true, requiredRole: UserType.ADMIN },
+  {
+    title: 'Dashboard',
+    icon: 'widget-add-line-duotone',
+    to: { name: 'Dashboard' },
+    authRequired: true,
+    requiredRole: UserType.ADMIN
+  },
+  {
+    title: 'Users',
+    icon: 'widget-add-line-duotone',
+    to: { name: 'Users' },
+    authRequired: true,
+    requiredRole: UserType.ADMIN
   }
 ]
 
-export default sidebarItem
+const devOnlyRoutes: Menu[] = [
+  { header: 'Dev' },
+  {
+    title: 'Icons',
+    icon: 'sticker-smile-circle-2-line-duotone',
+    to: { name: 'Icons' }
+  },
+  {
+    title: 'Typography',
+    icon: 'text-circle-outline',
+    to: { name: 'Typography' }
+  },
+  {
+    title: 'Shadow',
+    icon: 'watch-square-minimalistic-charge-line-duotone',
+    to: { name: 'Shadow' }
+  }
+]
+
+export default appConfig.isDev ? sidebarItem.concat(devOnlyRoutes) : sidebarItem

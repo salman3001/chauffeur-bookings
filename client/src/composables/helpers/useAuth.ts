@@ -1,19 +1,16 @@
 import type { User } from '@/types/interfaces/User'
-import { useCookie } from './useCookie'
 import { ref } from 'vue'
-
-const user = ref<User | null>()
+import { cookie } from '@/utils/cookies'
 
 export const useAuth = () => {
-  const cookies = useCookie()
-  user.value = cookies.get<User | null>('user')
+  const user = ref(cookie.get<User | null>('user'))
 
-  const is = (role: User['userType']) => {
+  const isUser = (role: User['userType']) => {
     return user.value?.userType === role
   }
 
   return {
     user,
-    is
+    isUser
   }
 }

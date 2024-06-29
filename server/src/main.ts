@@ -17,8 +17,14 @@ async function bootstrap() {
 
   const config = app.get<ConfigService>(ConfigService);
 
+  //cors
+  app.enableCors({
+    origin: [config.get<AppConfig>('appConfig')!.appUrl],
+    credentials: true,
+  });
+
+  // swagger
   if (config.get<AppConfig>('appConfig')!.nodeEnv === 'dev') {
-    // swagger
     const swaggerConfig = new DocumentBuilder()
       .setTitle(config.get<AppConfig>('appConfig')!.appName)
       .setDescription('All server apis documented here')
@@ -29,6 +35,8 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, swaggerConfig);
     SwaggerModule.setup('documentation', app, document);
   }
+
+  app.setGlobalPrefix('api');
 
   await app.listen(config.get<AppConfig>('appConfig')!.port);
 }

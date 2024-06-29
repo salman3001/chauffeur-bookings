@@ -29,9 +29,15 @@ dependencies:
   axios:
     specifier: ^1.7.2
     version: 1.7.2(debug@4.3.5)
+  cookie-es:
+    specifier: ^1.1.0
+    version: 1.1.0
   date-fns:
     specifier: ^2.29.3
     version: 2.30.0
+  destr:
+    specifier: ^2.0.3
+    version: 2.0.3
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
@@ -60,8 +66,8 @@ dependencies:
     specifier: 2.21.0
     version: 2.21.0
   vue-toastification:
-    specifier: ^1.7.14
-    version: 1.7.14(vue@3.4.31)
+    specifier: 2.0.0-rc.5
+    version: 2.0.0-rc.5(vue@3.4.31)
   vue3-apexcharts:
     specifier: 1.5.2
     version: 1.5.2(apexcharts@3.45.2)(vue@3.4.31)
@@ -2364,6 +2370,10 @@ packages:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
     dev: true
 
+  /cookie-es@1.1.0:
+    resolution: {integrity: sha512-L2rLOcK0wzWSfSDA33YR+PUHDG10a8px7rUHKWbGLP4YfbsMed2KFUw5fczvDPbT98DDe3LEzviswl810apTEw==}
+    dev: false
+
   /cookie@0.6.0:
     resolution: {integrity: sha512-U71cyTamuh1CRNCfpGY6to28lxvNwPG4Guz/EVjgf3Jmzv0vlDp1atT9eS5dDjMYHucpHbWns6Lwf3BKz6svdw==}
     engines: {node: '>= 0.6'}
@@ -2655,6 +2665,10 @@ packages:
   /delayed-stream@1.0.0:
     resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
     engines: {node: '>=0.4.0'}
+
+  /destr@2.0.3:
+    resolution: {integrity: sha512-2N3BOUU4gYMpTP24s5rF5iP7BDr7uNTCs4ozw3kf/eKfvWSIu93GEBi5m427YoyJoeOzQ5smuu4nNAPGb8idSQ==}
+    dev: false
 
   /diff-sequences@29.6.3:
     resolution: {integrity: sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==}
@@ -5907,10 +5921,10 @@ packages:
       he: 1.2.0
     dev: true
 
-  /vue-toastification@1.7.14(vue@3.4.31):
-    resolution: {integrity: sha512-khZR8t3NWZ/JJ2MZxXLbesHrRJ8AKa75PY5Zq8yMifF9x8lHq8ljYkC0d2PD9yahooygQB5tcFyRDkbbIPx8hw==}
+  /vue-toastification@2.0.0-rc.5(vue@3.4.31):
+    resolution: {integrity: sha512-q73e5jy6gucEO/U+P48hqX+/qyXDozAGmaGgLFm5tXX4wJBcVsnGp4e/iJqlm9xzHETYOilUuwOUje2Qg1JdwA==}
     peerDependencies:
-      vue: ^2.0.0
+      vue: ^3.0.2
     dependencies:
       vue: 3.4.31(typescript@5.4.5)
     dev: false

@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
 import type { Menu } from '../sidebarItem'
+import { useNavlinkVisibility } from '@/composables/helpers/useNavlinkVisibility'
 
-const props = defineProps<{ item: Menu; level?: number }>()
+defineProps<{ item: Menu; level?: number }>()
+const { isVisible } = useNavlinkVisibility()
 </script>
 
 <template>
   <!---Single Item-->
   <v-list-item
+    v-if="isVisible(item)"
     :to="item?.type === 'external' ? '' : item?.to"
-    :href="item?.type === 'external' ? item?.to : ''"
+    :href="item?.type === 'external' ? (item?.to as string) : ''"
     rounded
     class="mb-1"
     :disabled="item?.disabled"

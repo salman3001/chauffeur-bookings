@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import Logo from '@/layouts/full/logo/Logo.vue'
-/* Login form */
-import LoginForm from '@/components/auth/LoginForm.vue'
 import appConfig from '@/config/app.config'
 </script>
 <template>
@@ -15,18 +13,11 @@ import appConfig from '@/config/app.config'
                 <Logo />
               </div>
               <div class="text-body-1 text-muted text-center mb-3">{{ appConfig.appSlogan }}</div>
-              <LoginForm />
-              <h6
-                class="text-h6 text-muted font-weight-medium d-flex justify-center align-center mt-3"
-              >
-                New to {{ appConfig.appName }}?
-                <RouterLink
-                  to="/auth/register"
-                  class="text-primary text-decoration-none text-body-1 opacity-1 font-weight-medium pl-2"
+              <div class="my-10">
+                <VAlert type="info" icon="info" variant="tonal"
+                  >We have sent you an email. Please check your inbox</VAlert
                 >
-                  Create an account</RouterLink
-                >
-              </h6>
+              </div>
             </v-card-item>
           </v-card>
         </v-col>

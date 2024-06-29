@@ -1,6 +1,6 @@
 import { plainToInstance } from 'class-transformer';
 import { type ValidationError, validate } from 'class-validator';
-import { ValidationErrorsArray } from './types/common';
+import { ValidationErrorObj } from './types/common';
 
 type EnumLike = Array<unknown> | Record<string, unknown>;
 
@@ -16,39 +16,57 @@ export function getEnumValues<T extends EnumLike>(enumType: T): Array<string> {
 
 export function generateClassValidatorErrors(
   errors: ValidationError[],
-): ValidationErrorsArray {
-  const errArray: ValidationErrorsArray = [];
+): ValidationErrorObj {
+  let errObj: ValidationErrorObj = null;
 
   if (errors.length > 0) {
     errors.forEach((err) => {
       if (err?.constraints) {
-        errArray.push({
-          [err.property]: {
-            errors: err?.constraints
-              ? Object.values(err.constraints)
-              : ['Validiation Failed'],
-          },
-        });
+        if (errObj === null) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          errObj = {};
+        }
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        errObj[err.property] = {
+          errors: err?.constraints
+            ? Object.values(err.constraints)
+            : ['Validiation Failed'],
+        };
       }
 
       if (err?.children) {
         const childErrors = generateClassValidatorErrors(err.children);
-        childErrors.forEach((childError) => {
-          errArray.push({
-            [err.property]: childError,
-          });
-        });
+        if (errObj === null) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          errObj = {};
+        }
+
+        if (childErrors) {
+          const newErrorObj = {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            ...errObj[err.property],
+            ...childErrors,
+          };
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          errObj[err.property] = newErrorObj;
+        }
       }
     });
   }
 
-  return errArray;
+  return errObj;
 }
 
 export async function validatePartialModel<T extends new () => T>(
   model: T,
   partialModel: Partial<T>,
-): Promise<ValidationErrorsArray> {
+): Promise<ValidationErrorObj> {
   const partialModelInstance = plainToInstance(model, partialModel);
   const errors = await validate(partialModelInstance);
   return generateClassValidatorErrors(errors);

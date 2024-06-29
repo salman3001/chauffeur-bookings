@@ -26,8 +26,12 @@ export type IJwtPayload =
   | JWTConfirmEmailPayload
   | JWTResetPasswordPayload;
 
-export type ValidationErrorObj = {
-  [key: string]: string[] | ValidationErrorObj;
+type ValidationError = {
+  errors: string[];
 };
 
-export type ValidationErrorsArray = ValidationErrorObj[];
+export type ValidationErrorObj =
+  | (ValidationError & {
+      [key: string]: ValidationErrorObj;
+    })
+  | null;

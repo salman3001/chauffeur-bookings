@@ -1,7 +1,7 @@
 import type { AxiosError, AxiosRequestConfig } from 'axios'
 import { reactive, watch } from 'vue'
-import vt from 'vue-toastification'
-import type { ResType, ValidationErrorsArray } from '@/types/interfaces/ResType'
+import { useToast } from 'vue-toastification'
+import type { ResType, ValidationErrorObj } from '@/types/interfaces/ResType'
 import api from '@/utils/axios'
 import { pickKeysFromReference } from '@/utils/helpers'
 
@@ -13,14 +13,14 @@ export default function useApiForm<T extends object>(
     ...initialForm,
     res: undefined as undefined | ResType<any>,
     processing: false,
-    error: null as unknown as ValidationErrorsArray | undefined,
+    errors: null as unknown as ValidationErrorObj | undefined,
     disableToast: options?.disableToast || false,
     async post(
       url: string,
       config?: AxiosRequestConfig,
       opt?: { onSucess?: () => void; onError?: () => void }
     ) {
-      this.error = undefined
+      this.errors = undefined
       this.processing = true
       try {
         const res = await api.post<ResType<any>>(
@@ -28,13 +28,14 @@ export default function useApiForm<T extends object>(
           pickKeysFromReference(this, initialForm),
           config
         )
+
         if (res.data.success === true) {
           opt?.onSucess && opt.onSucess()
         }
         this.res = res.data
       } catch (error: unknown) {
         this.res = (error as AxiosError<ResType<any>>).response?.data
-        this.error = (error as AxiosError<ResType<any>>).response?.data?.errors
+        this.errors = (error as AxiosError<ResType<any>>).response?.data?.errors
         opt?.onError && opt.onError()
       }
       this.processing = false
@@ -44,7 +45,7 @@ export default function useApiForm<T extends object>(
       config?: AxiosRequestConfig,
       opt?: { onSucess?: () => void; onError?: () => void }
     ) {
-      this.error = undefined
+      this.errors = undefined
       this.processing = true
       try {
         const res = await api.put<ResType<any>>(
@@ -58,7 +59,7 @@ export default function useApiForm<T extends object>(
         this.res = res.data
       } catch (error: unknown) {
         this.res = (error as AxiosError<ResType<any>>).response?.data
-        this.error = (error as AxiosError<ResType<any>>).response?.data?.errors
+        this.errors = (error as AxiosError<ResType<any>>).response?.data?.errors
         opt?.onError && opt.onError()
       }
       this.processing = false
@@ -68,7 +69,7 @@ export default function useApiForm<T extends object>(
       config?: AxiosRequestConfig,
       opt?: { onSucess?: () => void; onError?: () => void }
     ) {
-      this.error = undefined
+      this.errors = undefined
       this.processing = true
       try {
         const res = await api.delete<ResType<any>>(url, config)
@@ -78,7 +79,7 @@ export default function useApiForm<T extends object>(
         this.res = res.data
       } catch (error: unknown) {
         this.res = (error as AxiosError<ResType<any>>).response?.data
-        this.error = (error as AxiosError<ResType<any>>).response?.data?.errors
+        this.errors = (error as AxiosError<ResType<any>>).response?.data?.errors
         opt?.onError && opt.onError()
       }
       this.processing = false
@@ -89,7 +90,7 @@ export default function useApiForm<T extends object>(
     () => formObject.res,
     (n) => {
       if (n && !formObject.disableToast) {
-        const toast = vt.useToast()
+        const toast = useToast()
         if (n.success === true) {
           toast.success(n.message || ' Success')
         }

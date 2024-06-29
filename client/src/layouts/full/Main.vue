@@ -9,8 +9,10 @@ import Logo from './logo/Logo.vue'
 import NotificationDD from './vertical-header/NotificationDD.vue'
 import ProfileDD from './vertical-header/ProfileDD.vue'
 import { Icon } from '@iconify/vue'
+import { useAuth } from '@/composables/helpers/useAuth'
 const sidebarMenu = shallowRef<Menu[]>(sidebarItems)
 const sDrawer = ref(true)
+const { user } = useAuth()
 </script>
 
 <template>
@@ -36,9 +38,7 @@ const sDrawer = ref(true)
             <!---End Single Item-->
           </template>
         </v-list>
-        <div class="pa-4">
-          <Upgradeversion />
-        </div>
+        <div class="pa-4"></div>
       </perfect-scrollbar>
     </div>
   </v-navigation-drawer>
@@ -56,13 +56,13 @@ const sDrawer = ref(true)
           <Icon icon="solar:hamburger-menu-outline" height="20"></Icon>
         </v-btn>
         <!-- Notification -->
-        <NotificationDD />
+        <NotificationDD v-if="user" />
       </div>
       <div>
         <!-- More options -->
         <v-btn class="mr-2 bg-primary" href="" target="_blank">More options</v-btn>
         <!-- User Profile -->
-        <ProfileDD />
+        <ProfileDD v-if="user" />
       </div>
     </div>
   </v-app-bar>

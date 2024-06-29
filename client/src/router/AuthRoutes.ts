@@ -9,14 +9,34 @@ const AuthRoutes: RouteRecordRaw = {
   children: [
     {
       name: 'Login',
-      path: '/auth/login',
+      path: 'login',
       component: () => import('@/views/auth/Login.vue'),
       meta: {}
     },
     {
       name: 'Register',
-      path: '/auth/register',
+      path: 'register',
       component: () => import('@/views/auth/Register.vue')
+    },
+    {
+      name: 'Check-Email',
+      path: 'check-email',
+      component: () => import('@/views/auth/CheckEmail.vue')
+    },
+    {
+      name: 'Confirming-Email',
+      path: 'confirming-email',
+      component: () => import('@/views/auth/ConfirmingEmail.vue')
+    },
+    {
+      name: 'Forgot-Password',
+      path: 'forgot-password',
+      component: () => import('@/views/auth/ForgotPassword.vue')
+    },
+    {
+      name: 'Reset-Password',
+      path: 'reset-password',
+      component: () => import('@/views/auth/ResetPassword.vue')
     }
   ]
 }

@@ -1,14 +1,14 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { ValidationErrorsArray } from '../types/common';
+import { ValidationErrorObj } from '../types/common';
 
 export class CustomHttpException extends HttpException {
-  errors: ValidationErrorsArray | undefined;
+  errors: ValidationErrorObj | undefined;
   constructor(opt: {
     code: HttpStatus;
     success: boolean;
     message?: string;
     data?: any;
-    errors?: ValidationErrorsArray;
+    errors?: ValidationErrorObj;
   }) {
     super(
       {

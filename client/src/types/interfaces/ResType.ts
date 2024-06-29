@@ -3,11 +3,15 @@ export interface ResType<T> {
   success: boolean
   message?: string
   data?: T
-  errors?: ValidationErrorsArray
+  errors?: ValidationErrorObj
 }
 
-export type ValidationErrorObj = {
-  [key: string]: string[] | ValidationErrorObj
+type ValidationError = {
+  errors: string[]
 }
 
-export type ValidationErrorsArray = ValidationErrorObj[]
+export type ValidationErrorObj =
+  | (ValidationError & {
+      [key: string]: ValidationErrorObj
+    })
+  | null

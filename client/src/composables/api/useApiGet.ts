@@ -2,11 +2,11 @@ import type { ResType } from '@/types/interfaces/ResType'
 import api from '@/utils/axios'
 import type { AxiosError, AxiosRequestConfig } from 'axios'
 import { ref, type Ref } from 'vue'
-import vt from 'vue-toastification'
+import { useToast } from 'vue-toastification'
 
 export default function useApiGet<T>() {
   const processing = ref(false)
-  const data = ref<T | null>(null)
+  const data = ref<T | null>(null) as Ref<T | null>
 
   const error = ref<null | string | undefined>(null)
 
@@ -33,7 +33,7 @@ export default function useApiGet<T>() {
         if (resData?.success === false) {
           opt?.onError && opt?.onError()
           if (!import.meta.env.SSR) {
-            const toast = vt.useToast()
+            const toast = useToast()
             toast.error(resData?.message || 'Error Resposse')
           }
         }
@@ -41,7 +41,7 @@ export default function useApiGet<T>() {
   }
 
   return {
-    data: data as Ref<T>,
+    data,
     exec,
     processing,
     error

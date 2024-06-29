@@ -6,6 +6,12 @@ export interface ResType<T> {
   errors?: ValidationErrorObj
 }
 
+export interface Paginated<T> {
+  count: number
+  results: T
+  perPage: number
+}
+
 type ValidationError = {
   errors: string[]
 }

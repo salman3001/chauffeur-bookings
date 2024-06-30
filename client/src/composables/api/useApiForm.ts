@@ -40,7 +40,7 @@ export default function useApiForm<T extends object>(
       }
       this.processing = false
     },
-    async put(
+    async pacth(
       url: string,
       config?: AxiosRequestConfig,
       opt?: { onSucess?: () => void; onError?: () => void }
@@ -48,7 +48,7 @@ export default function useApiForm<T extends object>(
       this.errors = undefined
       this.processing = true
       try {
-        const res = await api.put<ResType<any>>(
+        const res = await api.patch<ResType<any>>(
           url,
           pickKeysFromReference(this, initialForm),
           config
@@ -83,6 +83,15 @@ export default function useApiForm<T extends object>(
         opt?.onError && opt.onError()
       }
       this.processing = false
+    },
+    reset() {
+      for (const key in initialForm) {
+        // @ts-ignore
+        this[key] = initialForm[key]
+      }
+      this.res = undefined
+      this.processing = false
+      this.errors = null
     }
   })
 

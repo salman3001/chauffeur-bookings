@@ -9,4 +9,5 @@ export class CreateUserDto extends PickType(User, [
   'isActive',
   'password',
   'userType',
+  'emailVerified',
 ]) {}

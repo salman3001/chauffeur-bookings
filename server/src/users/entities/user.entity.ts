@@ -74,7 +74,7 @@ export default class User {
 
   @Column('boolean', { default: false })
   @IsBoolean()
-  emailVerfied: boolean;
+  emailVerified: boolean;
 
   @CreateDateColumn({ type: 'timestamptz' })
   cretaedAt: Date;

@@ -11,7 +11,7 @@ import ProfileDD from './vertical-header/ProfileDD.vue'
 import { Icon } from '@iconify/vue'
 import { useAuth } from '@/composables/helpers/useAuth'
 const sidebarMenu = shallowRef<Menu[]>(sidebarItems)
-const sDrawer = ref(true)
+const sDrawer = ref(false)
 const { user } = useAuth()
 </script>
 

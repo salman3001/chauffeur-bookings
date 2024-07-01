@@ -51,7 +51,14 @@ const sidebarItem: Menu[] = [
   {
     title: 'Users',
     icon: 'widget-add-line-duotone',
-    to: { name: 'Users' },
+    to: { name: 'Users.Index' },
+    authRequired: true,
+    requiredRole: UserType.ADMIN
+  },
+  {
+    title: 'Cars',
+    icon: 'widget-add-line-duotone',
+    to: { name: 'Cars.Index' },
     authRequired: true,
     requiredRole: UserType.ADMIN
   }

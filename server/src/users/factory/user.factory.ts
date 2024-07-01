@@ -14,7 +14,7 @@ export const userFactory = factory
   .attr('password', () => hashSync('123456789', 10))
   .attr('isActive', () => true)
   .attr('userType', () => UserType.CUSTOMER)
-  .attr('emailVerfied', () => true);
+  .attr('emailVerified', () => true);
 
 export default setSeederFactory(User, () => {
   const user = userFactory.build();

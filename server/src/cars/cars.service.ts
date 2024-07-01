@@ -48,7 +48,7 @@ export class CarsService {
 
     const { results, count, perPage } = await this.carRepo.paginate(qb, query);
 
-    return { cars: results, count, perPage };
+    return { results, count, perPage };
   }
 
   async findOne(id: number, authUser: AuthUserType) {
@@ -70,12 +70,12 @@ export class CarsService {
     if (image) {
       const oldImage = car.image;
       car.image = await this.fileservice.uploadImage(image, '/images/cars');
-
-      await this.carRepo.save(car);
       if (oldImage) {
         await this.fileservice.deleteImage(oldImage);
       }
     }
+
+    await this.carRepo.save(car);
 
     return car;
   }
@@ -85,8 +85,9 @@ export class CarsService {
     if (car.image) {
       await this.fileservice.deleteImage(car.image);
     }
+
     this.carsPolicy.authorize('remove', authUser);
-    const deletedCar = await this.carRepo.delete(car);
+    const deletedCar = await this.carRepo.delete({ id: car.id });
     return deletedCar;
   }
 }

@@ -1,10 +1,10 @@
-import type { User } from '@/types/interfaces/User'
 import useApiGet from '../useApiGet'
-import { reactive, watch } from 'vue'
-import type { Paginated, ResType } from '@/types/interfaces/ResType'
+import { reactive } from 'vue'
+import type { Paginated } from '@/types/interfaces/ResType'
+import type { Car } from '@/types/entities/car'
 
-export const useGetUsers = () => {
-  const { data, processing, exec } = useApiGet<Paginated<any[]>>()
+export const useGetCars = () => {
+  const { data, processing, exec } = useApiGet<Paginated<Car[]>>()
 
   const initialQuery = {
     page: 1,
@@ -14,8 +14,8 @@ export const useGetUsers = () => {
 
   const query = reactive(initialQuery)
 
-  const getUsers = () =>
-    exec('/users', {
+  const getCars = () =>
+    exec('/cars', {
       params: query
     })
 
@@ -24,13 +24,13 @@ export const useGetUsers = () => {
       // @ts-ignore
       query[key] = initialQuery[key]
     })
-    getUsers()
+    getCars()
   }
 
   return {
     data: data,
     query,
-    getUsers,
+    getCars,
     processing,
     refresh
   }

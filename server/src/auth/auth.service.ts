@@ -49,7 +49,7 @@ export class AuthService {
       });
     }
 
-    if (!user.isActive || !user.emailVerfied) {
+    if (!user.isActive || !user.emailVerified) {
       throw new CustomHttpException({
         code: HttpStatus.UNAUTHORIZED,
         success: false,
@@ -126,7 +126,7 @@ export class AuthService {
       email: payload.email,
     });
 
-    user.emailVerfied = true;
+    user.emailVerified = true;
     await this.userRepo.save(user);
     return user;
   }

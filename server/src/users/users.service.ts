@@ -40,6 +40,7 @@ export class UsersService {
       where: {
         email: createUserDto.email,
       },
+      withDeleted: true,
     });
 
     if (userExist) {
@@ -52,7 +53,6 @@ export class UsersService {
 
     return await this.dataSource.transaction(async (manager) => {
       const user = this.userRepository.create(createUserDto);
-      user.emailVerfied = true;
       const savedUser = await manager.save(user);
       const profile = this.profileRepository.create({});
       profile.user = savedUser;
@@ -99,6 +99,7 @@ export class UsersService {
     if (updateUserDto.email) {
       const emailExist = await this.userRepository.findOne({
         where: { email: updateUserDto.email, id: Not(id) },
+        withDeleted: true,
       });
       if (emailExist) {
         throw new CustomHttpException({

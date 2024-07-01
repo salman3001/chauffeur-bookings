@@ -18,9 +18,39 @@ const AdminRoutes: RouteRecordRaw = {
       path: 'users',
       children: [
         {
-          name: 'Users',
+          name: 'Users.Index',
           path: '',
-          component: () => import('@/views/admin/users/Index.vue')
+          component: () => import('@/views/admin/users/index.user.vue')
+        },
+        {
+          name: 'Users.Create',
+          path: 'create',
+          component: () => import('@/views/admin/users/create.user.vue')
+        },
+        {
+          name: 'Users.Edit',
+          path: ':id/edit',
+          component: () => import('@/views/admin/users/edit.user.vue')
+        }
+      ]
+    },
+    {
+      path: 'cars',
+      children: [
+        {
+          name: 'Cars.Index',
+          path: '',
+          component: () => import('@/views/admin/cars/cars.index.vue')
+        },
+        {
+          name: 'Cars.Create',
+          path: 'create',
+          component: () => import('@/views/admin/cars/cars.create.vue')
+        },
+        {
+          name: 'Cars.Edit',
+          path: ':id/edit',
+          component: () => import('@/views/admin/cars/cars.edit.vue')
         }
       ]
     }

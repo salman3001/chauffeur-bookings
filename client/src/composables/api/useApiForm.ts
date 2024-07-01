@@ -92,6 +92,12 @@ export default function useApiForm<T extends object>(
       this.res = undefined
       this.processing = false
       this.errors = null
+    },
+    assign(obj: Record<string, any>) {
+      for (const key in initialForm) {
+        // @ts-ignore
+        this[key] = obj[key]
+      }
     }
   })
 

@@ -2,6 +2,7 @@ import type { UserType } from '@/utils/enums/UserType'
 import type { AdminProfile } from './adminProfile'
 import type { ChauffeurProfile } from './chauffeurProfile'
 import type { Notification } from './notification'
+import type { Profile } from './profile'
 
 export interface User {
   id: number
@@ -16,6 +17,7 @@ export interface User {
   cretaedAt: string
   updatedAt: string
   deletedAt: string
+  profile: Profile
   adminProfile?: AdminProfile
   chauffeurProfile?: ChauffeurProfile
   notifications: Notification[]

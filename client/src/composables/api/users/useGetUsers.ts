@@ -1,16 +1,20 @@
-import type { User } from '@/types/interfaces/User'
 import useApiGet from '../useApiGet'
-import { reactive, watch } from 'vue'
-import type { Paginated, ResType } from '@/types/interfaces/ResType'
+import { reactive, ref } from 'vue'
+import type { Paginated } from '@/types/interfaces/ResType'
+import { debouncedWatch } from '@vueuse/core'
+import type { User } from '@/types/entities/user'
 
 export const useGetUsers = () => {
-  const { data, processing, exec } = useApiGet<Paginated<any[]>>()
+  const { data, processing, exec } = useApiGet<Paginated<User[]>>()
 
   const initialQuery = {
     page: 1,
     perPage: 10,
-    sortBy: ''
+    orderBy: [],
+    search: ''
   }
+
+  const debouncedSearch = ref('')
 
   const query = reactive(initialQuery)
 
@@ -27,11 +31,20 @@ export const useGetUsers = () => {
     getUsers()
   }
 
+  debouncedWatch(
+    debouncedSearch,
+    () => {
+      query.search = debouncedSearch.value
+    },
+    { debounce: 500 }
+  )
+
   return {
     data: data,
     query,
     getUsers,
     processing,
-    refresh
+    refresh,
+    debouncedSearch
   }
 }

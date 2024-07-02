@@ -1,21 +1,43 @@
 <script setup lang="ts">
 import UiParentCard from '@/components/shared/UiParentCard.vue'
+import DropZone from '@/components/shared/form/DropZone.vue'
 import { useEditCar } from '@/composables/api/cars/useEditCar'
+import { getUploadUrl } from '@/utils/getUploadUrl'
 import { Icon } from '@iconify/vue/dist/iconify.js'
 
-const { form, createCar } = useEditCar()
+const { form, createCar, car } = useEditCar()
 </script>
 
 <template>
   <v-row>
     <v-col cols="12" md="12">
       <div class="mb-4">
-        <v-btn class="mb-2" color="primary" flat :to="{ name: 'Users.Index' }">
+        <v-btn class="mb-2" color="primary" flat :to="{ name: 'Cars.Index' }">
           <Icon icon="solar:arrow-left-line-duotone" height="25"></Icon>
         </v-btn>
       </div>
       <UiParentCard title="Edit Car">
         <v-row class="d-flex mb-3">
+          <v-col cols="12">
+            <v-img
+              height="100px"
+              width="160px"
+              :src="getUploadUrl(car?.image?.thumbnailUrl)"
+              aspect-ratio="16/9"
+              cover
+            />
+          </v-col>
+          <v-col cols="12">
+            <v-label class="font-weight-bold mb-1">Image</v-label>
+            <DropZone
+              :max="1"
+              @change="
+                (f) => {
+                  form.image = f[0]?.file
+                }
+              "
+            />
+          </v-col>
           <v-col cols="12" :md="6" :lg="4">
             <v-label class="font-weight-bold mb-1">Name</v-label>
             <v-text-field

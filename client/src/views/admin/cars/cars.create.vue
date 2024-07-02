@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import UiParentCard from '@/components/shared/UiParentCard.vue'
+import DropZone from '@/components/shared/form/DropZone.vue'
 import { useCreateCar } from '@/composables/api/cars/useCreateCar'
-import { useCreateUser } from '@/composables/api/users/useCreateUser'
-import { UserType } from '@/utils/enums/UserType'
 import { Icon } from '@iconify/vue/dist/iconify.js'
 
 const { form, createCar } = useCreateCar()
@@ -18,6 +17,18 @@ const { form, createCar } = useCreateCar()
       </div>
       <UiParentCard title="Add Car">
         <v-row class="d-flex mb-3">
+          <v-col cols="12">
+            <v-label class="font-weight-bold mb-1">Image</v-label>
+
+            <DropZone
+              :max="1"
+              @change="
+                (f) => {
+                  form.image = f[0]?.file
+                }
+              "
+            />
+          </v-col>
           <v-col cols="12" :md="6" :lg="4">
             <v-label class="font-weight-bold mb-1">Name</v-label>
             <v-text-field

@@ -5,21 +5,29 @@ import { useTable } from '@/composables/helpers/useTable'
 import ConfirmModal from '@/components/shared/modals/ConfirmModal.vue'
 import { useGetCars } from '@/composables/api/cars/useGetCars'
 import { useDeleteCar } from '@/composables/api/cars/useDeleteCar'
+import { getUploadUrl } from '@/utils/getUploadUrl'
 
-const { data, getCars, processing, query, refresh } = useGetCars()
+const { data, getCars, processing, query, refresh, debouncedSearch } = useGetCars()
 const { deleteCar } = useDeleteCar()
 
 const { headers, loadItems } = useTable(
   [
+    {
+      title: 'Image',
+      align: 'start',
+      sortable: false,
+      key: 'image',
+      width: '50px'
+    },
     {
       title: 'Name',
       align: 'start',
       sortable: false,
       key: 'name'
     },
-    { title: 'model', key: 'model', align: 'start' },
+    { title: 'year', key: 'year', align: 'start' },
     { title: 'make', key: 'make', align: 'center' },
-    { title: 'Actions', key: 'actions', align: 'end' }
+    { title: 'Actions', key: 'actions', align: 'end', sortable: false }
   ],
   query,
   () => {
@@ -36,13 +44,37 @@ const { headers, loadItems } = useTable(
       <UiParentCard title="Cars">
         <v-data-table-server
           v-model:items-per-page="query.perPage"
+          :page="query.page"
           :headers="headers"
           :items="data?.results"
           :items-length="data?.count || 0"
           :loading="processing"
           item-value="name"
+          :search="query.search"
           @update:options="loadItems"
         >
+          <template v-slot:top>
+            <v-text-field
+              v-model.lazy="debouncedSearch"
+              label="Search"
+              prepend-inner-icon="mdi-magnify"
+              hide-details
+              single-line
+              variant="outlined"
+              density="compact"
+              style="max-width: 300px"
+            >
+            </v-text-field>
+          </template>
+          <template v-slot:item.image="{ item }"
+            ><v-img
+              height="30px"
+              width="60px"
+              :src="getUploadUrl(item.image?.thumbnailUrl)"
+              aspect-ratio="16/9"
+              cover
+            />
+          </template>
           <template v-slot:item.actions="{ item }">
             <div class="d-flex justify-end ga-2">
               <v-btn icon flat size="sm" :to="{ name: 'Cars.Edit', params: { id: item.id } }">

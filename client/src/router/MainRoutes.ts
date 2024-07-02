@@ -8,6 +8,11 @@ const BookingRoutes: RouteRecordRaw = {
       name: 'Home',
       path: '',
       component: () => import('@/views/booking/Index.vue')
+    },
+    {
+      name: 'Profile',
+      path: '/profile',
+      component: () => import('@/views/Profile.vue')
     }
   ]
 }

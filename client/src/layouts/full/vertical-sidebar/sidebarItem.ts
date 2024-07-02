@@ -70,16 +70,6 @@ const devOnlyRoutes: Menu[] = [
     title: 'Icons',
     icon: 'sticker-smile-circle-2-line-duotone',
     to: { name: 'Icons' }
-  },
-  {
-    title: 'Typography',
-    icon: 'text-circle-outline',
-    to: { name: 'Typography' }
-  },
-  {
-    title: 'Shadow',
-    icon: 'watch-square-minimalistic-charge-line-duotone',
-    to: { name: 'Shadow' }
   }
 ]
 

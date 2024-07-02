@@ -14,6 +14,7 @@ import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { UploadAvatarDto } from './dto/upload-avatar.dto';
 import { AuthUser } from 'src/utils/decorators/authUser.decorator';
 import { fileFilter } from 'src/files/helpers/fileFIlter';
+import CustomRes from 'src/utils/CustomRes';
 
 @Controller('my-profile')
 export class ProfilesController {
@@ -21,8 +22,12 @@ export class ProfilesController {
 
   @Get()
   async findOne(@AuthUser() authUser: AuthUserType) {
-    const profle = await this.profilesService.findOne(authUser);
-    return profle;
+    const profile = await this.profilesService.findOne(authUser);
+    return CustomRes({
+      code: 200,
+      data: profile,
+      success: true,
+    });
   }
 
   @Patch()
@@ -46,13 +51,15 @@ export class ProfilesController {
     @UploadedFile()
     avatar?: Express.Multer.File,
   ) {
-    console.log(avatar);
-
     const profile = this.profilesService.update(
       updateProfileDto,
       authUser,
       avatar,
     );
-    return profile;
+    return CustomRes({
+      code: 201,
+      data: profile,
+      success: true,
+    });
   }
 }

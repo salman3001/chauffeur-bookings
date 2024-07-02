@@ -7,10 +7,12 @@ import { ConfigService } from '@nestjs/config';
 import { AppConfig } from './config/app.config';
 import ValidatorPipe from './utils/pipes/ValidatorPipe';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  app.useStaticAssets(join(process.cwd(), 'public'));
   app.use(cookieParser());
   app.useGlobalFilters(new GlobalHttpExceptionsFilter());
   app.useGlobalPipes(new ValidatorPipe());
@@ -23,6 +25,8 @@ async function bootstrap() {
     credentials: true,
   });
 
+  app.setGlobalPrefix('api');
+
   // swagger
   if (config.get<AppConfig>('appConfig')!.nodeEnv === 'dev') {
     const swaggerConfig = new DocumentBuilder()
@@ -33,10 +37,10 @@ async function bootstrap() {
       .build();
 
     const document = SwaggerModule.createDocument(app, swaggerConfig);
-    SwaggerModule.setup('documentation', app, document);
+    SwaggerModule.setup('documentation', app, document, {
+      useGlobalPrefix: true,
+    });
   }
-
-  app.setGlobalPrefix('api');
 
   await app.listen(config.get<AppConfig>('appConfig')!.port);
 }

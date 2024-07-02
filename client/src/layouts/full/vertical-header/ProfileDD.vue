@@ -19,7 +19,7 @@ const { logout } = useLogout()
     </template>
     <v-sheet rounded="md" width="200" elevation="10" class="mt-2">
       <v-list class="py-0" lines="one" density="compact">
-        <v-list-item value="item1" active-color="primary">
+        <v-list-item value="item1" active-color="primary" :to="{ name: 'Profile' }">
           <template v-slot:prepend>
             <UserIcon stroke-width="1.5" size="20" />
           </template>

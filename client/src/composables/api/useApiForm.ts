@@ -40,7 +40,7 @@ export default function useApiForm<T extends object>(
       }
       this.processing = false
     },
-    async pacth(
+    async patch(
       url: string,
       config?: AxiosRequestConfig,
       opt?: { onSucess?: () => void; onError?: () => void }

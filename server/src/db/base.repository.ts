@@ -2,7 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
 import { AppConfig } from '../config/app.config';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class BaseRepository<T extends ObjectLiteral> extends Repository<T> {
@@ -36,12 +36,11 @@ export class BaseRepository<T extends ObjectLiteral> extends Repository<T> {
   }
 
   orderBy(qb: SelectQueryBuilder<T>, alias: string, query?: BaseQueryFilter) {
-    const [orderBy, orderDirection] = query?.orderBy
-      ? query?.orderBy.split(':')
-      : [];
-
-    if (orderBy) {
-      qb.orderBy(`${alias}.${orderBy}`, orderDirection as 'DESC');
+    if (query?.orderBy && query?.orderBy?.length > 0) {
+      query?.orderBy?.forEach((order: string) => {
+        const [orderBy, orderDirection] = order.split(':');
+        qb.orderBy(`${alias}.${orderBy}`, orderDirection as 'DESC');
+      });
     }
   }
 }
@@ -60,7 +59,8 @@ export class BaseQueryFilter {
   perPage?: number;
 
   @ApiPropertyOptional()
-  @IsString()
+  @IsArray()
   @IsOptional()
-  orderBy?: string;
+  @Type(() => String)
+  orderBy?: string[];
 }

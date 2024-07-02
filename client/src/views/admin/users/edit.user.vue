@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import UiParentCard from '@/components/shared/UiParentCard.vue'
-import { useCreateUser } from '@/composables/api/users/useCreateUser'
 import { useEditUser } from '@/composables/api/users/useEditUser'
 import { UserType } from '@/utils/enums/UserType'
 import { Icon } from '@iconify/vue/dist/iconify.js'

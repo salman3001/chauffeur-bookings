@@ -45,7 +45,8 @@ export class CarsService {
   async findAll(authUser: AuthUserType, query?: CarFilterQuery) {
     this.carsPolicy.authorize('findAll', authUser);
     const qb = this.carRepo.createQueryBuilder();
-
+    this.carRepo.applyFilers(qb, query);
+    this.carRepo.orderBy(qb, 'Car', query);
     const { results, count, perPage } = await this.carRepo.paginate(qb, query);
 
     return { results, count, perPage };

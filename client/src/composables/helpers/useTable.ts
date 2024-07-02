@@ -1,16 +1,21 @@
 import type { ReadonlyHeaders } from '@/types/interfaces/Vuetify'
-import { reactive } from 'vue'
+import { reactive, type Ref } from 'vue'
 
 export interface BaseTableQuery {
   page: number
   perPage: number
-  sortBy: string
+  orderBy: string[]
+  search: string
 }
 
 interface LoadItemProps {
   page: number
   itemsPerPage: number
-  sortBy: string
+  sortBy: {
+    key: string
+    order: 'asc' | 'desc'
+  }[]
+  search: string
 }
 
 export const useTable = (
@@ -18,9 +23,19 @@ export const useTable = (
   query: BaseTableQuery,
   getDateCb: () => void
 ) => {
-  function loadItems({ page, itemsPerPage, sortBy }: LoadItemProps) {
+  function loadItems(opt: LoadItemProps) {
+    const { page, itemsPerPage, sortBy, search } = opt
+
     query.page = page
     query.perPage = itemsPerPage
+    query.search = search
+
+    if (sortBy && sortBy.length > 0) {
+      sortBy.forEach((v) => {
+        query.orderBy = [`${v?.key}:${v?.order?.toUpperCase()}`]
+      })
+    }
+
     getDateCb()
   }
 

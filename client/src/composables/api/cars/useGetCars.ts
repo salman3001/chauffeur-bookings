@@ -1,7 +1,8 @@
 import useApiGet from '../useApiGet'
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import type { Paginated } from '@/types/interfaces/ResType'
 import type { Car } from '@/types/entities/car'
+import { debouncedWatch } from '@vueuse/core'
 
 export const useGetCars = () => {
   const { data, processing, exec } = useApiGet<Paginated<Car[]>>()
@@ -9,8 +10,11 @@ export const useGetCars = () => {
   const initialQuery = {
     page: 1,
     perPage: 10,
-    sortBy: ''
+    orderBy: [],
+    search: ''
   }
+
+  const debouncedSearch = ref('')
 
   const query = reactive(initialQuery)
 
@@ -27,11 +31,20 @@ export const useGetCars = () => {
     getCars()
   }
 
+  debouncedWatch(
+    debouncedSearch,
+    () => {
+      query.search = debouncedSearch.value
+    },
+    { debounce: 500 }
+  )
+
   return {
     data: data,
     query,
     getCars,
     processing,
-    refresh
+    refresh,
+    debouncedSearch
   }
 }

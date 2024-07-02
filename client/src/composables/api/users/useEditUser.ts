@@ -23,7 +23,7 @@ export const useEditUser = () => {
   })
 
   const createUser = () =>
-    form.pacth(
+    form.patch(
       `users/${route.params.id}/`,
       {},
       {

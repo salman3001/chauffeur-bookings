@@ -14,11 +14,11 @@ export const useEditCar = () => {
     name: '',
     make: '',
     year: 2024,
-    image: undefined
+    image: undefined as File | undefined
   })
 
   const createCar = () =>
-    form.pacth(
+    form.patch(
       `cars/${route.params.id}/`,
       {
         headers: {

@@ -16,8 +16,8 @@ export class NotificationRepository extends BaseRepository<Notification> {
   }
   async getUserNotifications(userId: number, query: NotificationFilterQuery) {
     const qb = this.createQueryBuilder();
-    qb.leftJoin('Notification.user', 'User');
-    qb.where('User.id = :id', { id: userId });
+    qb.leftJoin('Notification.user', 'user');
+    qb.where('user.id = :id', { id: userId });
     qb.orderBy('Notification.createdAt', 'DESC');
     this.applyFilters(qb, query);
     return this.paginate(qb, query);
@@ -25,8 +25,8 @@ export class NotificationRepository extends BaseRepository<Notification> {
 
   async getMenuNotifications(userId: number) {
     const qb = this.createQueryBuilder();
-    qb.leftJoin('Notification.user', 'User');
-    qb.where('User.id = :id', { id: userId });
+    qb.leftJoin('Notification.user', 'user');
+    qb.where('user.id = :id', { id: userId });
     qb.orderBy('Notification.createdAt', 'DESC');
     qb.take(10);
     const notifications = await qb.getMany();
@@ -37,9 +37,9 @@ export class NotificationRepository extends BaseRepository<Notification> {
   async removeOneForUser(id: number, userId: number) {
     const qb = this.createQueryBuilder();
     return qb
-      .leftJoin('Notification.user', 'User')
+      .leftJoin('Notification.user', 'user')
       .where('Notification.id = :id', { id })
-      .andWhere('User.id = :id', { id: userId })
+      .andWhere('user.id = :id', { id: userId })
       .delete()
       .execute();
   }
@@ -47,9 +47,9 @@ export class NotificationRepository extends BaseRepository<Notification> {
   async removeReadForUser(userId: number) {
     const qb = this.createQueryBuilder();
     return qb
-      .leftJoin('Notification.user', 'User')
-      .where('User.id = :id', { id: userId })
-      .andWhere('Notification.readAt IS NOT NULL')
+      .leftJoin('Notification.user', 'user')
+      .where('user.id = :id', { id: userId })
+      .andWhere('Notification."readAt" IS NOT NULL')
       .delete()
       .execute();
   }
@@ -57,8 +57,8 @@ export class NotificationRepository extends BaseRepository<Notification> {
   async removeAllForUser(userId: number) {
     const qb = this.createQueryBuilder();
     return qb
-      .leftJoin('Notification.user', 'User')
-      .where('User.id = :id', { id: userId })
+      .leftJoin('Notification.user', 'user')
+      .where('user.id = :id', { id: userId })
       .delete()
       .execute();
   }
@@ -66,9 +66,9 @@ export class NotificationRepository extends BaseRepository<Notification> {
   async markAsRead(id: number, userId: number) {
     const qb = this.createQueryBuilder();
     return qb
-      .leftJoin('Notification.user', 'User')
+      .leftJoin('Notification.user', 'user')
       .where('Notification.id = :id', { id })
-      .where('User.id = :id', { id: userId })
+      .where('user.id = :id', { id: userId })
       .update({ readAt: new Date() })
       .execute();
   }
@@ -76,9 +76,9 @@ export class NotificationRepository extends BaseRepository<Notification> {
   async markAsUnRead(id: number, userId: number) {
     const qb = this.createQueryBuilder();
     return qb
-      .leftJoin('Notification.user', 'User')
+      .leftJoin('Notification.user', 'user')
       .where('Notification.id = :id', { id })
-      .where('User.id = :id', { id: userId })
+      .where('user.id = :id', { id: userId })
       .update({ readAt: null })
       .execute();
   }
@@ -89,11 +89,11 @@ export class NotificationRepository extends BaseRepository<Notification> {
   ) {
     if (query?.type) {
       if (query.type === 'read') {
-        qb.andWhere('Notification.readAt IS NOT NULL');
+        qb.andWhere('Notification."readAt" IS NOT NULL');
       }
 
       if (query.type === 'unread') {
-        qb.andWhere('Notification.readAt IS NULL');
+        qb.andWhere('Notification."readAt" IS NULL');
       }
     }
   }

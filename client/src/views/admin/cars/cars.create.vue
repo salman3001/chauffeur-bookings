@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import UiParentCard from '@/components/shared/UiParentCard.vue'
-import DropZone from '@/components/shared/form/DropZone.vue'
+import AvatarInput from '@/components/shared/form/AvatarInput.vue'
 import { useCreateCar } from '@/composables/api/cars/useCreateCar'
+import { getUploadUrl } from '@/utils/getUploadUrl'
 import { Icon } from '@iconify/vue/dist/iconify.js'
 
 const { form, createCar } = useCreateCar()
@@ -11,22 +12,24 @@ const { form, createCar } = useCreateCar()
   <v-row>
     <v-col cols="12" md="12">
       <div class="mb-4">
-        <v-btn class="mb-2" color="primary" flat :to="{ name: 'Users.Index' }">
+        <v-btn class="mb-2" color="primary" flat :to="{ name: 'Cars.Index' }">
           <Icon icon="solar:arrow-left-line-duotone" height="25"></Icon>
         </v-btn>
       </div>
       <UiParentCard title="Add Car">
         <v-row class="d-flex mb-3">
           <v-col cols="12">
-            <v-label class="font-weight-bold mb-1">Image</v-label>
-
-            <DropZone
-              :max="1"
-              @change="
+            <div>
+              <v-label class="font-weight-bold mb-1">Image</v-label>
+            </div>
+            <AvatarInput
+              :url="getUploadUrl(undefined)"
+              @image="
                 (f) => {
-                  form.image = f[0]?.file
+                  form.image = f
                 }
               "
+              size="200"
             />
           </v-col>
           <v-col cols="12" :md="6" :lg="4">

@@ -20,7 +20,7 @@ export class UserRepository extends BaseRepository<User> {
 
   getChuffeurs(query?: UserFilterQuery) {
     const qb = this.createQueryBuilder();
-    qb.where('User.userType = :userType', { userType: UserType.CHAUFFEUR });
+    qb.where('User."userType" = :userType', { userType: UserType.CHAUFFEUR });
 
     this.applyFilters(qb, query);
     return this.paginate(qb, query);
@@ -28,9 +28,9 @@ export class UserRepository extends BaseRepository<User> {
 
   getActiveChuffeurs(query?: UserFilterQuery) {
     const qb = this.createQueryBuilder();
-    qb.where('User.userType = :userType', {
+    qb.where('User."userType" = :userType', {
       userType: UserType.CHAUFFEUR,
-    }).andWhere('User.isActive = true');
+    }).andWhere('User."isActive" = true');
     this.applyFilters(qb, query);
 
     return this.paginate(qb, query);
@@ -38,7 +38,7 @@ export class UserRepository extends BaseRepository<User> {
 
   getCustomer(query?: UserFilterQuery) {
     const qb = this.createQueryBuilder();
-    qb.where('User.userType = :userType', { userType: UserType.CUSTOMER });
+    qb.where('User."userType" = :userType', { userType: UserType.CUSTOMER });
     this.applyFilters(qb, query);
 
     return this.paginate(qb, query);
@@ -59,11 +59,11 @@ export class UserRepository extends BaseRepository<User> {
     }
 
     if (query?.active) {
-      qb.andWhere('User.isActive = :active', { active: query.active });
+      qb.andWhere('User."isActive" = :active', { active: query.active });
     }
 
     if (query?.userType) {
-      qb.andWhere('User.userType = :userType', { userType: query.userType });
+      qb.andWhere('User."userType" = :userType', { userType: query.userType });
     }
   }
 }

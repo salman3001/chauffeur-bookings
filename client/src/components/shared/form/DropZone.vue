@@ -10,6 +10,7 @@ interface FileData {
 
 const props = defineProps<{
   max: number
+  singleCol?: boolean
 }>()
 
 const maxRef = ref(props.max)
@@ -89,7 +90,7 @@ useDropZone(dropZoneRef, onDrop)
         <div v-else class="d-flex justify-center align-center gap-3 pa-8 drop-zone flex-wrap">
           <VRow class="match-height w-100">
             <template v-for="(item, index) in fileData" :key="index">
-              <VCol cols="12" sm="6" md="4">
+              <VCol cols="12" :sm="singleCol ? 12 : 6" :md="singleCol ? 12 : 4">
                 <VCard :ripple="false" border>
                   <VCardText class="d-flex flex-column" @click.stop>
                     <VImg :src="item.url" width="200px" height="150px" class="w-100 mx-auto" />

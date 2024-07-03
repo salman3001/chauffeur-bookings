@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 import { NotificationData } from '../types/NotificationData';
 import { DateTime } from 'luxon';
-import { luxonTransformer } from 'src/db/helpers/luxonTransformer';
 
 @Entity()
 export class Notification {
@@ -19,7 +18,7 @@ export class Notification {
   @Column('jsonb')
   data: NotificationData;
 
-  @Column('timestamp', { nullable: true, transformer: luxonTransformer })
+  @Column('timestamp', { nullable: true })
   readAt: DateTime | null;
 
   @ManyToOne(() => User, (user) => user.notifications)

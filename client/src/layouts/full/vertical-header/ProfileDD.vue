@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { useLogout } from '@/composables/api/auth/useLogout'
+import { useAvatar } from '@/composables/api/profile/useAvatar'
+import { getUploadUrl } from '@/utils/getUploadUrl'
 import { UserIcon, MailIcon, ListCheckIcon } from 'vue-tabler-icons'
 
 const { logout } = useLogout()
+const { dp } = useAvatar()
 </script>
 
 <template>
@@ -13,7 +16,11 @@ const { logout } = useLogout()
     <template v-slot:activator="{ props }">
       <v-btn class="profileBtn custom-hover-primary" variant="text" v-bind="props" icon>
         <v-avatar size="35">
-          <img src="@/assets/images/profile/user-1.jpg" height="35" alt="user" />
+          <img
+            :src="getUploadUrl(dp?.thumbnailUrl, '@/assets/images/profile/user-1.jpg')"
+            height="35"
+            alt="user"
+          />
         </v-avatar>
       </v-btn>
     </template>
@@ -25,7 +32,7 @@ const { logout } = useLogout()
           </template>
           <v-list-item-title class="pl-4 text-body-1">My Profile</v-list-item-title>
         </v-list-item>
-        <v-list-item value="item2" active-color="primary">
+        <!-- <v-list-item value="item2" active-color="primary">
           <template v-slot:prepend>
             <MailIcon stroke-width="1.5" size="20" />
           </template>
@@ -36,7 +43,7 @@ const { logout } = useLogout()
             <ListCheckIcon stroke-width="1.5" size="20" />
           </template>
           <v-list-item-title class="pl-4 text-body-1">My Task</v-list-item-title>
-        </v-list-item>
+        </v-list-item> -->
       </v-list>
       <div class="pt-4 pb-4 px-5 text-center">
         <v-btn to="/auth/login" color="primary" variant="outlined" block @click="logout"

@@ -6,9 +6,9 @@ import { useToast } from 'vue-toastification'
 
 export default function useApiGet<T>() {
   const processing = ref(false)
-  const data = ref<T | null>(null) as Ref<T | null>
+  const data = ref<T>() as Ref<T>
 
-  const error = ref<null | string | undefined>(null)
+  const error = ref<string | undefined>()
 
   const exec = async (
     url: string,
@@ -16,7 +16,7 @@ export default function useApiGet<T>() {
     opt?: { onSuccess?: () => void; onError?: () => void }
   ) => {
     processing.value = true
-    error.value = null
+    error.value = undefined
 
     try {
       const res = await api.get<ResType<any>>(url, config)

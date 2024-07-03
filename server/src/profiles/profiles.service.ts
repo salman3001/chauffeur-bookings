@@ -58,8 +58,20 @@ export class ProfilesService {
     }
 
     this.profileRepo.merge(profile, {});
-    await this.profileRepo.save(profile);
 
-    return profile;
+    return this.profileRepo.save(profile);
+  }
+
+  async myAvatar(authUser: AuthUserType) {
+    this.profilePolicy.authorize('find', authUser);
+    const profile = await this.profileRepo.findOneOrFail({
+      where: {
+        user: {
+          id: authUser?.id,
+        },
+      },
+    });
+
+    return profile.avatar;
   }
 }

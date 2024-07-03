@@ -3,6 +3,7 @@ import useApiForm from '../useApiForm'
 import useApiGet from '../useApiGet'
 import { onMounted } from 'vue'
 import type { Profile } from '@/types/entities/profile'
+import { dp } from './useAvatar'
 
 export const useUpdateProfile = () => {
   const router = useRouter()
@@ -12,8 +13,8 @@ export const useUpdateProfile = () => {
     avatar: undefined as undefined | File
   })
 
-  const updateProfile = () =>
-    form.patch(
+  const updateProfile = async () => {
+    await form.patch(
       '/my-profile',
       {
         headers: {
@@ -21,12 +22,17 @@ export const useUpdateProfile = () => {
         }
       },
       {
-        onSucess() {
-          // @ts-ignore
-          router.go()
-        }
+        onSucess() {}
       }
     )
+
+    if (form.res) {
+      console.log(form.res)
+
+      // @ts-ignore
+      dp.value = form.res.data?.avatar
+    }
+  }
 
   onMounted(async () => {
     await exec(`/my-profile`, {})

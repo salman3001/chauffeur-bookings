@@ -13,6 +13,11 @@ const BookingRoutes: RouteRecordRaw = {
       name: 'Profile',
       path: '/profile',
       component: () => import('@/views/Profile.vue')
+    },
+    {
+      name: 'Notifications',
+      path: '/notifications',
+      component: () => import('@/views/Notifications.vue')
     }
   ]
 }

@@ -60,7 +60,7 @@ const { user } = useAuth()
       </div>
       <div>
         <!-- More options -->
-        <v-btn class="mr-2 bg-primary" href="" target="_blank">More options</v-btn>
+        <!-- <v-btn class="mr-2 bg-primary" href="" target="_blank">More options</v-btn> -->
         <!-- User Profile -->
         <ProfileDD v-if="user" />
       </div>

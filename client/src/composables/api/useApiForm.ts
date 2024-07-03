@@ -11,7 +11,7 @@ export default function useApiForm<T extends object>(
 ) {
   const formObject = reactive({
     ...initialForm,
-    res: undefined as undefined | ResType<any>,
+    res: undefined as undefined | ResType<T>,
     processing: false,
     errors: null as unknown as ValidationErrorObj | undefined,
     disableToast: options?.disableToast || false,
@@ -23,7 +23,7 @@ export default function useApiForm<T extends object>(
       this.errors = undefined
       this.processing = true
       try {
-        const res = await api.post<ResType<any>>(
+        const res = await api.post<ResType<T>>(
           url,
           pickKeysFromReference(this, initialForm),
           config
@@ -34,8 +34,8 @@ export default function useApiForm<T extends object>(
         }
         this.res = res.data
       } catch (error: unknown) {
-        this.res = (error as AxiosError<ResType<any>>).response?.data
-        this.errors = (error as AxiosError<ResType<any>>).response?.data?.errors
+        this.res = (error as AxiosError<ResType<T>>).response?.data
+        this.errors = (error as AxiosError<ResType<T>>).response?.data?.errors
         opt?.onError && opt.onError()
       }
       this.processing = false
@@ -48,7 +48,7 @@ export default function useApiForm<T extends object>(
       this.errors = undefined
       this.processing = true
       try {
-        const res = await api.patch<ResType<any>>(
+        const res = await api.patch<ResType<T>>(
           url,
           pickKeysFromReference(this, initialForm),
           config
@@ -58,8 +58,8 @@ export default function useApiForm<T extends object>(
         }
         this.res = res.data
       } catch (error: unknown) {
-        this.res = (error as AxiosError<ResType<any>>).response?.data
-        this.errors = (error as AxiosError<ResType<any>>).response?.data?.errors
+        this.res = (error as AxiosError<ResType<T>>).response?.data
+        this.errors = (error as AxiosError<ResType<T>>).response?.data?.errors
         opt?.onError && opt.onError()
       }
       this.processing = false
@@ -72,14 +72,14 @@ export default function useApiForm<T extends object>(
       this.errors = undefined
       this.processing = true
       try {
-        const res = await api.delete<ResType<any>>(url, config)
+        const res = await api.delete<ResType<T>>(url, config)
         if (res.data.success === true) {
           opt?.onSucess && opt.onSucess()
         }
         this.res = res.data
       } catch (error: unknown) {
-        this.res = (error as AxiosError<ResType<any>>).response?.data
-        this.errors = (error as AxiosError<ResType<any>>).response?.data?.errors
+        this.res = (error as AxiosError<ResType<T>>).response?.data
+        this.errors = (error as AxiosError<ResType<T>>).response?.data?.errors
         opt?.onError && opt.onError()
       }
       this.processing = false

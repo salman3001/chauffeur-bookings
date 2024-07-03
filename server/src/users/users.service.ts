@@ -77,6 +77,17 @@ export class UsersService {
   async findAll(authUser: AuthUserType, query?: UserFilterQuery) {
     this.userPolicy.authorize('findAll', authUser);
     const qb = this.userRepository.createQueryBuilder();
+    qb.leftJoinAndSelect('User.profile', 'profile');
+    qb.select([
+      'User.id',
+      'User.firstName',
+      'User.lastName',
+      'User.email',
+      'User.phone',
+      'User.userType',
+      'User.isActive',
+      'profile.avatar',
+    ]);
     this.userRepository.applyFilters(qb, query);
     this.userRepository.orderBy(qb, 'User', query);
     return this.userRepository.paginate(qb, query);

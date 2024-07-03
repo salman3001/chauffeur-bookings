@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AvatarInput from '@/components/profile/AvatarInput.vue'
 import UiParentCard from '@/components/shared/UiParentCard.vue'
 import DropZone from '@/components/shared/form/DropZone.vue'
 import { useEditCar } from '@/composables/api/cars/useEditCar'
@@ -19,23 +20,17 @@ const { form, createCar, car } = useEditCar()
       <UiParentCard title="Edit Car">
         <v-row class="d-flex mb-3">
           <v-col cols="12">
-            <v-img
-              height="100px"
-              width="160px"
-              :src="getUploadUrl(car?.image?.thumbnailUrl)"
-              aspect-ratio="16/9"
-              cover
-            />
-          </v-col>
-          <v-col cols="12">
-            <v-label class="font-weight-bold mb-1">Image</v-label>
-            <DropZone
-              :max="1"
-              @change="
+            <div>
+              <v-label class="font-weight-bold mb-1">Image</v-label>
+            </div>
+            <AvatarInput
+              :url="getUploadUrl(car?.image?.thumbnailUrl)"
+              @image="
                 (f) => {
-                  form.image = f[0]?.file
+                  form.image = f
                 }
               "
+              size="200"
             />
           </v-col>
           <v-col cols="12" :md="6" :lg="4">

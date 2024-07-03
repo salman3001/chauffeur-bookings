@@ -51,7 +51,7 @@ export class ProfilesController {
     @UploadedFile()
     avatar?: Express.Multer.File,
   ) {
-    const profile = this.profilesService.update(
+    const profile = await this.profilesService.update(
       updateProfileDto,
       authUser,
       avatar,
@@ -59,6 +59,16 @@ export class ProfilesController {
     return CustomRes({
       code: 201,
       data: profile,
+      success: true,
+    });
+  }
+
+  @Get('avatar')
+  async myAvatar(@AuthUser() authUser: AuthUserType) {
+    const avatar = await this.profilesService.myAvatar(authUser);
+    return CustomRes({
+      code: 200,
+      data: avatar,
       success: true,
     });
   }

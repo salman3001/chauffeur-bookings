@@ -6,7 +6,7 @@ import { useToast } from 'vue-toastification'
 
 export default function useApiGet<T>() {
   const processing = ref(false)
-  const data = ref<T>() as Ref<T>
+  const data = ref<T>()
 
   const error = ref<string | undefined>()
 
@@ -19,6 +19,7 @@ export default function useApiGet<T>() {
     error.value = undefined
 
     try {
+      data.value = undefined
       const res = await api.get<ResType<any>>(url, config)
       data.value = res.data.data
       processing.value = false
@@ -27,6 +28,7 @@ export default function useApiGet<T>() {
       }
     } catch (err) {
       const resData = (err as AxiosError<ResType<T>>).response?.data
+      processing.value = false
       error.value = resData?.message
 
       if (resData?.success === false) {

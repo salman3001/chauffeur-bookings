@@ -41,6 +41,10 @@ export const userPolicy = {
     return user ? true : false;
   },
 
+  getAvailableChauffeurs(user: AuthUserType) {
+    return user ? true : false;
+  },
+
   getCustomer(user: AuthUserType) {
     const isAdmin = user?.userType === UserType.ADMIN;
     if (user && isAdmin) {

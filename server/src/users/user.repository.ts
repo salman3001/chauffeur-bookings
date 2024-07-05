@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class UserRepository extends BaseRepository<User> {
@@ -28,12 +29,98 @@ export class UserRepository extends BaseRepository<User> {
 
   getActiveChuffeurs(query?: UserFilterQuery) {
     const qb = this.createQueryBuilder();
-    qb.where('User."userType" = :userType', {
+    qb.where('User.userType = :userType', {
       userType: UserType.CHAUFFEUR,
-    }).andWhere('User."isActive" = true');
+    }).andWhere('User.isActive = true');
     this.applyFilters(qb, query);
 
     return this.paginate(qb, query);
+  }
+
+  checkChauffeurAvailabiltity(
+    chauffeurId: number,
+    dateTime: string,
+    duration: number,
+  ) {
+    const requestedDateTimeForm = DateTime.fromISO(dateTime);
+    const requestedDateTimeTo = DateTime.fromISO(dateTime).plus({
+      hour: duration,
+    });
+
+    const requestedDay = requestedDateTimeForm.weekdayLong?.toLocaleLowerCase();
+
+    const qb = this.createQueryBuilder();
+    qb.leftJoinAndSelect('User.chauffeurProfile', 'chauffeurProfile');
+    qb.innerJoin('chauffeurProfile.availability', 'availability');
+    qb.leftJoin(
+      'chauffeurProfile.bookedSlots',
+      'bookedSlot',
+      `("bookedSlot"."dateTimeFrom" BETWEEN :requestedFrom AND :requestedTo
+       OR "bookedSlot"."dateTimeTo" BETWEEN :requestedFrom AND :requestedTo
+       OR ("bookedSlot"."dateTimeFrom" <= :requestedFrom AND "bookedSlot"."dateTimeTo" >= :requestedTo))`,
+      {
+        requestedFrom: requestedDateTimeForm.toJSDate(),
+        requestedTo: requestedDateTimeTo.toJSDate(),
+      },
+    );
+    qb.where('User.id = :id', { id: chauffeurId });
+    qb.andWhere('User.isActive = true');
+    qb.andWhere('User.userType = :userType', {
+      userType: UserType.CHAUFFEUR,
+    });
+    qb.andWhere(`availability.${requestedDay} = true`);
+    qb.andWhere(
+      `(
+        availability."${requestedDay}FullDay" = true
+        OR (availability."${requestedDay}From" <= :timeFrom AND availability."${requestedDay}To" >= :timeTo)
+      )`,
+      {
+        timeFrom: requestedDateTimeForm.toFormat('HH:mm:ss'),
+        timeTo: requestedDateTimeTo.toFormat('HH:mm:ss'),
+      },
+    );
+    return qb.getOne();
+  }
+
+  getAvailableChauffeurs(dateTime: string, duration: number) {
+    const requestedDateTimeForm = DateTime.fromISO(dateTime);
+    const requestedDateTimeTo = DateTime.fromISO(dateTime).plus({
+      hour: duration,
+    });
+
+    const requestedDay = requestedDateTimeForm.weekdayLong?.toLocaleLowerCase();
+
+    const qb = this.createQueryBuilder();
+    qb.leftJoinAndSelect('User.chauffeurProfile', 'chauffeurProfile');
+    qb.innerJoin('chauffeurProfile.availability', 'availability');
+    qb.leftJoin(
+      'chauffeurProfile.bookedSlots',
+      'bookedSlot',
+      `("bookedSlot"."dateTimeFrom" BETWEEN :requestedFrom AND :requestedTo
+       OR "bookedSlot"."dateTimeTo" BETWEEN :requestedFrom AND :requestedTo
+       OR ("bookedSlot"."dateTimeFrom" <= :requestedFrom AND "bookedSlot"."dateTimeTo" >= :requestedTo))`,
+      {
+        requestedFrom: requestedDateTimeForm.toJSDate(),
+        requestedTo: requestedDateTimeTo.toJSDate(),
+      },
+    );
+    qb.where('User.isActive = true');
+    qb.andWhere('User.userType = :userType', {
+      userType: UserType.CHAUFFEUR,
+    });
+    qb.andWhere(`availability.${requestedDay} = true`);
+    qb.andWhere(
+      `(
+        availability."${requestedDay}FullDay" = true
+        OR (availability."${requestedDay}From" <= :timeFrom AND availability."${requestedDay}To" >= :timeTo)
+      )`,
+      {
+        timeFrom: requestedDateTimeForm.toFormat('HH:mm:ss'),
+        timeTo: requestedDateTimeTo.toFormat('HH:mm:ss'),
+      },
+    );
+
+    return qb.getMany();
   }
 
   getCustomer(query?: UserFilterQuery) {

@@ -9,8 +9,8 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Availability, defaultAvailability } from '../fixtures/availability';
 import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
+import { Availability } from '../availability/entities/availability.entity';
 
 @Entity()
 export class ChauffeurProfile {
@@ -19,9 +19,6 @@ export class ChauffeurProfile {
 
   @Column('decimal', { precision: 10, scale: 2, nullable: true })
   pricePerHour: string;
-
-  @Column('jsonb', { default: defaultAvailability })
-  availability: Availability;
 
   @OneToMany(() => Booking, (booking) => booking.chauffeurProfile, {
     onDelete: 'SET NULL',
@@ -38,4 +35,11 @@ export class ChauffeurProfile {
 
   @OneToMany(() => BookedSlot, (bookedSlot) => bookedSlot.chauffeurProfile)
   bookedSlots: BookedSlot[];
+
+  @OneToOne(
+    () => Availability,
+    (availability) => availability.chauffeurProfile,
+    { nullable: true },
+  )
+  availability: Availability;
 }

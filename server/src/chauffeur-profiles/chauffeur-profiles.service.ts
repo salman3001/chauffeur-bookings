@@ -5,6 +5,7 @@ import { IChauffeurProfilesPolicy } from './chauffeur-profiles.policy';
 import { AuthUserType } from 'src/utils/types/common';
 import { ChauffeurProfileRepository } from './chuffeur-profile.repository';
 import { CarRepository } from 'src/cars/car.repository';
+import { AvailabilityRepository } from './availability/availability.repository';
 
 @Injectable()
 export class ChauffeurProfilesService {
@@ -13,6 +14,7 @@ export class ChauffeurProfilesService {
     private readonly chauffeurProfilesPolicy: PolicyService<IChauffeurProfilesPolicy>,
     private chauffeurProfileRepo: ChauffeurProfileRepository,
     private carRepo: CarRepository,
+    private availabilityRepo: AvailabilityRepository,
   ) {}
 
   async findOne(authUser: AuthUserType) {
@@ -51,7 +53,10 @@ export class ChauffeurProfilesService {
     }
 
     if (availability) {
-      chauffeurProfile.availability = availability;
+      await this.availabilityRepo.save({
+        ...availability,
+        chauffeurProfile: chauffeurProfile,
+      });
     }
 
     await this.chauffeurProfileRepo.save(chauffeurProfile);

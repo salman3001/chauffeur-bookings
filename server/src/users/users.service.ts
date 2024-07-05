@@ -12,25 +12,18 @@ import { UserFilterQuery, UserRepository } from './user.repository';
 import { ProfileRepository } from 'src/profiles/profile.repository';
 import { ChauffeurProfileRepository } from 'src/chauffeur-profiles/chuffeur-profile.repository';
 import { AdminProfileRepository } from 'src/admin-profiles/admin-profile.repository';
-import { weekDays } from 'src/utils/helpers';
-import { BookedSlotRepository } from 'src/booked-slots/booked-slot.repository';
 import { CheckAvailabiltyDto } from './dto/check-availabilty.dto';
-import User from './entities/user.entity';
-import { BookedSlot } from 'src/booked-slots/entities/booked-slot.entity';
-import { ConfigService } from '@nestjs/config';
 import { DateTime } from 'luxon';
 
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly config: ConfigService,
     @Inject('userPolicy') private userPolicy: PolicyService<IUserPolicy>,
     @InjectDataSource() private readonly dataSource: DataSource,
     private readonly userRepository: UserRepository,
     private readonly profileRepository: ProfileRepository,
     private readonly chauffeurProfileRepo: ChauffeurProfileRepository,
     private readonly adminProfileRepo: AdminProfileRepository,
-    private readonly bookedSlotRepo: BookedSlotRepository,
   ) {}
 
   async create(createUserDto: CreateUserDto, authUser: AuthUserType) {
@@ -172,24 +165,13 @@ export class UsersService {
       });
     }
 
-    const chauffeur = await this.userRepository.findOneOrFail({
-      where: {
-        id: chauffeurId,
-        userType: UserType.CHAUFFEUR,
-      },
-      relations: {
-        chauffeurProfile: true,
-      },
-    });
+    const chauffeur = await this.userRepository.checkChauffeurAvailabiltity(
+      chauffeurId,
+      dateTime,
+      duration,
+    );
 
-    const isChauffeurAvailableOnRequestedDateTime =
-      this.isChauffeurAvailableOnRequestedDateTime(
-        chauffeur,
-        dateTime,
-        duration,
-      );
-
-    if (!isChauffeurAvailableOnRequestedDateTime) {
+    if (!chauffeur) {
       throw new CustomHttpException({
         code: HttpStatus.BAD_REQUEST,
         success: false,
@@ -198,15 +180,7 @@ export class UsersService {
       });
     }
 
-    const bookedSlots = await this.bookedSlotRepo.getChauffeurBookedSlotsByDate(
-      chauffeur.chauffeurProfile.id,
-      dateTime,
-    );
-
-    const isRequestedTimeBookedOrOverlapping =
-      this.isRequestedTimeBookedOrOverlapping(dateTime, duration, bookedSlots);
-
-    if (isRequestedTimeBookedOrOverlapping) {
+    if (chauffeur.chauffeurProfile?.bookedSlots?.length > 0) {
       throw new CustomHttpException({
         code: HttpStatus.BAD_GATEWAY,
         success: false,
@@ -216,6 +190,106 @@ export class UsersService {
     }
 
     return true;
+  }
+
+  // async checkAvailabilty2(
+  //   chauffeurId: number,
+  //   query: CheckAvailabiltyDto,
+  //   authUser: AuthUserType,
+  // ) {
+  //   this.userPolicy.authorize('checkAvailabilty', authUser);
+
+  //   const { dateTime, duration } = query;
+
+  //   if (this.isDurationExceedTomorow(dateTime, duration)) {
+  //     throw new CustomHttpException({
+  //       code: HttpStatus.BAD_REQUEST,
+  //       success: false,
+  //       message: 'Max booking hours can not exceed present day',
+  //     });
+  //   }
+
+  //   const chauffeur = await this.userRepository.findOneOrFail({
+  //     where: {
+  //       id: chauffeurId,
+  //       userType: UserType.CHAUFFEUR,
+  //     },
+  //     relations: {
+  //       chauffeurProfile: true,
+  //     },
+  //   });
+
+  //   const isChauffeurAvailableOnRequestedDateTime =
+  //     this.isChauffeurAvailableOnRequestedDateTime(
+  //       chauffeur,
+  //       dateTime,
+  //       duration,
+  //     );
+
+  //   if (!isChauffeurAvailableOnRequestedDateTime) {
+  //     throw new CustomHttpException({
+  //       code: HttpStatus.BAD_REQUEST,
+  //       success: false,
+  //       message:
+  //         'Chauffeur not available Request date or time. Please change the date or time',
+  //     });
+  //   }
+
+  //   const bookedSlots = await this.bookedSlotRepo.getChauffeurBookedSlotsByDate(
+  //     chauffeur.chauffeurProfile.id,
+  //     dateTime,
+  //   );
+
+  //   const isRequestedTimeBookedOrOverlapping =
+  //     this.isRequestedTimeBookedOrOverlapping(dateTime, duration, bookedSlots);
+
+  //   if (isRequestedTimeBookedOrOverlapping) {
+  //     throw new CustomHttpException({
+  //       code: HttpStatus.BAD_GATEWAY,
+  //       success: false,
+  //       message:
+  //         'Selected time is overlapping with existing bookings. please review the booked slots and choose the available time',
+  //     });
+  //   }
+
+  //   return true;
+  // }
+
+  async getAvailableChauffeurs(
+    query: CheckAvailabiltyDto,
+    authUser: AuthUserType,
+  ) {
+    this.userPolicy.authorize('getAvailableChauffeurs', authUser);
+
+    const { dateTime, duration } = query;
+
+    if (this.isDurationExceedTomorow(dateTime, duration)) {
+      throw new CustomHttpException({
+        code: HttpStatus.BAD_REQUEST,
+        success: false,
+        message: 'Max booking hours can not exceed present day',
+      });
+    }
+
+    const chauffeurs = await this.userRepository.getAvailableChauffeurs(
+      dateTime,
+      duration,
+    );
+
+    console.log(chauffeurs);
+
+    const filteredChauffeurs = chauffeurs.filter((c) => {
+      if (c?.chauffeurProfile) {
+        const isBookedSlotsThere =
+          c.chauffeurProfile?.bookedSlots &&
+          c.chauffeurProfile?.bookedSlots?.length > 0;
+        return !isBookedSlotsThere;
+      }
+      return true;
+      return c.chauffeurProfile?.bookedSlots?.length === 0;
+    });
+
+    return filteredChauffeurs;
   }
 
   async getCustomer(authUser: AuthUserType, query: UserFilterQuery) {
@@ -229,100 +303,100 @@ export class UsersService {
     return { customers, count, perPage };
   }
 
-  private isChauffeurAvailableOnRequestedDateTime(
-    chauffeur: User,
-    dateTime: string,
-    duration: number,
-  ) {
-    const requestedDateTimeForm = DateTime.fromISO(dateTime);
-    const requestedDateTimeTo = DateTime.fromISO(dateTime).plus({
-      hour: duration,
-    });
+  // private isChauffeurAvailableOnRequestedDateTime(
+  //   chauffeur: User,
+  //   dateTime: string,
+  //   duration: number,
+  // ) {
+  //   const requestedDateTimeForm = DateTime.fromISO(dateTime);
+  //   const requestedDateTimeTo = DateTime.fromISO(dateTime).plus({
+  //     hour: duration,
+  //   });
 
-    const requestedDay = requestedDateTimeForm.weekday;
-    const requestedWeekDay = weekDays[requestedDay] as 'sunday';
+  //   const requestedDay = requestedDateTimeForm.weekday;
+  //   const requestedWeekDay = weekDays[requestedDay] as 'sunday';
 
-    const isChauffeurAvailableOnThisDay =
-      chauffeur.chauffeurProfile?.availability[requestedWeekDay]?.available;
+  //   const isChauffeurAvailableOnThisDay =
+  //     chauffeur.chauffeurProfile?.availability[requestedWeekDay]?.available;
 
-    const isChauffeurAvailableFullDay =
-      chauffeur.chauffeurProfile?.availability[requestedWeekDay]?.fullDay;
+  //   const isChauffeurAvailableFullDay =
+  //     chauffeur.chauffeurProfile?.availability[requestedWeekDay]?.fullDay;
 
-    const chauffeurAvailableFrom =
-      chauffeur.chauffeurProfile?.availability[requestedWeekDay]?.from;
-    const chauffeurAvailableTo =
-      chauffeur.chauffeurProfile?.availability[requestedWeekDay]?.to;
+  //   const chauffeurAvailableFrom =
+  //     chauffeur.chauffeurProfile?.availability[requestedWeekDay]?.from;
+  //   const chauffeurAvailableTo =
+  //     chauffeur.chauffeurProfile?.availability[requestedWeekDay]?.to;
 
-    let isWithinRange = false;
+  //   let isWithinRange = false;
 
-    if (chauffeurAvailableFrom && chauffeurAvailableTo) {
-      const chauffeurAvailableFromDateTime = requestedDateTimeForm.set({
-        hour: Number(chauffeurAvailableFrom.split(':')[0]),
-        minute: Number(chauffeurAvailableFrom.split(':')[1]),
-      });
+  //   if (chauffeurAvailableFrom && chauffeurAvailableTo) {
+  //     const chauffeurAvailableFromDateTime = requestedDateTimeForm.set({
+  //       hour: Number(chauffeurAvailableFrom.split(':')[0]),
+  //       minute: Number(chauffeurAvailableFrom.split(':')[1]),
+  //     });
 
-      const chauffeurAvailableToDateTime = requestedDateTimeForm.set({
-        hour: Number(chauffeurAvailableTo.split(':')[0]),
-        minute: Number(chauffeurAvailableTo.split(':')[1]),
-      });
+  //     const chauffeurAvailableToDateTime = requestedDateTimeForm.set({
+  //       hour: Number(chauffeurAvailableTo.split(':')[0]),
+  //       minute: Number(chauffeurAvailableTo.split(':')[1]),
+  //     });
 
-      if (
-        requestedDateTimeForm >= chauffeurAvailableFromDateTime &&
-        requestedDateTimeTo <= chauffeurAvailableToDateTime
-      ) {
-        isWithinRange = true;
-      }
-    }
+  //     if (
+  //       requestedDateTimeForm >= chauffeurAvailableFromDateTime &&
+  //       requestedDateTimeTo <= chauffeurAvailableToDateTime
+  //     ) {
+  //       isWithinRange = true;
+  //     }
+  //   }
 
-    if (isChauffeurAvailableOnThisDay && isChauffeurAvailableFullDay) {
-      return true;
-    } else if (isChauffeurAvailableOnThisDay && isWithinRange) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  //   if (isChauffeurAvailableOnThisDay && isChauffeurAvailableFullDay) {
+  //     return true;
+  //   } else if (isChauffeurAvailableOnThisDay && isWithinRange) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
 
-  private isRequestedTimeBookedOrOverlapping(
-    dateTime: string,
-    duration: number,
-    bookedSlots: BookedSlot[],
-  ) {
-    const requestedDateTimeForm = DateTime.fromISO(dateTime);
-    const requestedDateTimeTo = DateTime.fromISO(dateTime).plus({
-      hour: duration,
-    });
+  // private isRequestedTimeBookedOrOverlapping(
+  //   dateTime: string,
+  //   duration: number,
+  //   bookedSlots: BookedSlot[],
+  // ) {
+  //   const requestedDateTimeForm = DateTime.fromISO(dateTime);
+  //   const requestedDateTimeTo = DateTime.fromISO(dateTime).plus({
+  //     hour: duration,
+  //   });
 
-    let isBookedOrOverlapping = false;
+  //   let isBookedOrOverlapping = false;
 
-    bookedSlots.forEach((slot) => {
-      const slotDateTimeFrom = DateTime.fromJSDate(slot.dateTimeFrom);
+  //   bookedSlots.forEach((slot) => {
+  //     const slotDateTimeFrom = DateTime.fromJSDate(slot.dateTimeFrom);
 
-      const slotDateTimeTo = DateTime.fromJSDate(slot.dateTimeTo);
+  //     const slotDateTimeTo = DateTime.fromJSDate(slot.dateTimeTo);
 
-      const isRequestedFromTimeOverLap =
-        requestedDateTimeForm >= slotDateTimeFrom &&
-        requestedDateTimeForm <= slotDateTimeTo;
+  //     const isRequestedFromTimeOverLap =
+  //       requestedDateTimeForm >= slotDateTimeFrom &&
+  //       requestedDateTimeForm <= slotDateTimeTo;
 
-      const isRequestedToTimeOverLap =
-        requestedDateTimeTo >= slotDateTimeFrom &&
-        requestedDateTimeTo <= slotDateTimeTo;
+  //     const isRequestedToTimeOverLap =
+  //       requestedDateTimeTo >= slotDateTimeFrom &&
+  //       requestedDateTimeTo <= slotDateTimeTo;
 
-      const isTimeSlotInBetween =
-        requestedDateTimeForm <= slotDateTimeFrom &&
-        requestedDateTimeTo >= slotDateTimeTo;
+  //     const isTimeSlotInBetween =
+  //       requestedDateTimeForm <= slotDateTimeFrom &&
+  //       requestedDateTimeTo >= slotDateTimeTo;
 
-      if (
-        isRequestedFromTimeOverLap ||
-        isRequestedToTimeOverLap ||
-        isTimeSlotInBetween
-      ) {
-        isBookedOrOverlapping = true;
-      }
-    });
+  //     if (
+  //       isRequestedFromTimeOverLap ||
+  //       isRequestedToTimeOverLap ||
+  //       isTimeSlotInBetween
+  //     ) {
+  //       isBookedOrOverlapping = true;
+  //     }
+  //   });
 
-    return isBookedOrOverlapping;
-  }
+  //   return isBookedOrOverlapping;
+  // }
 
   isDurationExceedTomorow(dateTime: string, duration) {
     const requestedDateTime = DateTime.fromISO(dateTime);

@@ -71,8 +71,24 @@ export class UsersController {
     });
   }
 
+  @Get('chauffeurs/availabilty')
+  async getAvailableChauffeurs(
+    @AuthUser() authUser: AuthUserType,
+    @Query() query: CheckAvailabiltyDto,
+  ) {
+    const results = await this.usersService.getAvailableChauffeurs(
+      query,
+      authUser,
+    );
+    return CustomRes({
+      code: 200,
+      data: results,
+      success: true,
+    });
+  }
+
   @Get('chauffeurs/:id/availabilty')
-  async getAvailableSlots(
+  async checkAvailabilty(
     @Param('id') chauffeurId: string,
     @AuthUser() authUser: AuthUserType,
     @Query() query: CheckAvailabiltyDto,

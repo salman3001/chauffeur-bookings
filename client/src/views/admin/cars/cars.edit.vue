@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import AvatarInput from '@/components/profile/AvatarInput.vue'
 import UiParentCard from '@/components/shared/UiParentCard.vue'
-import DropZone from '@/components/shared/form/DropZone.vue'
+import AvatarInput from '@/components/shared/form/AvatarInput.vue'
 import { useEditCar } from '@/composables/api/cars/useEditCar'
 import { getUploadUrl } from '@/utils/getUploadUrl'
 import { Icon } from '@iconify/vue/dist/iconify.js'

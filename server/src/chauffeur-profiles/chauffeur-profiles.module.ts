@@ -8,6 +8,9 @@ import { ChauffeurProfile } from './entities/chauffeur-profile.entity';
 import { ChauffeurProfileRepository } from './chuffeur-profile.repository';
 import { CarRepository } from 'src/cars/car.repository';
 import { Car } from 'src/cars/entities/car.entity';
+import { AvailabilityModule } from './availability/availability.module';
+import { AvailabilityRepository } from './availability/availability.repository';
+import { Availability } from './availability/entities/availability.entity';
 
 @Module({
   imports: [
@@ -17,13 +20,15 @@ import { Car } from 'src/cars/entities/car.entity';
         policy: ChauffeurProfilesPolicy,
       },
     ]),
-    TypeOrmModule.forFeature([ChauffeurProfile, Car]),
+    TypeOrmModule.forFeature([ChauffeurProfile, Car, Availability]),
+    AvailabilityModule,
   ],
   controllers: [ChauffeurProfilesController],
   providers: [
     ChauffeurProfilesService,
     ChauffeurProfileRepository,
     CarRepository,
+    AvailabilityRepository,
   ],
 })
 export class ChauffeurProfilesModule {}

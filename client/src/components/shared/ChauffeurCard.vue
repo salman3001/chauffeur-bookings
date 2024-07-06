@@ -6,6 +6,8 @@ import type { User } from '@/types/entities/user'
 
 defineProps<{
   chauffeur: User
+  dateTime: string
+  duration: number
 }>()
 </script>
 
@@ -26,7 +28,19 @@ defineProps<{
             {{ chauffeur?.chauffeurProfile?.pricePerHour }}/h</VCardTitle
           >
         </div>
-        <VBtn variant="tonal" color="primary">Book Now</VBtn>
+        <VBtn
+          variant="tonal"
+          color="primary"
+          :to="{
+            name: 'Book-Chauffeur',
+            params: {
+              chauffeurId: chauffeur?.id,
+              dateTime: dateTime,
+              duration: duration
+            }
+          }"
+          >Book Now</VBtn
+        >
       </div>
     </VCardText>
   </VCard>

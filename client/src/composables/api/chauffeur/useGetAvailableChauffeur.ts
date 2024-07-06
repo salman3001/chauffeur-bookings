@@ -3,7 +3,7 @@ import useApiGet from '../useApiGet'
 import { reactive } from 'vue'
 
 export const useGetAvailableChauffeur = () => {
-  const { data, processing, exec } = useApiGet<User[]>()
+  const { data, processing, exec, errors } = useApiGet<User[]>()
 
   const initialQuery = {
     dateTime: new Date(),
@@ -21,6 +21,7 @@ export const useGetAvailableChauffeur = () => {
     data,
     query,
     processing,
-    getAvailableChauffeur
+    getAvailableChauffeur,
+    errors
   }
 }

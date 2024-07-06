@@ -24,7 +24,7 @@ export interface Menu {
 
 const sidebarItem: Menu[] = [
   {
-    title: 'Booking',
+    title: 'Book Now',
     icon: 'home-linear',
     to: { name: 'Home' }
   },

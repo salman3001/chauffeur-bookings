@@ -88,7 +88,16 @@ export class UsersService {
 
   async findOne(id: number, authUser: AuthUserType) {
     this.userPolicy.authorize('find', authUser);
-    const user = await this.userRepository.findOneByOrFail({ id });
+    const user = await this.userRepository.findOneOrFail({
+      where: { id },
+      relations: {
+        profile: true,
+        adminProfile: true,
+        chauffeurProfile: {
+          car: true,
+        },
+      },
+    });
     return user;
   }
 
@@ -275,8 +284,6 @@ export class UsersService {
       dateTime,
       duration,
     );
-
-    console.log(chauffeurs);
 
     const filteredChauffeurs = chauffeurs.filter((c) => {
       if (c?.chauffeurProfile) {

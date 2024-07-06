@@ -1,4 +1,4 @@
-import type { ResType } from '@/types/interfaces/ResType'
+import type { ResType, ValidationErrorObj } from '@/types/interfaces/ResType'
 import api from '@/utils/axios'
 import type { AxiosError, AxiosRequestConfig } from 'axios'
 import { ref, type Ref } from 'vue'
@@ -9,6 +9,7 @@ export default function useApiGet<T>() {
   const data = ref<T>()
 
   const error = ref<string | undefined>()
+  const errors = ref<ValidationErrorObj>()
 
   const exec = async (
     url: string,
@@ -17,6 +18,7 @@ export default function useApiGet<T>() {
   ) => {
     processing.value = true
     error.value = undefined
+    errors.value = undefined
 
     try {
       data.value = undefined
@@ -30,6 +32,7 @@ export default function useApiGet<T>() {
       const resData = (err as AxiosError<ResType<T>>).response?.data
       processing.value = false
       error.value = resData?.message
+      errors.value = resData?.errors
 
       if (resData?.success === false) {
         opt?.onError && opt?.onError()

@@ -7,7 +7,12 @@ const BookingRoutes: RouteRecordRaw = {
     {
       name: 'Home',
       path: '',
-      component: () => import('@/views/booking/booking.index.vue')
+      component: () => import('@/views/book-now/book-now.vue')
+    },
+    {
+      name: 'Book-Chauffeur',
+      path: 'book-now/:chauffeurId/:dateTime/:duration',
+      component: () => import('@/views/book-now/book-chauffeur.vue')
     },
     {
       name: 'Profile',

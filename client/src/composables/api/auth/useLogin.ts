@@ -1,8 +1,10 @@
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import useApiForm from '../useApiForm'
 
 export const useLogin = (initForm: { email: string; password: string }) => {
   const router = useRouter()
+  const route = useRoute()
+  const { next } = route.query as Record<string, string>
   const form = useApiForm(initForm)
 
   const login = () =>
@@ -11,7 +13,11 @@ export const useLogin = (initForm: { email: string; password: string }) => {
       {},
       {
         onSucess: () => {
-          router.push({ name: 'Home' })
+          if (next) {
+            router.push(next)
+          } else {
+            router.push({ name: 'Home' })
+          }
         }
       }
     )

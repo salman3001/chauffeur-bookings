@@ -41,8 +41,8 @@ export const userPolicy = {
     return user ? true : false;
   },
 
-  getAvailableChauffeurs(user: AuthUserType) {
-    return user ? true : false;
+  getAvailableChauffeurs() {
+    return true;
   },
 
   getCustomer(user: AuthUserType) {

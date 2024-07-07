@@ -72,11 +72,11 @@ const { chauffeur, createBooking, form } = useCreateBooking()
                 <LocationAutoComplete
                   @selection="
                     (opt) => {
-                      form.pickupCords = opt.coordinates
+                      form.dropoffCords = opt.coordinates
                     }
                   "
                   :error="
-                    form.errors?.pickupCords?.x?.errors || form.errors?.pickupCords?.y?.errors
+                    form.errors?.dropoffCords?.x?.errors || form.errors?.dropoffCords?.y?.errors
                   "
                 />
               </div>

@@ -72,14 +72,8 @@ export class UsersController {
   }
 
   @Get('chauffeurs/availabilty')
-  async getAvailableChauffeurs(
-    @AuthUser() authUser: AuthUserType,
-    @Query() query: CheckAvailabiltyDto,
-  ) {
-    const results = await this.usersService.getAvailableChauffeurs(
-      query,
-      authUser,
-    );
+  async getAvailableChauffeurs(@Query() query: CheckAvailabiltyDto) {
+    const results = await this.usersService.getAvailableChauffeurs(query);
     return CustomRes({
       code: 200,
       data: results,

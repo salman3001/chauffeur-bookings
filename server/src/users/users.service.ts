@@ -264,11 +264,8 @@ export class UsersService {
   //   return true;
   // }
 
-  async getAvailableChauffeurs(
-    query: CheckAvailabiltyDto,
-    authUser: AuthUserType,
-  ) {
-    this.userPolicy.authorize('getAvailableChauffeurs', authUser);
+  async getAvailableChauffeurs(query: CheckAvailabiltyDto) {
+    this.userPolicy.authorize('getAvailableChauffeurs');
 
     const { dateTime, duration } = query;
 
@@ -405,7 +402,14 @@ export class UsersService {
   //   return isBookedOrOverlapping;
   // }
 
-  isDurationExceedTomorow(dateTime: string, duration) {
+  isDurationExceedTomorow(dateTime: string, duration: number) {
+    const requestedDateTime = DateTime.fromISO(dateTime);
+    const endDayDateTime = requestedDateTime.endOf('day');
+    const diff = endDayDateTime.diff(requestedDateTime, 'hour');
+    return duration > diff.hours;
+  }
+
+  isTImeAfter30Minutes(dateTime: string, duration) {
     const requestedDateTime = DateTime.fromISO(dateTime);
     const endDayDateTime = requestedDateTime.endOf('day');
     const diff = endDayDateTime.diff(requestedDateTime, 'hour');

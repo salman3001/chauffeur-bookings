@@ -3,12 +3,25 @@ import dummyCar from '@/assets/images/dummy-car.png'
 import dummyAvatar from '@/assets/images/dummy-avatar.jpg'
 import appConfig from '@/config/app.config'
 import type { User } from '@/types/entities/user'
+import { useAuth } from '@/composables/helpers/useAuth'
+import { useRouter } from 'vue-router'
 
-defineProps<{
+const props = defineProps<{
   chauffeur: User
   dateTime: string
   duration: number
 }>()
+
+const router = useRouter()
+const { user } = useAuth()
+const redirectUrl = router.resolve({
+  name: 'Book-Chauffeur',
+  params: {
+    chauffeurId: props.chauffeur.id,
+    dateTime: props.dateTime,
+    duration: props.duration
+  }
+}).path
 </script>
 
 <template>
@@ -31,14 +44,18 @@ defineProps<{
         <VBtn
           variant="tonal"
           color="primary"
-          :to="{
-            name: 'Book-Chauffeur',
-            params: {
-              chauffeurId: chauffeur?.id,
-              dateTime: dateTime,
-              duration: duration
-            }
-          }"
+          :to="
+            user
+              ? {
+                  name: 'Book-Chauffeur',
+                  params: {
+                    chauffeurId: chauffeur?.id,
+                    dateTime: dateTime,
+                    duration: duration
+                  }
+                }
+              : { name: 'Login', query: { next: redirectUrl } }
+          "
           >Book Now</VBtn
         >
       </div>

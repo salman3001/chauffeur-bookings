@@ -15,18 +15,18 @@ export class Notification {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('jsonb')
+  @Column('json')
   data: NotificationData;
 
-  @Column('timestamp', { nullable: true })
+  @Column('text', { nullable: true })
   readAt: DateTime | null;
 
   @ManyToOne(() => User, (user) => user.notifications)
   user: User;
 
-  @CreateDateColumn({ type: 'timestamptz' })
+  @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamptz' })
+  @UpdateDateColumn()
   updatedAt: Date;
 }

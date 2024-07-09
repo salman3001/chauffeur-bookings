@@ -7,6 +7,7 @@ import { useDeleteUser } from '@/composables/api/users/useDeleteUser'
 import ConfirmModal from '@/components/shared/modals/ConfirmModal.vue'
 import { getUploadUrl } from '@/utils/getUploadUrl'
 import dummyAvatar from '@/assets/images/dummy-avatar.jpg'
+import { UserType } from '@/utils/enums/UserType'
 
 const { data, getUsers, processing, query, refresh, debouncedSearch } = useGetUsers()
 const { deleteUser } = useDeleteUser()
@@ -77,6 +78,21 @@ const { headers, loadItems } = useTable(
           </template>
           <template v-slot:item.actions="{ item }">
             <div class="d-flex justify-end ga-2">
+              <v-btn
+                icon
+                flat
+                size="sm"
+                :to="{ name: 'Chauffeur.Edit', params: { id: item.id } }"
+                v-if="item.userType === UserType.CHAUFFEUR"
+              >
+                <Icon
+                  icon="healthicons:truck-driver"
+                  height="22"
+                  width="22"
+                  @click="() => {}"
+                  class="text-primary cursor-pointer"
+                />
+              </v-btn>
               <v-btn icon flat size="sm" :to="{ name: 'Users.Edit', params: { id: item.id } }">
                 <Icon
                   icon="material-symbols:edit"

@@ -16,18 +16,18 @@ export class BookingRepository extends BaseRepository<Booking> {
 
   async getchauffeurBookings(chauffeurId: number, query?: BookingFilterQuery) {
     const qb = this.createQueryBuilder()
-      .leftJoin('user.chauffeurProfile', 'chauffeurProfile')
+      .leftJoin('Booking.chauffeurProfile', 'chauffeurProfile')
       .leftJoin('chauffeurProfile.user', 'user')
-      .where('user.id = id', { id: chauffeurId });
+      .where('user.id = :id', { id: chauffeurId });
 
     return this.paginate(qb, query);
   }
 
   async getCustomersBookings(customerId: number, query?: BookingFilterQuery) {
     const qb = this.createQueryBuilder()
-      .leftJoin('user.customerProfile', 'customerProfile')
+      .leftJoin('Booking.customerProfile', 'customerProfile')
       .leftJoin('customerProfile.user', 'user')
-      .where('user.id = id', { id: customerId });
+      .where('user.id = :id', { id: customerId });
 
     return this.paginate(qb, query);
   }

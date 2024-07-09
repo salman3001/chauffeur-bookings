@@ -135,10 +135,10 @@ export class UserRepository extends BaseRepository<User> {
     if (query?.search) {
       qb.andWhere(
         new Brackets((qb) => {
-          qb.where('User.firstName ILIKE :search', {
+          qb.where('User.firstName LIKE :search', {
             search: `%${query?.search}%`,
           });
-          qb.orWhere('User.lastName ILIKE :search', {
+          qb.orWhere('User.lastName LIKE :search', {
             search: `%${query?.search}%`,
           });
         }),

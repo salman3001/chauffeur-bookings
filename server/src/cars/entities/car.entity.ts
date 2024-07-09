@@ -36,13 +36,13 @@ export class Car {
   @Type(() => Number)
   year: number;
 
-  @Column('jsonb', { nullable: true })
+  @Column('json', { nullable: true })
   image?: Image;
 
-  @CreateDateColumn({ type: 'timestamptz' })
+  @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamptz' })
+  @UpdateDateColumn()
   updatedAt: Date;
 
   @ManyToOne(() => AdminProfile, (adminProfile) => adminProfile.cars)

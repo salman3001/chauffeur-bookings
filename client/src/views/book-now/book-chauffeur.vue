@@ -115,7 +115,7 @@ const { chauffeur, createBooking, form } = useCreateBooking()
             :error-messages="form.errors?.paymentMode?.errors"
           >
             <v-radio label="Online" value="online"></v-radio>
-            <v-radio label="Cash" value="cod"></v-radio>
+            <v-radio label="Cash" value="cash"></v-radio>
           </v-radio-group>
         </div>
         <br />

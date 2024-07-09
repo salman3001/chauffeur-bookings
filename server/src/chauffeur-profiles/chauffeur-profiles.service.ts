@@ -20,20 +20,34 @@ export class ChauffeurProfilesService {
   async findOne(authUser: AuthUserType) {
     const chauffeurProfile = await this.chauffeurProfileRepo.findOneOrFail({
       where: { user: { id: authUser?.id } },
-      relations: { user: true },
+      relations: { user: true, availability: true, car: true },
     });
 
     this.chauffeurProfilesPolicy.authorize('find', authUser, chauffeurProfile);
     return chauffeurProfile;
   }
 
-  async update(
-    id: number,
+  async findOneByUserId(userId: number, authUser: AuthUserType) {
+    const chauffeurProfile = await this.chauffeurProfileRepo.findOneOrFail({
+      where: { user: { id: userId } },
+      relations: { user: true, availability: true, car: true },
+    });
+
+    this.chauffeurProfilesPolicy.authorize(
+      'findById',
+      authUser,
+      chauffeurProfile,
+    );
+    return chauffeurProfile;
+  }
+
+  async updateByUserId(
+    userId: number,
     updateChauffeurProfileDto: UpdateChauffeurProfileDto,
     authUser: AuthUserType,
   ) {
     const chauffeurProfile = await this.chauffeurProfileRepo.findOneOrFail({
-      where: { id: id },
+      where: { user: { id: userId } },
       relations: { user: true },
     });
 
@@ -53,10 +67,23 @@ export class ChauffeurProfilesService {
     }
 
     if (availability) {
-      await this.availabilityRepo.save({
-        ...availability,
-        chauffeurProfile: chauffeurProfile,
+      const existingAvailability = await this.availabilityRepo.findOne({
+        where: {
+          chauffeurProfile: {
+            id: chauffeurProfile.id,
+          },
+        },
       });
+
+      if (existingAvailability) {
+        this.availabilityRepo.merge(existingAvailability, availability);
+        await this.availabilityRepo.save(existingAvailability);
+      } else {
+        await this.availabilityRepo.save({
+          ...availability,
+          chauffeurProfile: chauffeurProfile,
+        });
+      }
     }
 
     await this.chauffeurProfileRepo.save(chauffeurProfile);

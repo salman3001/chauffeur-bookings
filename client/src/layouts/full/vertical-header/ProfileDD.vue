@@ -2,7 +2,8 @@
 import { useLogout } from '@/composables/api/auth/useLogout'
 import { useAvatar } from '@/composables/api/profile/useAvatar'
 import { getUploadUrl } from '@/utils/getUploadUrl'
-import { UserIcon, MailIcon, ListCheckIcon } from 'vue-tabler-icons'
+import { UserIcon } from 'vue-tabler-icons'
+import dummyAvatar from '@/assets/images/dummy-avatar.jpg'
 
 const { logout } = useLogout()
 const { dp } = useAvatar()
@@ -16,11 +17,7 @@ const { dp } = useAvatar()
     <template v-slot:activator="{ props }">
       <v-btn class="profileBtn custom-hover-primary" variant="text" v-bind="props" icon>
         <v-avatar size="35">
-          <img
-            :src="getUploadUrl(dp?.thumbnailUrl, '@/assets/images/profile/user-1.jpg')"
-            height="35"
-            alt="user"
-          />
+          <img :src="getUploadUrl(dp?.thumbnailUrl, dummyAvatar)" height="35" alt="user" />
         </v-avatar>
       </v-btn>
     </template>

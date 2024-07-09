@@ -15,7 +15,7 @@ export default class Profile {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('jsonb', { nullable: true })
+  @Column('json', { nullable: true })
   avatar?: Image;
 
   @OneToOne(() => User, (user) => user.profile)

@@ -62,7 +62,7 @@ export default class User {
   @IsPhoneNumber('IN')
   phone?: string;
 
-  @Column('enum', { enum: UserType })
+  @Column('text')
   @ApiProperty()
   @IsEnum(UserType)
   userType: UserType;
@@ -76,13 +76,13 @@ export default class User {
   @IsBoolean()
   emailVerified: boolean;
 
-  @CreateDateColumn({ type: 'timestamptz' })
+  @CreateDateColumn()
   cretaedAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamptz' })
+  @UpdateDateColumn()
   updatedAt: Date;
 
-  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
+  @DeleteDateColumn()
   deletedAt?: Date;
 
   @OneToOne(() => Profile, (profile) => profile.user, {

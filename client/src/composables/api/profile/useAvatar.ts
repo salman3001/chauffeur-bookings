@@ -11,8 +11,6 @@ export const useAvatar = () => {
     await exec('/my-profile/avatar')
 
     if (data.value) {
-      console.log(data.value)
-
       dp.value = data.value
     }
   })

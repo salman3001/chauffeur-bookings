@@ -13,9 +13,15 @@ export const BookingsPolicy = {
   },
 
   findAll(user: AuthUserType) {
-    return user ? true : false;
+    return user?.userType === UserType.ADMIN;
   },
 
+  findCusomerBookings(user: AuthUserType) {
+    return user ? true : false;
+  },
+  findChauffeurBookings(user: AuthUserType) {
+    return user?.userType === UserType.CHAUFFEUR;
+  },
   create(user: AuthUserType) {
     return user ? true : false;
   },

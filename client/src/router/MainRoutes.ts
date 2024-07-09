@@ -1,12 +1,12 @@
 import type { RouteRecordRaw } from 'vue-router'
 
-const BookingRoutes: RouteRecordRaw = {
+const MainRoutes: RouteRecordRaw = {
   path: '/',
   component: () => import('@/layouts/full/FullLayout.vue'),
   children: [
     {
       name: 'Home',
-      path: '',
+      path: '/',
       component: () => import('@/views/book-now/book-now.vue')
     },
     {
@@ -16,15 +16,15 @@ const BookingRoutes: RouteRecordRaw = {
     },
     {
       name: 'Profile',
-      path: '/profile',
+      path: 'profile',
       component: () => import('@/views/Profile.vue')
     },
     {
       name: 'Notifications',
-      path: '/notifications',
+      path: 'notifications',
       component: () => import('@/views/Notifications.vue')
     }
   ]
 }
 
-export default BookingRoutes
+export default MainRoutes

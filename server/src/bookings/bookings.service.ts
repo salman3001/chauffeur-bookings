@@ -134,38 +134,32 @@ export class BookingsService {
 
   async findAll(authUser: AuthUserType, query?: BookingFilterQuery) {
     this.bookingsPolicy.authorize('findAll', authUser);
-    let bookings: Booking[] = [];
-    let count = 0;
-    let perPage = 0;
 
-    if (authUser?.userType === UserType.CUSTOMER) {
-      const bookingData = await this.bookingRepo.getCustomersBookings(
-        authUser?.id,
-        query,
-      );
-      bookings = bookingData.results;
-      count = bookingData.count;
-      perPage = bookingData.perPage;
-    }
+    return this.bookingRepo.getAdminBookings(query);
+  }
 
-    if (authUser?.userType === UserType.CHAUFFEUR) {
-      const bookingData = await this.bookingRepo.getchauffeurBookings(
-        authUser?.id,
-        query,
-      );
-      bookings = bookingData.results;
-      count = bookingData.count;
-      perPage = bookingData.perPage;
-    }
+  async findCusomerBookings(
+    authUser: AuthUserType,
+    query?: BookingFilterQuery,
+  ) {
+    this.bookingsPolicy.authorize('findCusomerBookings', authUser);
 
-    if (authUser?.userType === UserType.ADMIN) {
-      const bookingData = await this.bookingRepo.getAdminBookings(query);
-      bookings = bookingData.results;
-      count = bookingData.count;
-      perPage = bookingData.perPage;
-    }
+    return await this.bookingRepo.getCustomersBookings(
+      authUser?.id as number,
+      query,
+    );
+  }
 
-    return { bookings, count, perPage };
+  async findChauffeurBookings(
+    authUser: AuthUserType,
+    query?: BookingFilterQuery,
+  ) {
+    this.bookingsPolicy.authorize('findChauffeurBookings', authUser);
+
+    return await this.bookingRepo.getchauffeurBookings(
+      authUser?.id as number,
+      query,
+    );
   }
 
   async findOne(id: number, authUser: AuthUserType) {

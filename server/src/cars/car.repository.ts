@@ -15,9 +15,11 @@ export class CarRepository extends BaseRepository<Car> {
   }
 
   applyFilers(qb: SelectQueryBuilder<Car>, query?: CarFilterQuery) {
-    qb.andWhere('Car.name ILIKE :search', {
-      search: `%${query?.search}%`,
-    });
+    if (query?.search) {
+      qb.andWhere('Car.name LIKE :search', {
+        search: `%${query?.search}%`,
+      });
+    }
   }
 }
 

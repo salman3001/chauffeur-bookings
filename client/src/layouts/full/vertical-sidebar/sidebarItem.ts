@@ -29,6 +29,11 @@ const sidebarItem: Menu[] = [
     to: { name: 'Home' }
   },
   {
+    title: 'My Bookings',
+    icon: 'home-linear',
+    to: { name: 'Bookings' }
+  },
+  {
     title: 'Login',
     icon: 'login-3-line-duotone',
     to: { name: 'Login' },

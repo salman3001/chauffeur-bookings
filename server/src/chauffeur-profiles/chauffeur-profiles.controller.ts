@@ -3,8 +3,9 @@ import { ChauffeurProfilesService } from './chauffeur-profiles.service';
 import { UpdateChauffeurProfileDto } from './dto/update-chauffeur-profile.dto';
 import { AuthUserType } from 'src/utils/types/common';
 import { AuthUser } from 'src/utils/decorators/authUser.decorator';
+import CustomRes from 'src/utils/CustomRes';
 
-@Controller('chauffeur-profiles')
+@Controller('chauffeur-profile')
 export class ChauffeurProfilesController {
   constructor(
     private readonly chauffeurProfilesService: ChauffeurProfilesService,
@@ -14,21 +15,43 @@ export class ChauffeurProfilesController {
   async findOne(@AuthUser() authUser: AuthUserType) {
     const chauffeurProfile =
       await this.chauffeurProfilesService.findOne(authUser);
-    return chauffeurProfile;
+    return CustomRes({
+      code: 200,
+      success: true,
+      data: chauffeurProfile,
+    });
   }
 
-  @Patch(':id')
-  async update(
-    @Param('id') id: string,
+  @Get(':userId')
+  async findOneByUserId(
+    @Param('userId') userId: string,
+    @AuthUser() authUser: AuthUserType,
+  ) {
+    const chauffeurProfile =
+      await this.chauffeurProfilesService.findOneByUserId(+userId, authUser);
+    return CustomRes({
+      code: 200,
+      success: true,
+      data: chauffeurProfile,
+    });
+  }
+
+  @Patch(':userId')
+  async updateByUserId(
+    @Param('userId') userId: string,
     @Body()
     updateChauffeurProfileDto: UpdateChauffeurProfileDto,
     @AuthUser() authUser: AuthUserType,
   ) {
-    const chauffeurProfile = await this.chauffeurProfilesService.update(
-      +id,
+    const chauffeurProfile = await this.chauffeurProfilesService.updateByUserId(
+      +userId,
       updateChauffeurProfileDto,
       authUser,
     );
-    return chauffeurProfile;
+    return CustomRes({
+      code: 200,
+      success: true,
+      data: chauffeurProfile,
+    });
   }
 }

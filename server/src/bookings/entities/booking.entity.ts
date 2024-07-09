@@ -38,7 +38,7 @@ export class Booking {
   @Length(5, 256)
   pickupAddress: string;
 
-  @Column('jsonb', { transformer: jsonTransformer })
+  @Column('json', { transformer: jsonTransformer })
   @ApiProperty()
   @ValidateNested()
   @Type(() => Geometry)
@@ -49,7 +49,7 @@ export class Booking {
   @Length(5, 256)
   dropoffAddress: string;
 
-  @Column('jsonb', { transformer: jsonTransformer })
+  @Column('json', { transformer: jsonTransformer })
   @ApiProperty()
   @ValidateNested()
   @Type(() => Geometry)
@@ -71,11 +71,11 @@ export class Booking {
   @IsPositive()
   total: string;
 
-  @Column('enum', { enum: BookingStatus })
+  @Column('text')
   @IsEnum(BookingStatus)
   status: BookingStatus;
 
-  @Column('enum', { enum: PaymentMode, nullable: true })
+  @Column('text', { nullable: true })
   @ApiProperty()
   @IsEnum(PaymentMode)
   paymentMode: PaymentMode;
@@ -100,9 +100,9 @@ export class Booking {
   @OneToOne(() => BookedSlot, (bookedSlot) => bookedSlot.booking)
   bookedSlot: BookedSlot;
 
-  @CreateDateColumn({ type: 'timestamptz' })
+  @CreateDateColumn()
   cretaedAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamptz' })
+  @UpdateDateColumn()
   updatedAt: Date;
 }

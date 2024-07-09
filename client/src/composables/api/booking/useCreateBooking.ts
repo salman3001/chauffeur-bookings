@@ -34,7 +34,7 @@ export const useCreateBooking = () => {
       {},
       {
         onSucess() {
-          //   router.push({ name: 'Cars.Index' })
+          router.push({ name: 'Bookings' })
         }
       }
     )

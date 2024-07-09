@@ -13,6 +13,16 @@ export const ChauffeurProfilesPolicy = {
     return false;
   },
 
+  findById(user: AuthUserType, chauffeurProfile: ChauffeurProfile) {
+    if (user?.userType === UserType.ADMIN) {
+      return true;
+    }
+    if (user?.userType === UserType.CHAUFFEUR && chauffeurProfile?.user?.id) {
+      return true;
+    }
+    return false;
+  },
+
   update(user: AuthUserType, chauffeurProfile: ChauffeurProfile) {
     if (user?.userType === UserType.ADMIN) {
       return true;

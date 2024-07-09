@@ -28,6 +28,11 @@ const AdminRoutes: RouteRecordRaw = {
           component: () => import('@/views/admin/users/create.user.vue')
         },
         {
+          name: 'Chauffeur.Edit',
+          path: 'chauffeur-profile/:id',
+          component: () => import('@/views/admin/users/edit.chauffeur.vue')
+        },
+        {
           name: 'Users.Edit',
           path: ':id/edit',
           component: () => import('@/views/admin/users/edit.user.vue')

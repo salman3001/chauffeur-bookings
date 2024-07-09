@@ -18,7 +18,7 @@ export default class UserSeeder implements Seeder {
   ): Promise<any> {
     if (process.env.NODE_ENV !== 'prod') {
       const manager = dataSource.manager;
-      await manager.query(`TRUNCATE TABLE "user" RESTART IDENTITY CASCADE;`);
+      await manager.query(`DELETE FROM "user";`);
 
       // repos
       const profileRepo = dataSource.getRepository(Profile);

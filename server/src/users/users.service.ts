@@ -123,9 +123,24 @@ export class UsersService {
       }
     }
 
-    this.userRepository.merge(user, updateUserDto);
-    await this.userRepository.save(user);
-    return user;
+    return await this.dataSource.transaction(async (manager) => {
+      this.userRepository.merge(user, updateUserDto);
+      const savedUser = await manager.save(user);
+
+      if (updateUserDto.userType === UserType.CHAUFFEUR) {
+        const chauffeurProfile = this.chauffeurProfileRepo.create({});
+        chauffeurProfile.user = savedUser;
+        await manager.save(chauffeurProfile);
+      }
+
+      if (savedUser.userType === UserType.ADMIN) {
+        const adminProfile = this.adminProfileRepo.create({});
+        adminProfile.user = savedUser;
+        await manager.save(adminProfile);
+      }
+
+      return user;
+    });
   }
 
   async remove(id: number, authUser: AuthUserType) {

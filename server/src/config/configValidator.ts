@@ -50,6 +50,9 @@ class EnvironmentVariables {
   PG_DB: string;
 
   @IsString()
+  SQLITE_FILE: string;
+
+  @IsString()
   SMTP_HOST: string;
 
   @IsNumber()

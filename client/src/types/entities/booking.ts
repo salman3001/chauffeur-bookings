@@ -22,6 +22,6 @@ export interface Booking {
   customerProfile: Profile
   chauffeurProfile: ChauffeurProfile
   bookedSlot: BookedSlot
-  cretaedAt: string
+  createdAt: string
   updatedAt: string
 }

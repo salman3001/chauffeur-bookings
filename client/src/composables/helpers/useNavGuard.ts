@@ -14,25 +14,21 @@ export const useNavGuard = (meta: any, next: NavigationGuardNext) => {
   }
 
   if (requiresAuth && !role) {
-    console.log('ran')
-
     if (user.value) {
       next()
-      return
     } else {
       next({ name: 'Login' })
-      return
     }
+    return
   }
 
   if (requiresAuth && role) {
     if (user.value && isUser(role)) {
       next()
-      return
     } else {
       next({ name: 'Denied' })
-      return
     }
+    return
   }
 
   next()

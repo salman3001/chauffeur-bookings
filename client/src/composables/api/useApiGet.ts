@@ -48,6 +48,7 @@ export default function useApiGet<T>() {
     data,
     exec,
     processing,
-    error
+    error,
+    errors
   }
 }

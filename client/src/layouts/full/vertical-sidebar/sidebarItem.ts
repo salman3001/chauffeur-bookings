@@ -31,7 +31,8 @@ const sidebarItem: Menu[] = [
   {
     title: 'My Bookings',
     icon: 'home-linear',
-    to: { name: 'Bookings' }
+    to: { name: 'Bookings' },
+    authRequired: true
   },
   {
     title: 'Login',

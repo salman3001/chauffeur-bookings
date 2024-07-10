@@ -7,6 +7,7 @@ import vuetify from './plugins/vuetify'
 import '@mdi/font/css/materialdesignicons.css'
 import '@/scss/style.scss'
 import PerfectScrollbar from 'vue3-perfect-scrollbar'
+// @ts-ignore
 import VueApexCharts from 'vue3-apexcharts'
 import VueTablerIcons from 'vue-tabler-icons'
 import Maska from 'maska'

@@ -107,7 +107,7 @@ const { headers, loadItems } = useTable(
 
           <template #item.createdAt="{ item }">
             <div style="min-width: 150px">
-              {{ new Date(item.cretaedAt).toLocaleString() }}
+              {{ new Date(item.createdAt).toLocaleString() }}
             </div>
           </template>
 
@@ -136,14 +136,8 @@ const { headers, loadItems } = useTable(
           <!-- Chauffeur  -->
 
           <template #item.chauffeurProfile="{ item }">
-            <div class="d-flex align-center gap-x-3">
-              <div class="d-flex flex-column">
-                <div class="text-body-1 font-weight-medium">
-                  {{ item.chauffeurProfile.user.firstName }}
-                  {{ item.chauffeurProfile.user.lastName }}
-                </div>
-              </div>
-            </div>
+            {{ item.chauffeurProfile.user.firstName }}
+            {{ item.chauffeurProfile.user.lastName }}
           </template>
 
           <!--Ride Price per hour-->

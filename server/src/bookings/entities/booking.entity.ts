@@ -101,7 +101,7 @@ export class Booking {
   bookedSlot: BookedSlot;
 
   @CreateDateColumn()
-  cretaedAt: Date;
+  createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;

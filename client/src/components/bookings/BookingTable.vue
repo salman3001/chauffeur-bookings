@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import type { Booking } from '@/types/entities/booking'
-import type { Paginated } from '@/types/interfaces/ResType'
-import type { ReadonlyHeaders } from '@/types/interfaces/Vuetify'
 import UiParentCard from '../shared/UiParentCard.vue'
 import { getUploadUrl } from '@/utils/getUploadUrl'
 import dummyAvatar from '@/assets/images/dummy-avatar.jpg'
@@ -9,17 +6,13 @@ import appConfig from '@/config/app.config'
 import { resolvePaymentMode } from '@/utils/Payments.helper'
 import { resolveBookingStatus } from '@/utils/bookings.helper'
 import { useTable } from '@/composables/helpers/useTable'
-import { useGetCustomerBookings } from '@/composables/api/booking/useGetCustomerBookings'
+import { useGetBookings } from '@/composables/api/booking/useGetBookings'
 
-// defineProps<{
-//   bookings: Paginated<Booking[]>
-//   query: Record<any, any>
-//   headers: ReadonlyHeaders
-//   loading: boolean
-//   loadItems: (opt?: any) => void
-// }>()
+const props = defineProps<{
+  type: 'admin' | 'customer' | 'chauffeur'
+}>()
 
-const { getCustomerBookings, data, query, processing } = useGetCustomerBookings()
+const { getBookings, data, query, processing } = useGetBookings(props.type)
 const { headers, loadItems } = useTable(
   [
     {
@@ -39,6 +32,12 @@ const { headers, loadItems } = useTable(
       align: 'start',
       sortable: false,
       key: 'customerProfile'
+    },
+    {
+      title: 'Chauffeur',
+      align: 'start',
+      sortable: false,
+      key: 'chauffeurProfile'
     },
     {
       title: 'Price/h',
@@ -69,11 +68,17 @@ const { headers, loadItems } = useTable(
       align: 'start',
       sortable: false,
       key: 'paymentStatus'
+    },
+    {
+      title: 'Actions',
+      align: 'center',
+      sortable: false,
+      key: 'actions'
     }
   ],
   query,
   () => {
-    getCustomerBookings()
+    getBookings()
   }
 )
 </script>
@@ -81,7 +86,7 @@ const { headers, loadItems } = useTable(
 <template>
   <v-row>
     <v-col cols="12" md="12">
-      <UiParentCard title="Cars">
+      <UiParentCard title="My Bookings">
         <v-data-table-server
           v-model:items-per-page="query.perPage"
           :page="query.page"
@@ -95,20 +100,20 @@ const { headers, loadItems } = useTable(
         >
           <!-- Order ID -->
           <template #item.id="{ item }">
-            <v-btn variant="plain" :to="{ name: 'Bookings.Show', params: { id: item.id } }">
-              {{ item.id }}
-            </v-btn>
+            {{ item.id }}
           </template>
 
           <!-- Date -->
 
           <template #item.createdAt="{ item }">
-            {{ item.cretaedAt }}
+            <div style="min-width: 150px">
+              {{ new Date(item.cretaedAt).toLocaleString() }}
+            </div>
           </template>
 
           <!-- Customers  -->
 
-          <template #item.customer="{ item }">
+          <template #item.customerProfile="{ item }">
             <div class="d-flex align-center gap-x-3">
               <VAvatar
                 size="34"
@@ -123,6 +128,19 @@ const { headers, loadItems } = useTable(
               <div class="d-flex flex-column">
                 <div class="text-body-1 font-weight-medium">
                   {{ item.customerProfile.user.firstName }} {{ item.customerProfile.user.lastName }}
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <!-- Chauffeur  -->
+
+          <template #item.chauffeurProfile="{ item }">
+            <div class="d-flex align-center gap-x-3">
+              <div class="d-flex flex-column">
+                <div class="text-body-1 font-weight-medium">
+                  {{ item.chauffeurProfile.user.firstName }}
+                  {{ item.chauffeurProfile.user.lastName }}
                 </div>
               </div>
             </div>
@@ -174,18 +192,16 @@ const { headers, loadItems } = useTable(
           <!-- Actions -->
 
           <template #item.actions="{ item }">
-            <v-btn icon="tabler-dots-vertical">
-              <VMenu activator="parent">
-                <VList>
-                  <VListItem value="view"> View </VListItem>
-                </VList>
-              </VMenu>
+            <v-btn
+              size="small"
+              color="primary"
+              flat
+              :to="{ name: 'Bookings.Show', params: { id: item.id } }"
+              >view
             </v-btn>
           </template>
         </v-data-table-server>
       </UiParentCard>
     </v-col></v-row
   >
-
-  <!-- 👉 Order Table -->
 </template>

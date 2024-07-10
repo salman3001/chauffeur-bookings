@@ -4,7 +4,7 @@ import type { Paginated } from '@/types/interfaces/ResType'
 import { debouncedWatch } from '@vueuse/core'
 import type { Booking } from '@/types/entities/booking'
 
-export const useGetBookings = () => {
+export const useGetBookings = (type: 'admin' | 'customer' | 'chauffeur') => {
   const { data, processing, exec } = useApiGet<Paginated<Booking[]>>()
 
   const initialQuery = {
@@ -18,10 +18,23 @@ export const useGetBookings = () => {
 
   const query = reactive(initialQuery)
 
-  const getBookings = () =>
-    exec('/bookings', {
-      params: query
-    })
+  const getBookings = () => {
+    if (type == 'admin') {
+      exec('/bookings', {
+        params: query
+      })
+    }
+    if (type == 'customer') {
+      exec('/bookings/customer', {
+        params: query
+      })
+    }
+    if (type == 'chauffeur') {
+      exec('/bookings/chauffeur', {
+        params: query
+      })
+    }
+  }
 
   const refresh = () => {
     Object.keys(initialQuery).forEach((key) => {

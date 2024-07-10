@@ -16,24 +16,32 @@ export class BookingRepository extends BaseRepository<Booking> {
 
   async getchauffeurBookings(chauffeurId: number, query?: BookingFilterQuery) {
     const qb = this.createQueryBuilder()
-      .leftJoin('Booking.chauffeurProfile', 'chauffeurProfile')
-      .leftJoin('chauffeurProfile.user', 'user')
-      .where('user.id = :id', { id: chauffeurId });
+      .leftJoinAndSelect('Booking.customerProfile', 'customerProfile')
+      .leftJoinAndSelect('Booking.chauffeurProfile', 'chauffeurProfile')
+      .leftJoinAndSelect('chauffeurProfile.user', 'chauffeur')
+      .leftJoinAndSelect('customerProfile.user', 'customer')
+      .where('chauffeur.id = :id', { id: chauffeurId });
 
     return this.paginate(qb, query);
   }
 
   async getCustomersBookings(customerId: number, query?: BookingFilterQuery) {
     const qb = this.createQueryBuilder()
-      .leftJoin('Booking.customerProfile', 'customerProfile')
-      .leftJoin('customerProfile.user', 'user')
-      .where('user.id = :id', { id: customerId });
+      .leftJoinAndSelect('Booking.customerProfile', 'customerProfile')
+      .leftJoinAndSelect('Booking.chauffeurProfile', 'chauffeurProfile')
+      .leftJoinAndSelect('chauffeurProfile.user', 'chauffeur')
+      .leftJoinAndSelect('customerProfile.user', 'customer')
+      .where('customer.id = :id', { id: customerId });
 
     return this.paginate(qb, query);
   }
 
   async getAdminBookings(query?: BookingFilterQuery) {
-    const qb = this.createQueryBuilder();
+    const qb = this.createQueryBuilder()
+      .leftJoinAndSelect('Booking.customerProfile', 'customerProfile')
+      .leftJoinAndSelect('Booking.chauffeurProfile', 'chauffeurProfile')
+      .leftJoinAndSelect('chauffeurProfile.user', 'chauffeur')
+      .leftJoinAndSelect('customerProfile.user', 'customer');
 
     return this.paginate(qb, query);
   }
